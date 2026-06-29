@@ -54,10 +54,10 @@
         .user-message { background: #1e1f20; border: 1px solid #333; } .bot-message { padding-left: 0; }
         .message-image { max-width: 100%; max-height: 200px; border-radius: 8px; margin-bottom: 8px; }
         
-        /* Like / Unlike Buttons */
-        .feedback-btns { display: flex; gap: 10px; margin-top: 5px; font-size: 14px; }
-        .feedback-btns span { cursor: pointer; opacity: 0.6; transition: 0.2s; user-select: none; }
-        .feedback-btns span:hover { opacity: 1; transform: scale(1.1); }
+        /* Feedback & Copy Buttons */
+        .feedback-btns { display: flex; gap: 15px; margin-top: 8px; font-size: 14px; }
+        .feedback-btns span { cursor: pointer; opacity: 0.6; transition: 0.2s; user-select: none; background: #1e1f20; padding: 4px 8px; border-radius: 6px; border: 1px solid #333;}
+        .feedback-btns span:hover { opacity: 1; background: #333; }
         
         /* Input Area */
         .chat-input-container { padding: 10px 20px 20px; background: #131314; display: flex; flex-direction: column; align-items: center; }
@@ -142,9 +142,7 @@
             appId: "1:818963537476:web:83e8b69fdf067001e62611"
         };
         
-        if (!firebase.apps.length) {
-            firebase.initializeApp(firebaseConfig);
-        }
+        if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
         const auth = firebase.auth();
         let currentUser = null;
@@ -212,6 +210,15 @@
         }
         function removeImage() { selectedImage = null; document.getElementById("preview-container").style.display = "none"; }
 
+        // Copy Text Function
+        window.copyText = function(btn, text) {
+            navigator.clipboard.writeText(text).then(() => {
+                let original = btn.innerHTML;
+                btn.innerHTML = "✅ Copied";
+                setTimeout(() => { btn.innerHTML = original; }, 2000);
+            });
+        };
+
         function appendMessage(text, isUser, img = null) {
             const container = document.getElementById("chat-messages");
             const row = document.createElement("div");
@@ -219,16 +226,28 @@
             
             let html = `<div class="message-bubble ${isUser ? 'user-message' : 'bot-message'}">`;
             if (img) html += `<img src="${img}" class="message-image">`;
-            if (text) html += `<span>${text.replace(/\n/g, '<br>')}</span>`;
+            
+            // Clean Text
+            let cleanText = text ? text : "";
+            let displayHtml = text ? text.replace(/\n/g, '<br>') : "";
+            
+            if (text) html += `<span>${displayHtml}</span>`;
             html += `</div>`;
             
-            // AI သို့မဟုတ် Admin ပြန်စာဆိုလျှင် Like/Unlike ခလုတ် ထည့်မည်
+            // AI သို့မဟုတ် Admin ပြန်စာဆိုလျှင် Copy နှင့် Like/Unlike ခလုတ် ထည့်မည်
             if (!isUser) {
-                html += `
-                <div class="feedback-btns">
-                    <span onclick="this.style.opacity='1'; this.innerText='👍 ေက်းဇူးပါ'; this.nextElementSibling.style.display='none';">👍</span>
-                    <span onclick="this.style.opacity='1'; this.innerText='👎 မကြိုက်ပါ'; this.previousElementSibling.style.display='none';">👎</span>
-                </div>`;
+                // ကိုးကားချက်များကို Escape လုပ်ခြင်း
+                let safeText = cleanText.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                
+                // Loading စာသားမဟုတ်မှသာ Action Buttons တွေပြပါမည်
+                if(text !== "NEXUS စဉ်းစားနေပါသည်..." && !text.includes("Admin ထံသို့ ပို့ဆောင်နေပါသည်")) {
+                    html += `
+                    <div class="feedback-btns">
+                        <span onclick="window.copyText(this, '${safeText}')">📋 Copy</span>
+                        <span onclick="this.innerHTML='👍'; this.nextElementSibling.style.display='none';">👍 Like</span>
+                        <span onclick="this.innerHTML='👎'; this.previousElementSibling.style.display='none';">👎 Unlike</span>
+                    </div>`;
+                }
             }
             
             row.innerHTML = html;
@@ -258,7 +277,7 @@
                 input.value = "";
                 removeImage();
                 
-                const loadingMsg = appendMessage("🚀 Pro အသုံးပြုမှုအတွက် Admin ထံသို့ ပို့ဆောင်နေပါသည်...", false);
+                const loadingMsg = appendMessage("🚀 Pro အသုံးပြုမှုအတွက် Admin ထံသို့ ပို့ဆောင်နေပါသည်... ကျေးဇူးပြု၍ ခဏစောင့်ပေးပါ။", false);
                 
                 try {
                     const docRef = await db.collection("pro_requests").add({
@@ -273,11 +292,10 @@
                         timestamp: firebase.firestore.FieldValue.serverTimestamp()
                     });
                     
-                    loadingMsg.innerHTML = `<div class="message-bubble bot-message"><span>✅ အစ်ကို့ရဲ့တောင်းဆိုချက် Admin ထံရောက်ရှိသွားပါပြီ။ Admin မှ မကြာမီ ပြန်လည်ပို့ပေးပါမည်။ ကျေးဇူးပြု၍ စောင့်ပေးပါ။</span></div>`;
-                    
                     const unsubscribe = db.collection("pro_requests").doc(docRef.id).onSnapshot((doc) => {
                         const data = doc.data();
                         if (data && data.status === "replied") {
+                            loadingMsg.remove(); // Admin ပြန်စာရောက်လာပါက 'စောင့်ပေးပါ' စာသားကို ဖျက်မည်
                             appendMessage(data.adminReply, false, data.adminImage);
                             unsubscribe();
                         }
@@ -327,7 +345,13 @@
                     let aiReply = data.candidates[0].content.parts[0].text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
                     appendMessage(aiReply, false);
                 } else {
-                    appendMessage("Error အတိအကျမှာ: " + JSON.stringify(data), false);
+                    // API Limit Error အား စစ်ဆေးခြင်း
+                    let errStr = JSON.stringify(data);
+                    if(errStr.includes("429") || errStr.includes("quota") || errStr.includes("RESOURCE_EXHAUSTED")) {
+                        appendMessage("⚠️ ယခုအချိန်တွင် အသုံးပြုသူများပြားနေသဖြင့် Free Limit ပြည့်သွားပါသည်။ ခဏအကြာမှ ပြန်လည်ကြိုးစားကြည့်ပါဗျ။", false);
+                    } else {
+                        appendMessage("⚠️ ချိတ်ဆက်မှု အခက်အခဲဖြစ်နေပါသည်။", false);
+                    }
                 }
             } catch (error) {
                 loadingMsg.remove();
