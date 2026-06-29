@@ -6,6 +6,7 @@
     <title>NEXUS - Admin Panel</title>
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     <style>
         body { font-family: Arial, sans-serif; background: #f4f7f6; padding: 20px; }
@@ -17,15 +18,28 @@
         button { background: #1a73e8; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
         button:hover { background: #1557b0; }
         hr { border: 0; border-top: 1px solid #eee; margin: 15px 0; }
+        
+        #login-section { text-align: center; margin-top: 50px; }
+        #admin-content { display: none; }
     </style>
 </head>
 <body>
 
     <h2>NEXUS - Pro User Requests (Admin Panel)</h2>
-    <div id="requests-container">Loading requests...</div>
+    
+    <!-- Login မဝင်ရသေးခင် ပေါ်မည့်အပိုင်း -->
+    <div id="login-section">
+        <p>Admin Panel ကို ဝင်ရောက်ရန် သင့် Google အကောင့်ဖြင့် Login ဝင်ပါ။</p>
+        <button onclick="adminLogin()">Login with Google</button>
+    </div>
+
+    <!-- Login ဝင်ပြီးမှ ပေါ်မည့်အပိုင်း -->
+    <div id="admin-content">
+        <button onclick="adminLogout()" style="background: #dc3545; margin-bottom: 20px;">Logout ထွက်မည်</button>
+        <div id="requests-container">Loading requests...</div>
+    </div>
 
     <script>
-        // သင့်ရဲ့ အမှန်တကယ် Firebase Config
         const firebaseConfig = {
             apiKey: "AIzaSyBuI_N7UY3HzLC1q4bTbr0pIjutn7oCez0",
             authDomain: "nexus-36961.firebaseapp.com",
@@ -39,40 +53,73 @@
             firebase.initializeApp(firebaseConfig); 
         }
         const db = firebase.firestore();
-        const container = document.getElementById('requests-container');
+        const auth = firebase.auth();
 
-        // Status "pending" ဖြစ်နေတဲ့ Request တွေကို အချိန်နဲ့တပြေးညီ ဆွဲယူမယ်
-        db.collection("pro_requests").where("status", "==", "pending")
-          .onSnapshot((snapshot) => {
-              container.innerHTML = "";
-              if(snapshot.empty) {
-                  container.innerHTML = "<p>လက်ရှိမှာ ဖြေစရာ Request အသစ်မရှိပါ။</p>";
-                  return;
-              }
-              
-              snapshot.forEach((doc) => {
-                  const data = doc.data();
-                  const docId = doc.id;
+        // ⚠️ အစ်ကို့ Gmail ကို ဒီမှာ ထည့်သွင်းထားပါတယ်
+        const ADMIN_EMAIL = "newtruckermyanmar1010@gmail.com"; 
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // Admin Gmail ဟုတ်မဟုတ် စစ်ဆေးခြင်း
+                if (user.email === ADMIN_EMAIL) {
+                    document.getElementById('login-section').style.display = 'none';
+                    document.getElementById('admin-content').style.display = 'block';
+                    loadRequests(); 
+                } else {
+                    alert("တောင်းပန်ပါသည်။ သင်သည် Admin မဟုတ်သောကြောင့် ဝင်ရောက်ခွင့် မရှိပါ။");
+                    auth.signOut(); // Admin မဟုတ်လျှင် ကန်ထုတ်မည်
+                }
+            } else {
+                document.getElementById('login-section').style.display = 'block';
+                document.getElementById('admin-content').style.display = 'none';
+            }
+        });
+
+        function adminLogin() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).catch(err => alert("Login Error: " + err.message));
+        }
+
+        function adminLogout() {
+            if(confirm("Logout ထွက်မှာ သေချာပါသလား?")) auth.signOut();
+        }
+
+        function loadRequests() {
+            const container = document.getElementById('requests-container');
+            db.collection("pro_requests").where("status", "==", "pending")
+              .onSnapshot((snapshot) => {
+                  container.innerHTML = "";
+                  if(snapshot.empty) {
+                      container.innerHTML = "<p>လက်ရှိမှာ ဖြေစရာ Request အသစ်မရှိပါ။</p>";
+                      return;
+                  }
                   
-                  let html = `
-                    <div class="request-card" id="card-${docId}">
-                        <div class="user-info">User: ${data.userName} (${data.userEmail})</div>
-                        <div class="user-prompt"><strong>Prompt:</strong> ${data.userPrompt || '(စာသားမပါ)'}</div>
-                        ${data.userImage ? `<img src="${data.userImage}" class="img-preview" alt="User Image">` : ''}
-                        
-                        <hr>
-                        <strong>Admin Reply (ပြန်စာ):</strong>
-                        <textarea id="reply-text-${docId}" placeholder="User ကိုပြန်ပို့မည့် စာသားရိုက်ထည့်ပါ..."></textarea>
-                        
-                        <strong>Reply Image (ပြန်ပို့မည့်ပုံ ရှိပါက ရွေးပါ):</strong><br>
-                        <input type="file" id="reply-img-${docId}" accept="image/*" style="margin-bottom: 10px;"><br>
-                        
-                        <button onclick="sendReply('${docId}')">Send Reply</button>
-                    </div>
-                  `;
-                  container.innerHTML += html;
+                  snapshot.forEach((doc) => {
+                      const data = doc.data();
+                      const docId = doc.id;
+                      
+                      let html = `
+                        <div class="request-card" id="card-${docId}">
+                            <div class="user-info">User: ${data.userName} (${data.userEmail})</div>
+                            <div class="user-prompt"><strong>Prompt:</strong> ${data.userPrompt || '(စာသားမပါ)'}</div>
+                            ${data.userImage ? `<img src="${data.userImage}" class="img-preview" alt="User Image">` : ''}
+                            
+                            <hr>
+                            <strong>Admin Reply (ပြန်စာ):</strong>
+                            <textarea id="reply-text-${docId}" placeholder="User ကိုပြန်ပို့မည့် စာသားရိုက်ထည့်ပါ..."></textarea>
+                            
+                            <strong>Reply Image (ပြန်ပို့မည့်ပုံ ရှိပါက ရွေးပါ):</strong><br>
+                            <input type="file" id="reply-img-${docId}" accept="image/*" style="margin-bottom: 10px;"><br>
+                            
+                            <button onclick="sendReply('${docId}')">Send Reply</button>
+                        </div>
+                      `;
+                      container.innerHTML += html;
+                  });
+              }, (error) => {
+                  alert("Data ဆွဲယူခွင့် မရှိပါ။ Error: " + error.message);
               });
-          });
+        }
 
         function sendReply(docId) {
             const replyText = document.getElementById(`reply-text-${docId}`).value;
@@ -89,7 +136,6 @@
                 repliedAt: firebase.firestore.FieldValue.serverTimestamp()
             };
 
-            // ပုံပါ ပါခဲ့ရင် Base64 အဖြစ်ပြောင်းပြီးမှ ပို့မယ်
             if (fileInput.files.length > 0) {
                 const reader = new FileReader();
                 reader.onload = (e) => {
@@ -105,9 +151,6 @@
         function pushToFirebase(docId, updateData) {
             document.querySelector(`#card-${docId} button`).innerText = "Sending...";
             db.collection("pro_requests").doc(docId).update(updateData)
-              .then(() => {
-                  console.log("Reply sent successfully!");
-              })
               .catch((error) => {
                   alert("Error sending reply: " + error);
               });
