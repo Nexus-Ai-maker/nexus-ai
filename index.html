@@ -3,27 +3,40 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS AI</title>
+    <title>NEXUS AI | Premium</title>
     
     <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     
-    <!-- EmailJS SDK -->
+    <!-- EmailJS & PDF & Markdown SDKs -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
-    
-    <!-- HTML2PDF SDK (For PDF Export) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
-    <!-- Marked.js SDK (For Premium Markdown Text Formatting) -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 
     <style>
-        body { font-family: 'Google Sans', sans-serif; background: #131314; color: #e3e3e3; margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        * { box-sizing: border-box; }
         
+        /* DARK GLASSMORPHISM THEME */
+        body { 
+            font-family: 'Google Sans', sans-serif; 
+            background: linear-gradient(135deg, #09090b 0%, #171026 50%, #09090b 100%); 
+            color: #e3e3e3; 
+            margin: 0; display: flex; height: 100vh; overflow: hidden; 
+        }
+        
+        /* Glass Effect Mixin Classes */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+
         /* Splash Screen */
-        #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 9999; display: flex; justify-content: center; align-items: center; transition: opacity 0.8s; }
+        #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #09090b; z-index: 9999; display: flex; justify-content: center; align-items: center; transition: opacity 0.8s; }
         .nexus-letters { display: flex; gap: 15px; font-size: 48px; font-weight: bold; color: #fff; letter-spacing: 5px; }
         .nexus-letters span { opacity: 0; transform: translateY(20px); animation: fadeUpIn 0.6s ease forwards; }
         .nexus-letters span:nth-child(1) { animation-delay: 0.2s; } .nexus-letters span:nth-child(2) { animation-delay: 0.6s; } .nexus-letters span:nth-child(3) { animation-delay: 1.0s; } .nexus-letters span:nth-child(4) { animation-delay: 1.4s; } .nexus-letters span:nth-child(5) { animation-delay: 1.8s; }
@@ -32,113 +45,159 @@
         .rocket-launch { animation: launchUp 1s cubic-bezier(0.5, 0, 0.2, 1) forwards; }
         @keyframes launchUp { 20% { transform: translateY(15px) scale(0.95); } 100% { transform: translateY(-150vh) scale(1.1); opacity: 0; } }
         
-        /* Sidebar */
-        .sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: #1e1f20; z-index: 1000; transition: left 0.3s; display: flex; flex-direction: column; border-right: 1px solid #333; }
+        /* Sidebar (Glass) */
+        .sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: rgba(15, 15, 20, 0.7); backdrop-filter: blur(20px); z-index: 1000; transition: left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; border-right: 1px solid rgba(255,255,255,0.05); }
         .sidebar.open { left: 0; }
-        .sidebar-header { padding: 20px; font-size: 18px; font-weight: 500; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
+        .sidebar-header { padding: 20px; font-size: 18px; font-weight: 500; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; }
         .clear-history-btn { background: transparent; border: none; color: #ff6b6b; cursor: pointer; font-size: 13px; padding: 4px 8px; border-radius: 4px; }
-        .clear-history-btn:hover { background: rgba(255,107,107,0.1); }
         
-        /* New Chat Button & History List */
-        .new-chat-btn { width: 100%; padding: 12px; background: #1a73e8; color: white; border: none; border-radius: 8px; cursor: pointer; margin-bottom: 10px; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s;}
-        .new-chat-btn:hover { background: #1557b0; }
+        .new-chat-btn { width: 100%; padding: 12px; background: linear-gradient(90deg, #6b46c1, #3182ce); color: white; border: none; border-radius: 12px; cursor: pointer; margin-bottom: 10px; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s; box-shadow: 0 4px 15px rgba(107, 70, 193, 0.4);}
+        .new-chat-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(107, 70, 193, 0.6); }
         .history-list { padding: 0 15px 15px 15px; overflow-y: auto; flex: 1; }
-        .history-item { padding: 12px; color: #c4c7c5; font-size: 14px; cursor: pointer; border-radius: 8px; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 10px;}
-        .history-item:hover { background: #333639; }
-        .history-item.active { background: #333639; color: #fff; font-weight: bold; }
+        .history-item { padding: 12px; color: #c4c7c5; font-size: 14px; cursor: pointer; border-radius: 8px; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 10px; transition: 0.2s;}
+        .history-item:hover { background: rgba(255,255,255,0.1); }
+        .history-item.active { background: rgba(255,255,255,0.15); color: #fff; font-weight: bold; border-left: 3px solid #a8c7fa;}
         
-        .sidebar-footer { padding: 15px; border-top: 1px solid #333; background: #1a1b1d; }
-        .login-btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 12px; background: #2a2b2f; color: #e3e3e3; border: 1px solid #444746; border-radius: 8px; cursor: pointer; transition: 0.3s;}
-        .login-btn:hover { background: #3a3b3f; }
-        .user-profile { display: flex; align-items: center; gap: 10px; }
+        .sidebar-footer { padding: 15px; border-top: 1px solid rgba(255,255,255,0.05); }
+        .login-btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 12px; background: rgba(255,255,255,0.05); color: #e3e3e3; border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; cursor: pointer; transition: 0.3s;}
+        .login-btn:hover { background: rgba(255,255,255,0.1); }
         .user-profile img { width: 30px; height: 30px; border-radius: 50%; }
         
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999; display: none; }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(3px); z-index: 999; display: none; }
         .overlay.show { display: block; }
         
         /* Main UI */
         .main-content { flex: 1; display: flex; flex-direction: column; width: 100%; height: 100vh; position: relative;}
-        .chat-header { padding: 15px 20px; display: flex; align-items: center; }
+        .chat-header { padding: 15px 20px; display: flex; align-items: center; background: rgba(9, 9, 11, 0.5); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 10;}
         .menu-btn { font-size: 24px; cursor: pointer; margin-right: 15px; }
-        .logo { font-size: 22px; font-weight: bold; margin-right: 10px; }
+        .logo { font-size: 20px; font-weight: bold; margin-right: 10px; letter-spacing: 2px;}
         
-        .dropdown-btn { background: transparent; color: #a8c7fa; border: none; font-size: 16px; padding: 6px 12px; cursor: pointer; }
-        .dropdown-menu { position: absolute; top: 100%; left: 0; background: #1e1f20; border-radius: 8px; display: none; flex-direction: column; border: 1px solid #333; z-index: 10; width: 240px;}
-        .dropdown-menu.show { display: flex; }
-        .dropdown-item { padding: 12px 20px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 14px;} 
-        .dropdown-item:hover { background: #333639; }
-        .dropdown-divider { height: 1px; background: #333; margin: 5px 0; }
+        .dropdown-btn { background: rgba(255,255,255,0.05); color: #a8c7fa; border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; font-size: 14px; padding: 6px 14px; cursor: pointer; transition: 0.2s;}
+        .dropdown-btn:hover { background: rgba(255,255,255,0.1); }
         
-        .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; max-width: 800px; margin: 0 auto; width: 100%; position: relative; scroll-behavior: smooth; }
-        #welcome-message { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 32px; font-weight: bold; color: #444746; text-align: center;}
+        .dropdown-menu { position: absolute; top: 60px; left: 20px; background: rgba(20, 20, 25, 0.9); backdrop-filter: blur(20px); border-radius: 16px; display: none; flex-direction: column; border: 1px solid rgba(255,255,255,0.1); z-index: 50; width: 220px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); overflow: hidden;}
+        .dropdown-menu.show { display: flex; animation: slideDown 0.2s ease forwards; }
+        @keyframes slideDown { from{opacity:0; transform:translateY(-10px);} to{opacity:1; transform:translateY(0);} }
+        .dropdown-item { padding: 12px 20px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 14px; transition: 0.2s;} 
+        .dropdown-item:hover { background: rgba(255,255,255,0.1); }
+        .dropdown-divider { height: 1px; background: rgba(255,255,255,0.05); margin: 0; }
+        
+        /* Chat Messages */
+        .chat-messages { flex: 1; padding: 20px 20px 100px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; max-width: 800px; margin: 0 auto; width: 100%; position: relative; scroll-behavior: smooth; }
+        #welcome-message { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); font-size: 32px; font-weight: bold; color: rgba(255,255,255,0.1); text-align: center;}
+        
         .message-row { display: flex; flex-direction: column; } .user-message-row { align-items: flex-end; } .bot-message-row { align-items: flex-start; }
-        .message-bubble { max-width: 85%; padding: 12px 16px; border-radius: 16px; line-height: 1.5; word-wrap: break-word; font-size: 15px; }
-        .user-message { background: #1e1f20; border: 1px solid #333; } .bot-message { padding-left: 0; }
-        .message-image { max-width: 100%; max-height: 250px; border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: 0.3s; }
+        
+        /* Glass Bubbles */
+        .message-bubble { max-width: 85%; padding: 14px 18px; border-radius: 20px; line-height: 1.5; word-wrap: break-word; font-size: 15px; }
+        .user-message { background: rgba(107, 70, 193, 0.2); backdrop-filter: blur(10px); border: 1px solid rgba(107, 70, 193, 0.4); border-bottom-right-radius: 4px;} 
+        .bot-message { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-bottom-left-radius: 4px; }
+        
+        .message-image { max-width: 100%; max-height: 250px; border-radius: 12px; margin-bottom: 8px; cursor: pointer; transition: 0.3s; border: 1px solid rgba(255,255,255,0.1);}
         .message-image:hover { opacity: 0.8; }
         
-        /* Premium Markdown Styles */
-        .message-bubble pre { background: #000; padding: 12px; border-radius: 8px; overflow-x: auto; border: 1px solid #444746; margin-top: 8px; margin-bottom: 8px;}
-        .message-bubble code { font-family: 'Courier New', Courier, monospace; background: #2a2b2f; padding: 2px 6px; border-radius: 4px; color: #ffab70; font-size: 14px;}
+        /* Premium Markdown */
+        .message-bubble pre { background: rgba(0,0,0,0.4); padding: 12px; border-radius: 12px; overflow-x: auto; border: 1px solid rgba(255,255,255,0.1); margin: 8px 0;}
+        .message-bubble code { font-family: 'Courier New', Courier, monospace; background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 6px; color: #d6bcfa; font-size: 13px;}
         .message-bubble pre code { padding: 0; background: transparent; color: #e3e3e3; }
-        .message-bubble ul, .message-bubble ol { padding-left: 20px; margin: 8px 0; }
-        .message-bubble p { margin: 0 0 8px 0; } .message-bubble p:last-child { margin: 0; }
-        .message-bubble a { color: #a8c7fa; text-decoration: none; } .message-bubble a:hover { text-decoration: underline; }
-
-        /* Premium Typing Animation */
-        .typing-container { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #a8c7fa; padding: 12px 16px; background: #1e1f20; border-radius: 16px; border: 1px solid #333; width: fit-content; font-style: italic;}
+        
+        /* Typing Animation */
+        .typing-container { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #a8c7fa; padding: 12px 16px; background: rgba(255,255,255,0.05); border-radius: 16px; border: 1px solid rgba(255,255,255,0.1); width: fit-content; font-style: italic;}
         .typing-dots { display: flex; gap: 4px; }
         .dot { width: 6px; height: 6px; background: #a8c7fa; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
         .dot:nth-child(1) { animation-delay: -0.32s; } .dot:nth-child(2) { animation-delay: -0.16s; }
         @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
         
-        /* Feedback & Copy Buttons */
-        .feedback-btns { display: flex; gap: 15px; margin-top: 8px; font-size: 14px; }
-        .feedback-btns span { cursor: pointer; opacity: 0.6; transition: 0.2s; user-select: none; background: #1e1f20; padding: 4px 8px; border-radius: 6px; border: 1px solid #333;}
-        .feedback-btns span:hover { opacity: 1; background: #333; }
-        .exporting-pdf .feedback-btns { display: none !important; }
+        .feedback-btns { display: flex; gap: 15px; margin-top: 8px; font-size: 13px; margin-left: 5px;}
+        .feedback-btns span { cursor: pointer; opacity: 0.5; transition: 0.2s; user-select: none; }
+        .feedback-btns span:hover { opacity: 1; color: #a8c7fa;}
         
-        /* Input Area & Mic Button */
-        .chat-input-container { padding: 10px 20px 10px; background: #131314; display: flex; flex-direction: column; align-items: center; position: relative;}
-        .input-wrapper { display: flex; background: #1e1f20; border-radius: 30px; padding: 10px 15px; width: 100%; max-width: 800px; border: 1px solid #444746; align-items: center; gap: 5px;}
-        .input-wrapper input { flex: 1; padding: 8px; border: none; background: transparent; color: #fff; outline: none; font-size: 16px; min-width: 0;}
-        .icon-btn { background: transparent; border: none; cursor: pointer; padding: 5px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: 0.3s;} 
-        .icon-btn svg { fill: #c4c7c5; width: 24px; height: 24px; transition: 0.3s; }
+        /* FLOATING INPUT BOX */
+        .chat-input-container { 
+            position: absolute; bottom: 0; left: 0; width: 100%; 
+            padding: 10px 20px 20px; background: linear-gradient(to top, rgba(9,9,11,1) 40%, rgba(9,9,11,0)); 
+            display: flex; flex-direction: column; align-items: center; z-index: 20; pointer-events: none;
+        }
+        .input-wrapper { 
+            pointer-events: auto;
+            display: flex; align-items: center; gap: 5px; 
+            width: 100%; max-width: 760px; 
+            background: rgba(30, 30, 40, 0.6); 
+            backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.15); 
+            border-radius: 40px; 
+            padding: 8px 12px; 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.4); 
+            transition: 0.3s;
+        }
+        .input-wrapper:focus-within { background: rgba(40, 40, 55, 0.8); border-color: rgba(255, 255, 255, 0.3); box-shadow: 0 15px 40px rgba(107, 70, 193, 0.2); }
+        .input-wrapper input { flex: 1; padding: 10px 15px; border: none; background: transparent; color: #fff; outline: none; font-size: 15px; min-width: 0;}
+        .input-wrapper input::placeholder { color: rgba(255,255,255,0.4); }
+        
+        .icon-btn { background: transparent; border: none; cursor: pointer; padding: 8px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: 0.3s;} 
+        .icon-btn svg { fill: #c4c7c5; width: 22px; height: 22px; transition: 0.3s; }
         .icon-btn:hover { background: rgba(255,255,255,0.1); }
+        .icon-btn.primary svg { fill: #d6bcfa; }
         
-        /* Mic Animation */
-        .icon-btn.listening svg { fill: #ff6b6b; animation: pulse 1.5s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
-
-        /* Premium AI Disclaimer */
-        .disclaimer-text { font-size: 11px; color: #888; text-align: center; margin-top: 10px; max-width: 800px; }
-        
-        /* GEMINI STYLE ATTACHMENT MENU */
-        .attachment-menu { position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); width: 100%; max-width: 320px; background: #1e1f20; border: 1px solid #333; border-radius: 16px; padding: 20px; display: none; gap: 20px; justify-content: space-around; box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 100; animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; opacity: 0;}
+        /* Attachment Menu */
+        .attachment-menu { pointer-events: auto; position: absolute; bottom: 85px; left: 50%; transform: translateX(-50%); width: calc(100% - 40px); max-width: 320px; background: rgba(30,30,40,0.8); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; padding: 20px; display: none; gap: 20px; justify-content: space-around; box-shadow: 0 15px 40px rgba(0,0,0,0.6); z-index: 100; animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; opacity: 0;}
         .attachment-menu.show { display: flex; }
         @keyframes slideUp { to { opacity: 1; transform: translate(-50%, -10px); } }
-        
         .attach-option { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; }
-        .attach-icon-circle { width: 56px; height: 56px; border-radius: 50%; background: #2a2b2f; display: flex; justify-content: center; align-items: center; transition: 0.2s; border: 1px solid #444746;}
-        .attach-option:hover .attach-icon-circle { background: #3a3b3f; transform: scale(1.05);}
-        .attach-icon-circle svg { fill: #a8c7fa; width: 26px; height: 26px; }
-        .attach-option span { font-size: 13px; color: #e3e3e3; font-weight: 500;}
+        .attach-icon-circle { width: 54px; height: 54px; border-radius: 50%; background: rgba(255,255,255,0.05); display: flex; justify-content: center; align-items: center; transition: 0.3s; border: 1px solid rgba(255,255,255,0.1);}
+        .attach-option:hover .attach-icon-circle { background: rgba(255,255,255,0.15); transform: translateY(-3px);}
+        .attach-icon-circle svg { fill: #a8c7fa; width: 24px; height: 24px; }
+        .attach-option span { font-size: 12px; color: #ccc;}
 
-        /* Image Preview */
-        .image-preview-container { display: none; width: 100%; max-width: 800px; margin-bottom: 10px; }
-        .image-preview-box { position: relative; display: inline-block; }
-        .image-preview-box img { height: 60px; border-radius: 8px; border: 1px solid #444746; }
-        .remove-image-btn { position: absolute; top: -5px; right: -5px; background: #444746; color: white; border: none; border-radius: 50%; cursor: pointer; width: 20px; height: 20px; font-size: 12px; }
+        /* Image Preview Box */
+        .image-preview-container { pointer-events: auto; display: none; width: 100%; max-width: 760px; margin-bottom: 10px; text-align: left; padding: 0 15px;}
+        .image-preview-box { position: relative; display: inline-block; background: rgba(255,255,255,0.1); padding: 5px; border-radius: 12px; backdrop-filter: blur(10px);}
+        .image-preview-box img { height: 60px; border-radius: 8px; object-fit: cover;}
+        .remove-image-btn { position: absolute; top: -8px; right: -8px; background: #ff4757; color: white; border: none; border-radius: 50%; cursor: pointer; width: 22px; height: 22px; font-size: 12px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.5);}
 
-        /* Fullscreen Image Modal */
-        .modal-overlay-img { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; justify-content: center; align-items: center; flex-direction: column; backdrop-filter: blur(5px); }
-        .modal-overlay-img.active { display: flex; }
-        .modal-content-img { max-width: 90%; max-height: 75vh; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); object-fit: contain; }
-        .modal-close-img { position: absolute; top: 20px; right: 30px; color: white; font-size: 40px; font-weight: bold; cursor: pointer; transition: 0.3s;}
-        .modal-close-img:hover { color: #ff6b6b; }
-        .modal-actions { margin-top: 20px; display: flex; gap: 15px; }
-        .download-btn { padding: 12px 24px; background: #1a73e8; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s;}
-        .download-btn:hover { background: #1557b0; }
+        .disclaimer-text { font-size: 11px; color: rgba(255,255,255,0.3); text-align: center; margin-top: 15px; max-width: 800px; width: 100%; pointer-events: auto; }
+
+        /* ========================================================= */
+        /* VIP SLIDE OVERLAY & CUSTOM PNG ROBOT                      */
+        /* ========================================================= */
+        .vip-slide-container {
+            position: fixed; top: 0; right: -100%; width: 100%; height: 100%;
+            background: linear-gradient(135deg, rgba(20, 10, 40, 0.95), rgba(40, 20, 70, 0.95));
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            z-index: 2000; transition: right 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex; flex-direction: column; align-items: center; justify-content: space-between;
+            padding: 60px 20px 40px; text-align: center; overflow: hidden;
+        }
+        .vip-slide-container.active { right: 0; }
+        
+        .vip-close-btn { position: absolute; top: 20px; left: 20px; background: rgba(255,255,255,0.1); border: none; width: 40px; height: 40px; border-radius: 50%; color: white; font-size: 24px; cursor: pointer; display: flex; justify-content: center; align-items: center; transition: 0.3s;}
+        .vip-close-btn:hover { background: rgba(255,255,255,0.2); }
+        
+        .vip-header h1 { margin: 0; font-size: 36px; font-weight: 300; color: #fff;}
+        .vip-header h1 span { font-weight: bold; background: -webkit-linear-gradient(#d6bcfa, #9f7aea); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        .vip-robot-box { position: relative; margin-top: 20px; }
+        .vip-bubble { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 20px; padding: 15px 25px; border: 1px solid rgba(255,255,255,0.2); margin-bottom: 20px; display: inline-block; position: relative;}
+        .vip-bubble::after { content: ''; position: absolute; bottom: -10px; left: 30px; border-width: 10px 10px 0; border-style: solid; border-color: rgba(255,255,255,0.1) transparent transparent transparent; }
+        
+        /* UPDATED: Custom Robot PNG Styling with Blue Glow */
+        .vip-robot-img { 
+            width: 220px; 
+            height: auto;
+            filter: drop-shadow(0 10px 30px rgba(0, 150, 255, 0.8));
+            animation: float 3s ease-in-out infinite; 
+        }
+        @keyframes float { 0% {transform: translateY(0px);} 50% {transform: translateY(-15px);} 100% {transform: translateY(0px);} }
+        
+        /* Swipe to Start */
+        .swipe-wrapper { width: 100%; max-width: 320px; height: 65px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 40px; position: relative; display: flex; align-items: center; overflow: hidden;}
+        .swipe-text { position: absolute; width: 100%; text-align: center; color: rgba(255,255,255,0.6); font-size: 16px; font-weight: 500; pointer-events: none; letter-spacing: 1px;}
+        .swipe-arrows { position: absolute; right: 25px; color: rgba(255,255,255,0.3); letter-spacing: -2px; pointer-events: none; animation: pulseArrow 1.5s infinite;}
+        @keyframes pulseArrow { 0%{opacity:0.2; transform:translateX(0);} 50%{opacity:0.8; transform:translateX(5px);} 100%{opacity:0.2; transform:translateX(0);} }
+        
+        .swipe-input { -webkit-appearance: none; appearance: none; width: 100%; height: 100%; background: transparent; position: absolute; z-index: 10; outline: none; margin: 0;}
+        .swipe-input::-webkit-slider-thumb { -webkit-appearance: none; width: 55px; height: 55px; border-radius: 50%; background: linear-gradient(135deg, #b794f4, #805ad5); cursor: pointer; margin-left: 5px; box-shadow: 0 0 20px rgba(128, 90, 213, 0.5); transition: background 0.3s; position: relative;}
+        .swipe-input::-webkit-slider-thumb:active { cursor: grabbing; transform: scale(0.95);}
     </style>
 </head>
 <body>
@@ -150,21 +209,38 @@
         </div>
     </div>
 
-    <!-- Fullscreen Image Modal -->
-    <div class="modal-overlay-img" id="imageModal">
-        <span class="modal-close-img" onclick="closeImageModal()">&times;</span>
-        <img class="modal-content-img" id="modalImage" src="">
-        <div class="modal-actions">
-            <button class="download-btn" onclick="downloadModalImage()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
-                  <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
-                  <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
-                </svg> Download Image
-            </button>
+    <!-- VIP SLIDE OVERLAY -->
+    <div class="vip-slide-container" id="vipSlide">
+        <button class="vip-close-btn" onclick="closeVipSlide()">×</button>
+        
+        <div class="vip-header">
+            <h1>Meet the<br><span>NEXUS Pro!</span></h1>
+        </div>
+        
+        <div class="vip-robot-box">
+            <div class="vip-bubble">Need Admin's help?</div><br>
+            <!-- UPDATED: Pointing directly to the robot.png -->
+            <img src="robot.png" alt="Robot" class="vip-robot-img">
+        </div>
+        
+        <!-- Swipe Slider -->
+        <div class="swipe-wrapper">
+            <div class="swipe-text" id="swipeText">Get Started</div>
+            <div class="swipe-arrows" id="swipeArrows">>>></div>
+            <input type="range" min="0" max="100" value="0" class="swipe-input" id="swipeSlider" oninput="handleSwipe(event)" onchange="snapSwipe(event)" ontouchend="snapSwipe(event)" onmouseup="snapSwipe(event)">
         </div>
     </div>
 
+    <!-- Fullscreen Image Modal -->
+    <div class="modal-overlay-img" id="imageModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:10000; justify-content:center; align-items:center; flex-direction:column; backdrop-filter:blur(5px);">
+        <span onclick="closeImageModal()" style="position:absolute; top:20px; right:30px; color:white; font-size:40px; cursor:pointer;">&times;</span>
+        <img id="modalImage" src="" style="max-width:90%; max-height:75vh; border-radius:8px;">
+        <button onclick="downloadModalImage()" style="margin-top:20px; padding:12px 24px; background:#1a73e8; color:white; border:none; border-radius:8px; cursor:pointer;">Download Image</button>
+    </div>
+
     <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+    
+    <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <span>Chats</span>
@@ -172,20 +248,15 @@
         </div>
         <div style="padding: 15px 15px 5px 15px;">
             <button class="new-chat-btn" onclick="startNewChat()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                New Chat
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg> New Chat
             </button>
         </div>
         <div class="history-list" id="history-list-container"></div>
         <div class="sidebar-footer">
-            <button class="login-btn" id="auth-btn" onclick="handleAuth()">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#a8c7fa" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                Login Account
-            </button>
+            <button class="login-btn" id="auth-btn" onclick="handleAuth()">Login Account</button>
         </div>
     </div>
 
-    <!-- Hidden File Inputs -->
     <input type="file" id="gallery-input" accept="image/*" style="display: none;" onchange="handleImageSelect(event)">
     <input type="file" id="camera-input" accept="image/*" capture="environment" style="display: none;" onchange="handleImageSelect(event)">
     <input type="file" id="file-input" accept=".txt,.md,.csv,.json" style="display: none;" onchange="handleTextFileSelect(event)">
@@ -197,16 +268,13 @@
             <div style="position: relative;">
                 <button class="dropdown-btn" id="model-btn" onclick="toggleDropdown(event)">⚡ Flash ▼</button>
                 <div class="dropdown-menu" id="model-dropdown">
-                    <!-- AI Modes -->
                     <div class="dropdown-item" onclick="selectModel('Flash')">⚡ Flash (Premium AI)</div>
                     <div class="dropdown-item" onclick="selectModel('Dev')">👨‍💻 Developer Mode</div>
                     <div class="dropdown-item" onclick="selectModel('Funny')">😎 Funny Mode</div>
                     <div class="dropdown-divider"></div>
-                    <!-- Features -->
                     <div class="dropdown-item" onclick="selectModel('ImageGen')">🎨 Create Image</div>
-                    <div class="dropdown-item" onclick="selectModel('VIP')">💎 VIP Request</div>
+                    <div class="dropdown-item" onclick="openVipSlide()" style="color: #d6bcfa;">💎 VIP Request</div>
                     <div class="dropdown-divider"></div>
-                    <!-- PDF Export -->
                     <div class="dropdown-item" onclick="exportChatToPDF()">📄 Export to PDF</div>
                 </div>
             </div>
@@ -218,19 +286,15 @@
 
         <div class="chat-input-container">
             
-            <!-- ATTACHMENT MENU -->
             <div class="attachment-menu" id="attachment-menu">
                 <div class="attach-option" onclick="document.getElementById('gallery-input').click(); toggleAttachmentMenu();">
-                    <div class="attach-icon-circle"><svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg></div>
-                    <span>Photos</span>
+                    <div class="attach-icon-circle"><svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg></div><span>Photos</span>
                 </div>
                 <div class="attach-option" onclick="document.getElementById('camera-input').click(); toggleAttachmentMenu();">
-                    <div class="attach-icon-circle"><svg viewBox="0 0 24 24"><path d="M4 4h3l2-2h6l2 2h3c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zm8 3c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0 8c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z"/></svg></div>
-                    <span>Camera</span>
+                    <div class="attach-icon-circle"><svg viewBox="0 0 24 24"><path d="M4 4h3l2-2h6l2 2h3c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zm8 3c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0 8c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z"/></svg></div><span>Camera</span>
                 </div>
                 <div class="attach-option" onclick="document.getElementById('file-input').click(); toggleAttachmentMenu();">
-                    <div class="attach-icon-circle"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg></div>
-                    <span>Files</span>
+                    <div class="attach-icon-circle"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg></div><span>Files</span>
                 </div>
             </div>
 
@@ -246,18 +310,17 @@
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                 </button>
                 
-                <input type="text" id="user-input" placeholder="Enter a prompt here..." autocomplete="off" onkeypress="if(event.key === 'Enter') sendMessage()">
+                <input type="text" id="user-input" placeholder="Message NEXUS..." autocomplete="off" onkeypress="if(event.key === 'Enter') sendMessage()">
                 
                 <button class="icon-btn" id="mic-btn" onclick="toggleMic()">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>
                 </button>
 
-                <button class="icon-btn" onclick="sendMessage()">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#a8c7fa" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                <button class="icon-btn primary" onclick="sendMessage()">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
                 </button>
             </div>
             
-            <!-- Premium AI Disclaimer (ChatGPT Style) -->
             <div class="disclaimer-text">
                 NEXUS AI can make mistakes. Please consider verifying important information.
             </div>
@@ -290,17 +353,13 @@
                 authBtn.innerHTML = `<div class="user-profile"><img src="${user.photoURL || 'https://via.placeholder.com/30'}" alt="profile"><span>${user.displayName}</span></div>`;
             } else {
                 currentUser = null;
-                authBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#a8c7fa" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg> Login Account`;
+                authBtn.innerHTML = `Login Account`;
             }
         });
 
         function handleAuth() {
-            if (currentUser) {
-                if(confirm("Logout ထွက်မှာ သေချာပါသလား?")) auth.signOut();
-            } else {
-                const provider = new firebase.auth.GoogleAuthProvider();
-                auth.signInWithPopup(provider).catch(err => alert("Login Error: " + err.message));
-            }
+            if (currentUser) { if(confirm("Logout ထွက်မှာ သေချာပါသလား?")) auth.signOut(); } 
+            else { const provider = new firebase.auth.GoogleAuthProvider(); auth.signInWithPopup(provider).catch(err => alert("Login Error: " + err.message)); }
         }
 
         const BACKEND_URL = "https://nexus-backend.minthantaung2027.workers.dev";
@@ -329,312 +388,169 @@
             if (model === 'Dev') btnText = '👨‍💻 Dev ▼';
             if (model === 'Funny') btnText = '😎 Funny ▼';
             if (model === 'ImageGen') btnText = '🎨 Image ▼';
-            if (model === 'VIP') btnText = '💎 VIP ▼';
+            if (model === 'VIP') btnText = '💎 VIP Admin ▼'; 
             
             document.getElementById("model-btn").innerText = btnText; 
             document.getElementById("model-dropdown").classList.remove("show"); 
         }
-        window.onclick = (e) => { 
-            if (!e.target.matches('.dropdown-btn')) document.getElementById("model-dropdown").classList.remove('show'); 
-        };
+        window.onclick = (e) => { if (!e.target.matches('.dropdown-btn')) document.getElementById("model-dropdown").classList.remove('show'); };
 
-        // --- ATTACHMENT MENU LOGIC ---
-        function toggleAttachmentMenu(event) {
-            if(event) event.stopPropagation();
-            document.getElementById("attachment-menu").classList.toggle("show");
+        function openVipSlide() {
+            document.getElementById("model-dropdown").classList.remove("show");
+            document.getElementById("vipSlide").classList.add("active");
+            document.getElementById("swipeSlider").value = 0;
+            document.getElementById("swipeText").style.opacity = 1;
+            document.getElementById("swipeArrows").style.opacity = 1;
         }
-        document.addEventListener('click', function(event) {
-            const menu = document.getElementById("attachment-menu");
-            const btn = document.getElementById("attach-btn");
-            if (menu && btn && !menu.contains(event.target) && !btn.contains(event.target)) {
-                menu.classList.remove("show");
+        function closeVipSlide() { document.getElementById("vipSlide").classList.remove("active"); }
+        
+        function handleSwipe(e) {
+            let val = e.target.value; let opacity = 1 - (val / 50); 
+            document.getElementById("swipeText").style.opacity = opacity > 0 ? opacity : 0;
+            document.getElementById("swipeArrows").style.opacity = opacity > 0 ? opacity : 0;
+        }
+        
+        function snapSwipe(e) {
+            let slider = document.getElementById("swipeSlider");
+            if(slider.value > 85) {
+                slider.value = 100; 
+                setTimeout(() => {
+                    closeVipSlide(); selectModel('VIP'); startNewChat(); 
+                    document.getElementById("welcome-message").innerHTML = "💎<br>VIP Admin Chat<br><span style='font-size:14px; font-weight:normal; color:#aaa;'>Your request is secured.</span>";
+                    document.getElementById("welcome-message").style.display = 'block';
+                }, 300);
+            } else {
+                slider.value = 0; 
+                document.getElementById("swipeText").style.opacity = 1; document.getElementById("swipeArrows").style.opacity = 1;
             }
+        }
+
+        function toggleAttachmentMenu(event) { if(event) event.stopPropagation(); document.getElementById("attachment-menu").classList.toggle("show"); }
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById("attachment-menu"); const btn = document.getElementById("attach-btn");
+            if (menu && btn && !menu.contains(event.target) && !btn.contains(event.target)) { menu.classList.remove("show"); }
         });
 
         function handleImageSelect(e) {
             const file = e.target.files[0];
             if (file) {
                 const reader = new FileReader();
-                reader.onload = (event) => {
-                    selectedImage = event.target.result;
-                    document.getElementById("preview-img").src = selectedImage;
-                    document.getElementById("preview-container").style.display = "block";
-                };
+                reader.onload = (event) => { selectedImage = event.target.result; document.getElementById("preview-img").src = selectedImage; document.getElementById("preview-container").style.display = "block"; };
                 reader.readAsDataURL(file); 
-            }
-            e.target.value = '';
+            } e.target.value = '';
         }
-
         function handleTextFileSelect(e) {
-            const file = e.target.files[0];
-            if (!file) return;
+            const file = e.target.files[0]; if (!file) return;
             const reader = new FileReader();
             reader.onload = function(event) {
-                const text = event.target.result;
-                const inputField = document.getElementById("user-input");
+                const text = event.target.result; const inputField = document.getElementById("user-input");
                 inputField.value += (inputField.value ? "\n" : "") + `[File Content: ${file.name}]\n` + text + `\n`;
                 if (navigator.vibrate) navigator.vibrate(50);
-            };
-            reader.readAsText(file);
-            e.target.value = '';
+            }; reader.readAsText(file); e.target.value = '';
         }
-
         function removeImage() { selectedImage = null; document.getElementById("preview-container").style.display = "none"; }
 
-        // --- FULLSCREEN IMAGE MODAL ---
-        window.openImageModal = function(imgSrc) {
-            document.getElementById("modalImage").src = imgSrc;
-            document.getElementById("imageModal").classList.add("active");
-        }
-        window.closeImageModal = function() {
-            document.getElementById("imageModal").classList.remove("active");
-        }
+        window.openImageModal = function(imgSrc) { document.getElementById("modalImage").src = imgSrc; document.getElementById("imageModal").style.display = "flex"; }
+        window.closeImageModal = function() { document.getElementById("imageModal").style.display = "none"; }
         window.downloadModalImage = async function() {
             const imgSrc = document.getElementById("modalImage").src;
-            try {
-                const response = await fetch(imgSrc);
-                const blob = await response.blob();
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement("a");
-                a.style.display = "none";
-                a.href = url;
-                a.download = "NEXUS_AI_Image_" + Date.now() + ".jpg";
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-            } catch (err) { alert("ပုံကို Download ဆွဲရာတွင် အခက်အခဲဖြစ်သွားပါသည်။"); }
+            try { const response = await fetch(imgSrc); const blob = await response.blob(); const url = window.URL.createObjectURL(blob); const a = document.createElement("a"); a.style.display = "none"; a.href = url; a.download = "NEXUS_AI_Image_" + Date.now() + ".jpg"; document.body.appendChild(a); a.click(); window.URL.revokeObjectURL(url); document.body.removeChild(a); } catch (err) { alert("Download Failed."); }
         }
-
-        // --- PDF EXPORT ---
         function exportChatToPDF() {
             document.getElementById("model-dropdown").classList.remove("show"); 
             const chatElement = document.getElementById("chat-messages");
-            if(chatElement.innerText.includes("Hello, Welcome") && chatElement.children.length <= 1) {
-                alert("Export လုပ်ရန် Chat History မရှိသေးပါဗျ။"); return;
-            }
+            if(chatElement.innerText.includes("Hello, Welcome") && chatElement.children.length <= 1) { alert("No Chat History to Export."); return; }
             document.body.classList.add("exporting-pdf");
             const opt = { margin: 10, filename: 'NEXUS_Chat_History.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true, backgroundColor: '#131314' }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }};
-            const oldText = document.getElementById("model-btn").innerText;
-            document.getElementById("model-btn").innerText = "📄 Exporting...";
-            html2pdf().set(opt).from(chatElement).save().then(() => {
-                document.body.classList.remove("exporting-pdf");
-                document.getElementById("model-btn").innerText = oldText;
-            }).catch(err => {
-                document.body.classList.remove("exporting-pdf");
-                document.getElementById("model-btn").innerText = oldText;
-            });
+            html2pdf().set(opt).from(chatElement).save().then(() => { document.body.classList.remove("exporting-pdf"); });
         }
 
-        // --- VOICE INPUT SYSTEM ---
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-        let recognition;
-        let isListening = false;
-
+        let recognition; let isListening = false;
         if (SpeechRecognition) {
-            recognition = new SpeechRecognition();
-            recognition.lang = 'my-MM'; 
-            recognition.continuous = false;
-            recognition.interimResults = false;
-
-            recognition.onstart = function() {
-                isListening = true;
-                document.getElementById("mic-btn").classList.add("listening");
-                document.getElementById("user-input").placeholder = "အသံဖမ်းယူနေပါသည်...";
-            };
-            recognition.onresult = function(event) {
-                const transcript = event.results[0][0].transcript;
-                const inputField = document.getElementById("user-input");
-                inputField.value += (inputField.value ? " " : "") + transcript; 
-            };
-            recognition.onerror = function(event) { resetMic(); };
-            recognition.onend = function() { resetMic(); };
+            recognition = new SpeechRecognition(); recognition.lang = 'my-MM'; recognition.continuous = false; recognition.interimResults = false;
+            recognition.onstart = function() { isListening = true; document.getElementById("mic-btn").classList.add("listening"); document.getElementById("user-input").placeholder = "Listening..."; };
+            recognition.onresult = function(event) { const transcript = event.results[0][0].transcript; document.getElementById("user-input").value += (document.getElementById("user-input").value ? " " : "") + transcript; };
+            recognition.onerror = function(event) { resetMic(); }; recognition.onend = function() { resetMic(); };
         }
+        function toggleMic() { if (!SpeechRecognition) { alert("Voice Input not supported in this browser."); return; } if (isListening) recognition.stop(); else recognition.start(); }
+        function resetMic() { isListening = false; const micBtn = document.getElementById("mic-btn"); if(micBtn) micBtn.classList.remove("listening"); document.getElementById("user-input").placeholder = "Message NEXUS..."; }
 
-        function toggleMic() {
-            if (!SpeechRecognition) { alert("သင့် Browser သည် Voice Input ကို Support မလုပ်ပါဗျ။ Google Chrome ကို သုံးကြည့်ပါ။"); return; }
-            if (isListening) recognition.stop(); else recognition.start();
-        }
+        window.copyText = function(btn, text) { navigator.clipboard.writeText(text).then(() => { let original = btn.innerHTML; btn.innerHTML = "✅"; setTimeout(() => { btn.innerHTML = original; }, 2000); }); };
 
-        function resetMic() {
-            isListening = false;
-            const micBtn = document.getElementById("mic-btn");
-            if(micBtn) micBtn.classList.remove("listening");
-            document.getElementById("user-input").placeholder = "Enter a prompt here...";
-        }
-
-        window.copyText = function(btn, text) {
-            navigator.clipboard.writeText(text).then(() => {
-                let original = btn.innerHTML;
-                btn.innerHTML = "✅ Copied";
-                setTimeout(() => { btn.innerHTML = original; }, 2000);
-            });
-        };
-
-        function startNewChat() {
-            currentSessionId = null;
-            document.getElementById("chat-messages").innerHTML = '<div id="welcome-message">Hello, Welcome</div>';
-            renderSidebar();
-            if(window.innerWidth <= 768) toggleSidebar(); 
-        }
+        function startNewChat() { currentSessionId = null; document.getElementById("chat-messages").innerHTML = '<div id="welcome-message">Hello, Welcome</div>'; renderSidebar(); if(window.innerWidth <= 768) document.getElementById("sidebar").classList.remove("open"); document.getElementById("overlay").classList.remove("show"); }
 
         function renderSidebar() {
-            const container = document.getElementById("history-list-container");
-            container.innerHTML = "";
-            if(chatSessions.length === 0) {
-                container.innerHTML = '<div style="color: #c4c7c5; font-size: 13px; text-align: center; margin-top: 20px;">History မရှိသေးပါ</div>'; return;
-            }
+            const container = document.getElementById("history-list-container"); container.innerHTML = "";
+            if(chatSessions.length === 0) { container.innerHTML = '<div style="color: #666; font-size: 13px; text-align: center; margin-top: 20px;">No History</div>'; return; }
             chatSessions.forEach(session => {
-                const div = document.createElement("div");
-                div.className = `history-item ${session.id === currentSessionId ? 'active' : ''}`;
-                div.innerHTML = `💬 ${session.title}`;
-                div.onclick = () => loadChatSession(session.id);
-                container.appendChild(div);
+                const div = document.createElement("div"); div.className = `history-item ${session.id === currentSessionId ? 'active' : ''}`; div.innerHTML = `💬 ${session.title}`; div.onclick = () => loadChatSession(session.id); container.appendChild(div);
             });
         }
-
-        function loadChatSession(id) {
-            currentSessionId = id;
-            const session = chatSessions.find(s => s.id === id);
-            if(session) {
-                document.getElementById("chat-messages").innerHTML = "";
-                session.messages.forEach(msg => { appendMessage(msg.text, msg.isUser, msg.img, false); });
-            }
-            renderSidebar();
-            if(window.innerWidth <= 768) toggleSidebar();
-        }
-
-        window.clearAllHistory = function() {
-            if(confirm("Chat History အားလုံးကို ဖျက်ပစ်ရန် သေချာပါသလား?")) {
-                localStorage.removeItem("nexus_chat_sessions");
-                chatSessions = [];
-                startNewChat();
-            }
-        };
+        function loadChatSession(id) { currentSessionId = id; const session = chatSessions.find(s => s.id === id); if(session) { document.getElementById("chat-messages").innerHTML = ""; session.messages.forEach(msg => { appendMessage(msg.text, msg.isUser, msg.img, false); }); } renderSidebar(); if(window.innerWidth <= 768) { document.getElementById("sidebar").classList.remove("open"); document.getElementById("overlay").classList.remove("show"); } }
+        window.clearAllHistory = function() { if(confirm("Clear All History?")) { localStorage.removeItem("nexus_chat_sessions"); chatSessions = []; startNewChat(); } };
 
         function saveMessageToSession(text, isUser, img) {
             if(!text && !img) return;
-            const session = chatSessions.find(s => s.id === currentSessionId);
-            if (!currentSessionId) {
-                currentSessionId = Date.now().toString();
-                let titleText = text ? text : "Image Request";
-                let title = titleText.substring(0, 20) + (titleText.length > 20 ? "..." : "");
-                chatSessions.unshift({ id: currentSessionId, title: title, messages: [] });
-            }
+            if (!currentSessionId) { currentSessionId = Date.now().toString(); let titleText = text ? text : "Image Request"; let title = titleText.substring(0, 20) + (titleText.length > 20 ? "..." : ""); chatSessions.unshift({ id: currentSessionId, title: title, messages: [] }); }
             const activeSession = chatSessions.find(s => s.id === currentSessionId);
-            if(activeSession) {
-                activeSession.messages.push({ text: text, isUser: isUser, img: img });
-                localStorage.setItem("nexus_chat_sessions", JSON.stringify(chatSessions));
-                renderSidebar();
-            }
+            if(activeSession) { activeSession.messages.push({ text: text, isUser: isUser, img: img }); localStorage.setItem("nexus_chat_sessions", JSON.stringify(chatSessions)); renderSidebar(); }
         }
 
-        // --- PREMIUM MESSAGE APPEND (WITH MARKDOWN & TYPING ANIMATION) ---
         function appendMessage(text, isUser, img = null, saveToLocal = true, isLoading = false) {
-            const container = document.getElementById("chat-messages");
-            const row = document.createElement("div");
-            row.className = `message-row ${isUser ? 'user-message-row' : 'bot-message-row'}`;
-            
+            const container = document.getElementById("chat-messages"); const row = document.createElement("div"); row.className = `message-row ${isUser ? 'user-message-row' : 'bot-message-row'}`;
             let html = "";
-            
-            if (isLoading) {
-                // Premium Typing Indicator
-                html = `
-                <div class="typing-container" id="typing-indicator">
-                    <span>NEXUS Thinking</span>
-                    <div class="typing-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
-                </div>`;
-            } else {
+            if (isLoading) { html = `<div class="typing-container"><span>NEXUS Thinking</span><div class="typing-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`; } 
+            else {
                 html = `<div class="message-bubble ${isUser ? 'user-message' : 'bot-message'}">`;
                 if (img) html += `<img src="${img}" class="message-image" onclick="openImageModal('${img}')">`;
-                
                 let displayHtml = "";
-                if (text) {
-                    if (isUser) {
-                        displayHtml = text.replace(/\n/g, '<br>');
-                    } else {
-                        // Premium Markdown Parser (bold, code blocks, lists)
-                        displayHtml = typeof marked !== 'undefined' ? marked.parse(text) : text.replace(/\n/g, '<br>');
-                    }
-                }
-                
-                if (text) html += `<span>${displayHtml}</span>`;
-                html += `</div>`;
-                
+                if (text) { displayHtml = (isUser || typeof marked === 'undefined') ? text.replace(/\n/g, '<br>') : marked.parse(text); }
+                if (text) html += `<span>${displayHtml}</span></div>`;
                 if (!isUser) {
                     let safeText = text ? text.replace(/'/g, "\\'").replace(/"/g, '&quot;') : "";
                     if(!text.includes("ပို့ဆောင်နေပါသည်") && !text.includes("ပုံဆွဲပေးနေပါသည်")) {
-                        html += `
-                        <div class="feedback-btns">
-                            <span onclick="window.copyText(this, '${safeText}')">📋 Copy</span>
-                            <span onclick="this.innerHTML='👍'; this.nextElementSibling.style.display='none';">👍 Like</span>
-                            <span onclick="this.innerHTML='👎'; this.previousElementSibling.style.display='none';">👎 Unlike</span>
-                        </div>`;
+                        html += `<div class="feedback-btns"><span onclick="window.copyText(this, '${safeText}')">📋 Copy</span><span onclick="this.innerHTML='👍'; this.nextElementSibling.style.display='none';">👍</span><span onclick="this.innerHTML='👎'; this.previousElementSibling.style.display='none';">👎</span></div>`;
                     }
                 }
             }
-            
-            row.innerHTML = html;
-            container.appendChild(row);
-            container.scrollTop = container.scrollHeight;
-
+            row.innerHTML = html; container.appendChild(row); container.scrollTop = container.scrollHeight;
             if(saveToLocal && !isLoading) saveMessageToSession(text, isUser, img);
             return row;
         }
 
         async function sendMessage() {
-            const input = document.getElementById("user-input");
-            const text = input.value.trim();
-            const imgData = selectedImage;
-            
-            if(isListening) recognition.stop();
-            if (!text && !imgData) return;
-            const welcome = document.getElementById("welcome-message");
-            if (welcome) welcome.style.display = 'none';
+            const input = document.getElementById("user-input"); const text = input.value.trim(); const imgData = selectedImage;
+            if(isListening) recognition.stop(); if (!text && !imgData) return;
+            const welcome = document.getElementById("welcome-message"); if (welcome) welcome.style.display = 'none';
 
-            // ၁။ VIP REQUEST
             if (currentModel === 'VIP') {
                 if (!currentUser) { alert("VIP Request အသုံးပြုရန် ကျေးဇူးပြု၍ Account ဖွင့်ပါ (Sidebar မှ Login ဝင်ပါ)။"); return; }
-                appendMessage(text, true, imgData);
-                input.value = ""; removeImage();
-                // VIP အတွက် ရိုးရိုး Loading စာသား
-                const loadingMsg = appendMessage("💎 VIP Request ကို Admin ထံသို့ ပို့ဆောင်နေပါသည်... ကျေးဇူးပြု၍ ခဏစောင့်ပေးပါ။", false, null, false);
+                appendMessage(text, true, imgData); input.value = ""; removeImage();
+                const loadingMsg = appendMessage("💎 VIP Request ကို Admin ထံသို့ ပို့ဆောင်နေပါသည်...", false, null, false);
                 try {
                     const docRef = await db.collection("pro_requests").add({ userId: currentUser.uid, userName: currentUser.displayName, userEmail: currentUser.email, userPrompt: text, userImage: imgData, adminReply: null, adminImage: null, status: "pending", timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-                    let emailParams = { user_name: currentUser.displayName || "Unknown User", user_email: currentUser.email || "No Email", message: text || "(စာသားမပါ၊ ပုံသာပါသည်)" };
-                    emailjs.send("service_xlzau1n", "template_qt6s5gv", emailParams);
+                    emailjs.send("service_xlzau1n", "template_qt6s5gv", { user_name: currentUser.displayName, user_email: currentUser.email, message: text || "(Image Only)" });
                     const unsubscribe = db.collection("pro_requests").doc(docRef.id).onSnapshot((doc) => {
-                        const data = doc.data();
-                        if (data && data.status === "replied") { loadingMsg.remove(); appendMessage(data.adminReply, false, data.adminImage); unsubscribe(); }
+                        const data = doc.data(); if (data && data.status === "replied") { loadingMsg.remove(); appendMessage(data.adminReply, false, data.adminImage); unsubscribe(); }
                     });
-                } catch (error) { loadingMsg.remove(); appendMessage("ပို့ဆောင်ရာတွင် အမှားအယွင်းဖြစ်သွားပါသည်: " + error.message, false); }
-                return;
+                } catch (error) { loadingMsg.remove(); appendMessage("Error: " + error.message, false); } return;
             }
 
-            // ၂။ AI IMAGE GENERATION
             if (currentModel === 'ImageGen') {
-                if (!text) { alert("ပုံဆွဲရန်အတွက် စာသားတစ်ခုခု ရိုက်ထည့်ပေးပါဗျ။ (ဥပမာ - A cute cat driving a car)"); return; }
-                appendMessage(text, true);
-                input.value = ""; removeImage();
-                // ပုံဆွဲရန်အတွက် ရိုးရိုး Loading စာသား
-                const loadingMsg = appendMessage("🎨 NEXUS ပုံဆွဲပေးနေပါသည်... စက္ကန့်အနည်းငယ် စောင့်ပေးပါဗျ။", false, null, false);
+                appendMessage(text, true); input.value = ""; removeImage();
+                const loadingMsg = appendMessage("🎨 ပုံဆွဲပေးနေပါသည်...", false, null, false);
                 try {
-                    const randomSeed = Math.floor(Math.random() * 100000);
-                    const encodedPrompt = encodeURIComponent(text);
+                    const randomSeed = Math.floor(Math.random() * 100000); const encodedPrompt = encodeURIComponent(text);
                     const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=1024&nologo=true&seed=${randomSeed}`;
                     const imgObj = new Image();
-                    imgObj.onload = function() { loadingMsg.remove(); appendMessage(`🎨 **${text}** အတွက် ရေးဆွဲထားသော ပုံပါဗျ။ (ပုံကို နှိပ်၍ Download ဆွဲနိုင်ပါသည်)`, false, imageUrl); };
-                    imgObj.onerror = function() { loadingMsg.remove(); appendMessage("⚠️ ပုံဆွဲရာတွင် အခက်အခဲဖြစ်သွားပါသည်၊ အခြားစာသားတစ်ခုဖြင့် ပြန်စမ်းကြည့်ပါဗျ။", false); };
+                    imgObj.onload = function() { loadingMsg.remove(); appendMessage(`🎨 **${text}**`, false, imageUrl); };
+                    imgObj.onerror = function() { loadingMsg.remove(); appendMessage("⚠️ Error generated image.", false); };
                     imgObj.src = imageUrl;
-                } catch (error) { loadingMsg.remove(); appendMessage("ပုံဖန်တီးရာတွင် အမှားအယွင်းဖြစ်သွားပါသည်။", false); }
-                return;
+                } catch (error) { loadingMsg.remove(); appendMessage("Error.", false); } return;
             }
 
-            // ၃။ CHAT MODELS (Flash, Dev, Funny Modes)
-            appendMessage(text, true, imgData);
-            input.value = ""; removeImage();
-            
-            // Premium Typing Animation ခေါ်ယူခြင်း
+            appendMessage(text, true, imgData); input.value = ""; removeImage();
             const loadingMsg = appendMessage("", false, null, false, true);
             
             try {
@@ -642,40 +558,23 @@
                 if (currentSessionId) {
                     const session = chatSessions.find(s => s.id === currentSessionId);
                     if (session && session.messages) {
-                        let validMessages = session.messages.filter(m => 
-                            m.text && 
-                            !m.text.includes("ပို့ဆောင်နေပါသည်") && 
-                            !m.text.includes("ပုံဆွဲပေးနေပါသည်") &&
-                            !m.text.includes("အတွက် ရေးဆွဲထားသော ပုံပါဗျ")
-                        );
+                        let validMessages = session.messages.filter(m => m.text && !m.text.includes("ပို့ဆောင်နေပါသည်") && !m.text.includes("ပုံဆွဲပေးနေပါသည်") && !m.text.includes("🎨 **"));
                         let recentHistory = validMessages.slice(-6); 
                         recentHistory.forEach(msg => { contents.push({ role: msg.isUser ? "user" : "model", parts: [{ text: msg.text }] }); });
                     }
                 }
-                let currentParts = [];
-                if (text) currentParts.push({ text: text });
-                if (imgData) {
-                    const base64Data = imgData.split(',')[1];
-                    const mimeType = imgData.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0];
-                    currentParts.push({ inline_data: { mime_type: mimeType, data: base64Data } });
-                }
+                let currentParts = []; if (text) currentParts.push({ text: text });
+                if (imgData) { const base64Data = imgData.split(',')[1]; const mimeType = imgData.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0]; currentParts.push({ inline_data: { mime_type: mimeType, data: base64Data } }); }
                 contents.push({ role: "user", parts: currentParts });
                 
-                const requestBody = { model: 'gemini-2.5-flash', contents: contents, aiMode: currentModel };
+                const requestBody = { model: 'gemini-1.5-flash', contents: contents, aiMode: currentModel };
                 const response = await fetch(BACKEND_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(requestBody) });
                 const data = await response.json();
                 loadingMsg.remove(); 
                 
-                if (data.candidates && data.candidates.length > 0) {
-                    let aiReply = data.candidates[0].content.parts[0].text;
-                    appendMessage(aiReply, false);
-                } else {
-                    let errStr = JSON.stringify(data);
-                    if(errStr.includes("429") || errStr.includes("quota") || errStr.includes("RESOURCE_EXHAUSTED")) {
-                        appendMessage("⚠️ ယခုအချိန်တွင် အသုံးပြုသူများပြားနေသဖြင့် Free Limit ပြည့်သွားပါသည်။ ခဏအကြာမှ ပြန်လည်ကြိုးစားကြည့်ပါဗျ။", false);
-                    } else { appendMessage("⚠️ ချက်ဆက်မှု အခက်အခဲဖြစ်နေပါသည်။", false); }
-                }
-            } catch (error) { loadingMsg.remove(); appendMessage("အင်တာနက် သို့မဟုတ် Cloudflare ချိတ်ဆက်မှု အခက်အခဲဖြစ်နေပါသည်။", false); }
+                if (data.candidates && data.candidates.length > 0) { appendMessage(data.candidates[0].content.parts[0].text, false); } 
+                else { appendMessage("⚠️ Network Error.", false); }
+            } catch (error) { loadingMsg.remove(); appendMessage("⚠️ Error.", false); }
         }
     </script>
 </body>
