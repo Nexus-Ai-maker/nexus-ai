@@ -16,6 +16,9 @@
     <!-- HTML2PDF SDK (For PDF Export) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
+    <!-- Marked.js SDK (For Premium Markdown Text Formatting) -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
     <style>
         body { font-family: 'Google Sans', sans-serif; background: #131314; color: #e3e3e3; margin: 0; display: flex; height: 100vh; overflow: hidden; }
         
@@ -54,7 +57,7 @@
         .overlay.show { display: block; }
         
         /* Main UI */
-        .main-content { flex: 1; display: flex; flex-direction: column; width: 100%; height: 100vh; }
+        .main-content { flex: 1; display: flex; flex-direction: column; width: 100%; height: 100vh; position: relative;}
         .chat-header { padding: 15px 20px; display: flex; align-items: center; }
         .menu-btn { font-size: 24px; cursor: pointer; margin-right: 15px; }
         .logo { font-size: 22px; font-weight: bold; margin-right: 10px; }
@@ -69,21 +72,34 @@
         .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; max-width: 800px; margin: 0 auto; width: 100%; position: relative; scroll-behavior: smooth; }
         #welcome-message { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 32px; font-weight: bold; color: #444746; text-align: center;}
         .message-row { display: flex; flex-direction: column; } .user-message-row { align-items: flex-end; } .bot-message-row { align-items: flex-start; }
-        .message-bubble { max-width: 85%; padding: 12px 16px; border-radius: 16px; line-height: 1.5; word-wrap: break-word; }
+        .message-bubble { max-width: 85%; padding: 12px 16px; border-radius: 16px; line-height: 1.5; word-wrap: break-word; font-size: 15px; }
         .user-message { background: #1e1f20; border: 1px solid #333; } .bot-message { padding-left: 0; }
         .message-image { max-width: 100%; max-height: 250px; border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: 0.3s; }
         .message-image:hover { opacity: 0.8; }
+        
+        /* Premium Markdown Styles */
+        .message-bubble pre { background: #000; padding: 12px; border-radius: 8px; overflow-x: auto; border: 1px solid #444746; margin-top: 8px; margin-bottom: 8px;}
+        .message-bubble code { font-family: 'Courier New', Courier, monospace; background: #2a2b2f; padding: 2px 6px; border-radius: 4px; color: #ffab70; font-size: 14px;}
+        .message-bubble pre code { padding: 0; background: transparent; color: #e3e3e3; }
+        .message-bubble ul, .message-bubble ol { padding-left: 20px; margin: 8px 0; }
+        .message-bubble p { margin: 0 0 8px 0; } .message-bubble p:last-child { margin: 0; }
+        .message-bubble a { color: #a8c7fa; text-decoration: none; } .message-bubble a:hover { text-decoration: underline; }
+
+        /* Premium Typing Animation */
+        .typing-container { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #a8c7fa; padding: 12px 16px; background: #1e1f20; border-radius: 16px; border: 1px solid #333; width: fit-content; font-style: italic;}
+        .typing-dots { display: flex; gap: 4px; }
+        .dot { width: 6px; height: 6px; background: #a8c7fa; border-radius: 50%; animation: bounce 1.4s infinite ease-in-out both; }
+        .dot:nth-child(1) { animation-delay: -0.32s; } .dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
         
         /* Feedback & Copy Buttons */
         .feedback-btns { display: flex; gap: 15px; margin-top: 8px; font-size: 14px; }
         .feedback-btns span { cursor: pointer; opacity: 0.6; transition: 0.2s; user-select: none; background: #1e1f20; padding: 4px 8px; border-radius: 6px; border: 1px solid #333;}
         .feedback-btns span:hover { opacity: 1; background: #333; }
-        
-        /* Hide feedback buttons when exporting PDF */
         .exporting-pdf .feedback-btns { display: none !important; }
         
         /* Input Area & Mic Button */
-        .chat-input-container { padding: 10px 20px 20px; background: #131314; display: flex; flex-direction: column; align-items: center; }
+        .chat-input-container { padding: 10px 20px 10px; background: #131314; display: flex; flex-direction: column; align-items: center; position: relative;}
         .input-wrapper { display: flex; background: #1e1f20; border-radius: 30px; padding: 10px 15px; width: 100%; max-width: 800px; border: 1px solid #444746; align-items: center; gap: 5px;}
         .input-wrapper input { flex: 1; padding: 8px; border: none; background: transparent; color: #fff; outline: none; font-size: 16px; min-width: 0;}
         .icon-btn { background: transparent; border: none; cursor: pointer; padding: 5px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: 0.3s;} 
@@ -93,20 +109,35 @@
         /* Mic Animation */
         .icon-btn.listening svg { fill: #ff6b6b; animation: pulse 1.5s infinite; }
         @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+
+        /* Premium AI Disclaimer */
+        .disclaimer-text { font-size: 11px; color: #888; text-align: center; margin-top: 10px; max-width: 800px; }
         
+        /* GEMINI STYLE ATTACHMENT MENU */
+        .attachment-menu { position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%); width: 100%; max-width: 320px; background: #1e1f20; border: 1px solid #333; border-radius: 16px; padding: 20px; display: none; gap: 20px; justify-content: space-around; box-shadow: 0 10px 30px rgba(0,0,0,0.8); z-index: 100; animation: slideUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; opacity: 0;}
+        .attachment-menu.show { display: flex; }
+        @keyframes slideUp { to { opacity: 1; transform: translate(-50%, -10px); } }
+        
+        .attach-option { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; }
+        .attach-icon-circle { width: 56px; height: 56px; border-radius: 50%; background: #2a2b2f; display: flex; justify-content: center; align-items: center; transition: 0.2s; border: 1px solid #444746;}
+        .attach-option:hover .attach-icon-circle { background: #3a3b3f; transform: scale(1.05);}
+        .attach-icon-circle svg { fill: #a8c7fa; width: 26px; height: 26px; }
+        .attach-option span { font-size: 13px; color: #e3e3e3; font-weight: 500;}
+
+        /* Image Preview */
         .image-preview-container { display: none; width: 100%; max-width: 800px; margin-bottom: 10px; }
         .image-preview-box { position: relative; display: inline-block; }
         .image-preview-box img { height: 60px; border-radius: 8px; border: 1px solid #444746; }
         .remove-image-btn { position: absolute; top: -5px; right: -5px; background: #444746; color: white; border: none; border-radius: 50%; cursor: pointer; width: 20px; height: 20px; font-size: 12px; }
 
-        /* --- Fullscreen Image Modal Styles --- */
+        /* Fullscreen Image Modal */
         .modal-overlay-img { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; justify-content: center; align-items: center; flex-direction: column; backdrop-filter: blur(5px); }
         .modal-overlay-img.active { display: flex; }
         .modal-content-img { max-width: 90%; max-height: 75vh; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); object-fit: contain; }
         .modal-close-img { position: absolute; top: 20px; right: 30px; color: white; font-size: 40px; font-weight: bold; cursor: pointer; transition: 0.3s;}
         .modal-close-img:hover { color: #ff6b6b; }
         .modal-actions { margin-top: 20px; display: flex; gap: 15px; }
-        .download-btn { padding: 12px 24px; background: #1a73e8; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; font-family: 'Google Sans', sans-serif;}
+        .download-btn { padding: 12px 24px; background: #1a73e8; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s;}
         .download-btn:hover { background: #1557b0; }
     </style>
 </head>
@@ -125,7 +156,6 @@
         <img class="modal-content-img" id="modalImage" src="">
         <div class="modal-actions">
             <button class="download-btn" onclick="downloadModalImage()">
-                <!-- Download Arrow Icon -->
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
                   <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
                   <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
@@ -155,7 +185,10 @@
         </div>
     </div>
 
+    <!-- Hidden File Inputs -->
     <input type="file" id="gallery-input" accept="image/*" style="display: none;" onchange="handleImageSelect(event)">
+    <input type="file" id="camera-input" accept="image/*" capture="environment" style="display: none;" onchange="handleImageSelect(event)">
+    <input type="file" id="file-input" accept=".txt,.md,.csv,.json" style="display: none;" onchange="handleTextFileSelect(event)">
     
     <div class="main-content">
         <div class="chat-header">
@@ -184,23 +217,49 @@
         </div>
 
         <div class="chat-input-container">
+            
+            <!-- ATTACHMENT MENU -->
+            <div class="attachment-menu" id="attachment-menu">
+                <div class="attach-option" onclick="document.getElementById('gallery-input').click(); toggleAttachmentMenu();">
+                    <div class="attach-icon-circle"><svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg></div>
+                    <span>Photos</span>
+                </div>
+                <div class="attach-option" onclick="document.getElementById('camera-input').click(); toggleAttachmentMenu();">
+                    <div class="attach-icon-circle"><svg viewBox="0 0 24 24"><path d="M4 4h3l2-2h6l2 2h3c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zm8 3c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0 8c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z"/></svg></div>
+                    <span>Camera</span>
+                </div>
+                <div class="attach-option" onclick="document.getElementById('file-input').click(); toggleAttachmentMenu();">
+                    <div class="attach-icon-circle"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg></div>
+                    <span>Files</span>
+                </div>
+            </div>
+
             <div class="image-preview-container" id="preview-container">
                 <div class="image-preview-box">
                     <img id="preview-img" src="">
                     <button class="remove-image-btn" onclick="removeImage()">✖</button>
                 </div>
             </div>
+
             <div class="input-wrapper">
-                <button class="icon-btn" onclick="document.getElementById('gallery-input').click()">
+                <button class="icon-btn" id="attach-btn" onclick="toggleAttachmentMenu(event)">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                 </button>
+                
                 <input type="text" id="user-input" placeholder="Enter a prompt here..." autocomplete="off" onkeypress="if(event.key === 'Enter') sendMessage()">
+                
                 <button class="icon-btn" id="mic-btn" onclick="toggleMic()">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>
                 </button>
+
                 <button class="icon-btn" onclick="sendMessage()">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#a8c7fa" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
                 </button>
+            </div>
+            
+            <!-- Premium AI Disclaimer (ChatGPT Style) -->
+            <div class="disclaimer-text">
+                NEXUS AI can make mistakes. Please consider verifying important information.
             </div>
         </div>
     </div>
@@ -275,7 +334,22 @@
             document.getElementById("model-btn").innerText = btnText; 
             document.getElementById("model-dropdown").classList.remove("show"); 
         }
-        window.onclick = (e) => { if (!e.target.matches('.dropdown-btn')) document.getElementById("model-dropdown").classList.remove('show'); };
+        window.onclick = (e) => { 
+            if (!e.target.matches('.dropdown-btn')) document.getElementById("model-dropdown").classList.remove('show'); 
+        };
+
+        // --- ATTACHMENT MENU LOGIC ---
+        function toggleAttachmentMenu(event) {
+            if(event) event.stopPropagation();
+            document.getElementById("attachment-menu").classList.toggle("show");
+        }
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById("attachment-menu");
+            const btn = document.getElementById("attach-btn");
+            if (menu && btn && !menu.contains(event.target) && !btn.contains(event.target)) {
+                menu.classList.remove("show");
+            }
+        });
 
         function handleImageSelect(e) {
             const file = e.target.files[0];
@@ -290,9 +364,24 @@
             }
             e.target.value = '';
         }
+
+        function handleTextFileSelect(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = function(event) {
+                const text = event.target.result;
+                const inputField = document.getElementById("user-input");
+                inputField.value += (inputField.value ? "\n" : "") + `[File Content: ${file.name}]\n` + text + `\n`;
+                if (navigator.vibrate) navigator.vibrate(50);
+            };
+            reader.readAsText(file);
+            e.target.value = '';
+        }
+
         function removeImage() { selectedImage = null; document.getElementById("preview-container").style.display = "none"; }
 
-        // --- FULLSCREEN IMAGE MODAL FUNCTIONS ---
+        // --- FULLSCREEN IMAGE MODAL ---
         window.openImageModal = function(imgSrc) {
             document.getElementById("modalImage").src = imgSrc;
             document.getElementById("imageModal").classList.add("active");
@@ -314,34 +403,26 @@
                 a.click();
                 window.URL.revokeObjectURL(url);
                 document.body.removeChild(a);
-            } catch (err) {
-                alert("ပုံကို Download ဆွဲရာတွင် အခက်အခဲဖြစ်သွားပါသည်။");
-            }
+            } catch (err) { alert("ပုံကို Download ဆွဲရာတွင် အခက်အခဲဖြစ်သွားပါသည်။"); }
         }
 
-        // --- PDF EXPORT SYSTEM ---
+        // --- PDF EXPORT ---
         function exportChatToPDF() {
             document.getElementById("model-dropdown").classList.remove("show"); 
             const chatElement = document.getElementById("chat-messages");
-            
             if(chatElement.innerText.includes("Hello, Welcome") && chatElement.children.length <= 1) {
-                alert("Export လုပ်ရန် Chat History မရှိသေးပါဗျ။");
-                return;
+                alert("Export လုပ်ရန် Chat History မရှိသေးပါဗျ။"); return;
             }
-
             document.body.classList.add("exporting-pdf");
             const opt = { margin: 10, filename: 'NEXUS_Chat_History.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true, backgroundColor: '#131314' }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }};
-
             const oldText = document.getElementById("model-btn").innerText;
             document.getElementById("model-btn").innerText = "📄 Exporting...";
-
             html2pdf().set(opt).from(chatElement).save().then(() => {
                 document.body.classList.remove("exporting-pdf");
                 document.getElementById("model-btn").innerText = oldText;
             }).catch(err => {
                 document.body.classList.remove("exporting-pdf");
                 document.getElementById("model-btn").innerText = oldText;
-                alert("PDF ပြောင်းရာတွင် အခက်အခဲဖြစ်သွားပါသည်။");
             });
         }
 
@@ -371,7 +452,7 @@
         }
 
         function toggleMic() {
-            if (!SpeechRecognition) { alert("သင့် Browser သည် Voice Input ကို Support မလုပ်ပါဗျ။ Chrome ကို အသုံးပြုကြည့်ပါ။"); return; }
+            if (!SpeechRecognition) { alert("သင့် Browser သည် Voice Input ကို Support မလုပ်ပါဗျ။ Google Chrome ကို သုံးကြည့်ပါ။"); return; }
             if (isListening) recognition.stop(); else recognition.start();
         }
 
@@ -401,8 +482,7 @@
             const container = document.getElementById("history-list-container");
             container.innerHTML = "";
             if(chatSessions.length === 0) {
-                container.innerHTML = '<div style="color: #c4c7c5; font-size: 13px; text-align: center; margin-top: 20px;">History မရှိသေးပါ</div>';
-                return;
+                container.innerHTML = '<div style="color: #c4c7c5; font-size: 13px; text-align: center; margin-top: 20px;">History မရှိသေးပါ</div>'; return;
             }
             chatSessions.forEach(session => {
                 const div = document.createElement("div");
@@ -434,47 +514,63 @@
 
         function saveMessageToSession(text, isUser, img) {
             if(!text && !img) return;
-            if(text.includes("NEXUS စဉ်းစားနေပါသည်") || text.includes("ပို့ဆောင်နေပါသည်") || text.includes("ပုံဆွဲပေးနေပါသည်")) return;
-
+            const session = chatSessions.find(s => s.id === currentSessionId);
             if (!currentSessionId) {
                 currentSessionId = Date.now().toString();
                 let titleText = text ? text : "Image Request";
                 let title = titleText.substring(0, 20) + (titleText.length > 20 ? "..." : "");
                 chatSessions.unshift({ id: currentSessionId, title: title, messages: [] });
             }
-
-            const session = chatSessions.find(s => s.id === currentSessionId);
-            if(session) {
-                session.messages.push({ text: text, isUser: isUser, img: img });
+            const activeSession = chatSessions.find(s => s.id === currentSessionId);
+            if(activeSession) {
+                activeSession.messages.push({ text: text, isUser: isUser, img: img });
                 localStorage.setItem("nexus_chat_sessions", JSON.stringify(chatSessions));
                 renderSidebar();
             }
         }
 
-        function appendMessage(text, isUser, img = null, saveToLocal = true) {
+        // --- PREMIUM MESSAGE APPEND (WITH MARKDOWN & TYPING ANIMATION) ---
+        function appendMessage(text, isUser, img = null, saveToLocal = true, isLoading = false) {
             const container = document.getElementById("chat-messages");
             const row = document.createElement("div");
             row.className = `message-row ${isUser ? 'user-message-row' : 'bot-message-row'}`;
             
-            let html = `<div class="message-bubble ${isUser ? 'user-message' : 'bot-message'}">`;
-            // ပုံကို နှိပ်လိုက်လျှင် Full-screen Modal ပေါ်စေရန် onclick ထည့်သွင်းထားသည်
-            if (img) html += `<img src="${img}" class="message-image" onclick="openImageModal('${img}')">`;
+            let html = "";
             
-            let cleanText = text ? text : "";
-            let displayHtml = text ? text.replace(/\n/g, '<br>') : "";
-            
-            if (text) html += `<span>${displayHtml}</span>`;
-            html += `</div>`;
-            
-            if (!isUser) {
-                let safeText = cleanText.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                if(!text.includes("NEXUS စဉ်းစားနေပါသည်") && !text.includes("ပို့ဆောင်နေပါသည်") && !text.includes("ပုံဆွဲပေးနေပါသည်")) {
-                    html += `
-                    <div class="feedback-btns">
-                        <span onclick="window.copyText(this, '${safeText}')">📋 Copy</span>
-                        <span onclick="this.innerHTML='👍'; this.nextElementSibling.style.display='none';">👍 Like</span>
-                        <span onclick="this.innerHTML='👎'; this.previousElementSibling.style.display='none';">👎 Unlike</span>
-                    </div>`;
+            if (isLoading) {
+                // Premium Typing Indicator
+                html = `
+                <div class="typing-container" id="typing-indicator">
+                    <span>NEXUS Thinking</span>
+                    <div class="typing-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+                </div>`;
+            } else {
+                html = `<div class="message-bubble ${isUser ? 'user-message' : 'bot-message'}">`;
+                if (img) html += `<img src="${img}" class="message-image" onclick="openImageModal('${img}')">`;
+                
+                let displayHtml = "";
+                if (text) {
+                    if (isUser) {
+                        displayHtml = text.replace(/\n/g, '<br>');
+                    } else {
+                        // Premium Markdown Parser (bold, code blocks, lists)
+                        displayHtml = typeof marked !== 'undefined' ? marked.parse(text) : text.replace(/\n/g, '<br>');
+                    }
+                }
+                
+                if (text) html += `<span>${displayHtml}</span>`;
+                html += `</div>`;
+                
+                if (!isUser) {
+                    let safeText = text ? text.replace(/'/g, "\\'").replace(/"/g, '&quot;') : "";
+                    if(!text.includes("ပို့ဆောင်နေပါသည်") && !text.includes("ပုံဆွဲပေးနေပါသည်")) {
+                        html += `
+                        <div class="feedback-btns">
+                            <span onclick="window.copyText(this, '${safeText}')">📋 Copy</span>
+                            <span onclick="this.innerHTML='👍'; this.nextElementSibling.style.display='none';">👍 Like</span>
+                            <span onclick="this.innerHTML='👎'; this.previousElementSibling.style.display='none';">👎 Unlike</span>
+                        </div>`;
+                    }
                 }
             }
             
@@ -482,7 +578,7 @@
             container.appendChild(row);
             container.scrollTop = container.scrollHeight;
 
-            if(saveToLocal) saveMessageToSession(text, isUser, img);
+            if(saveToLocal && !isLoading) saveMessageToSession(text, isUser, img);
             return row;
         }
 
@@ -501,7 +597,8 @@
                 if (!currentUser) { alert("VIP Request အသုံးပြုရန် ကျေးဇူးပြု၍ Account ဖွင့်ပါ (Sidebar မှ Login ဝင်ပါ)။"); return; }
                 appendMessage(text, true, imgData);
                 input.value = ""; removeImage();
-                const loadingMsg = appendMessage("💎 VIP Request ကို Admin ထံသို့ ပို့ဆောင်နေပါသည်... ကျေးဇူးပြု၍ ခဏစောင့်ပေးပါ။", false);
+                // VIP အတွက် ရိုးရိုး Loading စာသား
+                const loadingMsg = appendMessage("💎 VIP Request ကို Admin ထံသို့ ပို့ဆောင်နေပါသည်... ကျေးဇူးပြု၍ ခဏစောင့်ပေးပါ။", false, null, false);
                 try {
                     const docRef = await db.collection("pro_requests").add({ userId: currentUser.uid, userName: currentUser.displayName, userEmail: currentUser.email, userPrompt: text, userImage: imgData, adminReply: null, adminImage: null, status: "pending", timestamp: firebase.firestore.FieldValue.serverTimestamp() });
                     let emailParams = { user_name: currentUser.displayName || "Unknown User", user_email: currentUser.email || "No Email", message: text || "(စာသားမပါ၊ ပုံသာပါသည်)" };
@@ -519,13 +616,14 @@
                 if (!text) { alert("ပုံဆွဲရန်အတွက် စာသားတစ်ခုခု ရိုက်ထည့်ပေးပါဗျ။ (ဥပမာ - A cute cat driving a car)"); return; }
                 appendMessage(text, true);
                 input.value = ""; removeImage();
-                const loadingMsg = appendMessage("🎨 NEXUS ပုံဆွဲပေးနေပါသည်... စက္ကန့်အနည်းငယ် စောင့်ပေးပါဗျ။", false);
+                // ပုံဆွဲရန်အတွက် ရိုးရိုး Loading စာသား
+                const loadingMsg = appendMessage("🎨 NEXUS ပုံဆွဲပေးနေပါသည်... စက္ကန့်အနည်းငယ် စောင့်ပေးပါဗျ။", false, null, false);
                 try {
                     const randomSeed = Math.floor(Math.random() * 100000);
                     const encodedPrompt = encodeURIComponent(text);
                     const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=1024&nologo=true&seed=${randomSeed}`;
                     const imgObj = new Image();
-                    imgObj.onload = function() { loadingMsg.remove(); appendMessage(`🎨 <b>${text}</b> အတွက် ရေးဆွဲထားသော ပုံပါဗျ။ (ပုံကို နှိပ်၍ Download ဆွဲနိုင်ပါသည်)`, false, imageUrl); };
+                    imgObj.onload = function() { loadingMsg.remove(); appendMessage(`🎨 **${text}** အတွက် ရေးဆွဲထားသော ပုံပါဗျ။ (ပုံကို နှိပ်၍ Download ဆွဲနိုင်ပါသည်)`, false, imageUrl); };
                     imgObj.onerror = function() { loadingMsg.remove(); appendMessage("⚠️ ပုံဆွဲရာတွင် အခက်အခဲဖြစ်သွားပါသည်၊ အခြားစာသားတစ်ခုဖြင့် ပြန်စမ်းကြည့်ပါဗျ။", false); };
                     imgObj.src = imageUrl;
                 } catch (error) { loadingMsg.remove(); appendMessage("ပုံဖန်တီးရာတွင် အမှားအယွင်းဖြစ်သွားပါသည်။", false); }
@@ -535,19 +633,20 @@
             // ၃။ CHAT MODELS (Flash, Dev, Funny Modes)
             appendMessage(text, true, imgData);
             input.value = ""; removeImage();
-            const loadingMsg = appendMessage("NEXUS စဉ်းစားနေပါသည်...", false);
+            
+            // Premium Typing Animation ခေါ်ယူခြင်း
+            const loadingMsg = appendMessage("", false, null, false, true);
+            
             try {
                 let contents = [];
                 if (currentSessionId) {
                     const session = chatSessions.find(s => s.id === currentSessionId);
                     if (session && session.messages) {
-                        // AI ရဲ့ ပုံဆွဲပေးတဲ့ စာတွေကို History ထဲကနေ ဖယ်ထုတ်ပြီးမှ LLM ဆီပို့မည် (Context မရှုပ်စေရန်)
                         let validMessages = session.messages.filter(m => 
                             m.text && 
-                            !m.text.includes("NEXUS စဉ်းစားနေပါသည်") && 
                             !m.text.includes("ပို့ဆောင်နေပါသည်") && 
                             !m.text.includes("ပုံဆွဲပေးနေပါသည်") &&
-                            !m.text.includes("အတွက် ရေးဆွဲထားသော ပုံပါဗျ") // Image Gen Response များကို ဖယ်ထုတ်ထားခြင်း
+                            !m.text.includes("အတွက် ရေးဆွဲထားသော ပုံပါဗျ")
                         );
                         let recentHistory = validMessages.slice(-6); 
                         recentHistory.forEach(msg => { contents.push({ role: msg.isUser ? "user" : "model", parts: [{ text: msg.text }] }); });
@@ -568,7 +667,7 @@
                 loadingMsg.remove(); 
                 
                 if (data.candidates && data.candidates.length > 0) {
-                    let aiReply = data.candidates[0].content.parts[0].text.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
+                    let aiReply = data.candidates[0].content.parts[0].text;
                     appendMessage(aiReply, false);
                 } else {
                     let errStr = JSON.stringify(data);
