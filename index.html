@@ -12,6 +12,9 @@
     
     <!-- EmailJS SDK -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    
+    <!-- HTML2PDF SDK (For PDF Export) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
         body { font-family: 'Google Sans', sans-serif; background: #131314; color: #e3e3e3; margin: 0; display: flex; height: 100vh; overflow: hidden; }
@@ -29,8 +32,18 @@
         /* Sidebar */
         .sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: #1e1f20; z-index: 1000; transition: left 0.3s; display: flex; flex-direction: column; border-right: 1px solid #333; }
         .sidebar.open { left: 0; }
-        .sidebar-header { padding: 20px; font-size: 18px; font-weight: 500; border-bottom: 1px solid #333; }
-        .history-list { padding: 15px; overflow-y: auto; flex: 1; }
+        .sidebar-header { padding: 20px; font-size: 18px; font-weight: 500; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; }
+        .clear-history-btn { background: transparent; border: none; color: #ff6b6b; cursor: pointer; font-size: 13px; padding: 4px 8px; border-radius: 4px; }
+        .clear-history-btn:hover { background: rgba(255,107,107,0.1); }
+        
+        /* New Chat Button & History List */
+        .new-chat-btn { width: 100%; padding: 12px; background: #1a73e8; color: white; border: none; border-radius: 8px; cursor: pointer; margin-bottom: 10px; font-size: 15px; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.3s;}
+        .new-chat-btn:hover { background: #1557b0; }
+        .history-list { padding: 0 15px 15px 15px; overflow-y: auto; flex: 1; }
+        .history-item { padding: 12px; color: #c4c7c5; font-size: 14px; cursor: pointer; border-radius: 8px; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: flex; align-items: center; gap: 10px;}
+        .history-item:hover { background: #333639; }
+        .history-item.active { background: #333639; color: #fff; font-weight: bold; }
+        
         .sidebar-footer { padding: 15px; border-top: 1px solid #333; background: #1a1b1d; }
         .login-btn { display: flex; align-items: center; justify-content: center; gap: 10px; width: 100%; padding: 12px; background: #2a2b2f; color: #e3e3e3; border: 1px solid #444746; border-radius: 8px; cursor: pointer; transition: 0.3s;}
         .login-btn:hover { background: #3a3b3f; }
@@ -47,27 +60,38 @@
         .logo { font-size: 22px; font-weight: bold; margin-right: 10px; }
         
         .dropdown-btn { background: transparent; color: #a8c7fa; border: none; font-size: 16px; padding: 6px 12px; cursor: pointer; }
-        .dropdown-menu { position: absolute; top: 100%; left: 0; background: #1e1f20; border-radius: 8px; display: none; flex-direction: column; border: 1px solid #333; z-index: 10; }
+        .dropdown-menu { position: absolute; top: 100%; left: 0; background: #1e1f20; border-radius: 8px; display: none; flex-direction: column; border: 1px solid #333; z-index: 10; width: 240px;}
         .dropdown-menu.show { display: flex; }
-        .dropdown-item { padding: 10px 20px; cursor: pointer; } .dropdown-item:hover { background: #333639; }
+        .dropdown-item { padding: 12px 20px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 14px;} 
+        .dropdown-item:hover { background: #333639; }
+        .dropdown-divider { height: 1px; background: #333; margin: 5px 0; }
         
         .chat-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; max-width: 800px; margin: 0 auto; width: 100%; position: relative; scroll-behavior: smooth; }
         #welcome-message { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 32px; font-weight: bold; color: #444746; text-align: center;}
         .message-row { display: flex; flex-direction: column; } .user-message-row { align-items: flex-end; } .bot-message-row { align-items: flex-start; }
         .message-bubble { max-width: 85%; padding: 12px 16px; border-radius: 16px; line-height: 1.5; word-wrap: break-word; }
         .user-message { background: #1e1f20; border: 1px solid #333; } .bot-message { padding-left: 0; }
-        .message-image { max-width: 100%; max-height: 200px; border-radius: 8px; margin-bottom: 8px; }
+        .message-image { max-width: 100%; max-height: 250px; border-radius: 8px; margin-bottom: 8px; }
         
         /* Feedback & Copy Buttons */
         .feedback-btns { display: flex; gap: 15px; margin-top: 8px; font-size: 14px; }
         .feedback-btns span { cursor: pointer; opacity: 0.6; transition: 0.2s; user-select: none; background: #1e1f20; padding: 4px 8px; border-radius: 6px; border: 1px solid #333;}
         .feedback-btns span:hover { opacity: 1; background: #333; }
         
-        /* Input Area */
+        /* Hide feedback buttons when exporting PDF */
+        .exporting-pdf .feedback-btns { display: none !important; }
+        
+        /* Input Area & Mic Button */
         .chat-input-container { padding: 10px 20px 20px; background: #131314; display: flex; flex-direction: column; align-items: center; }
-        .input-wrapper { display: flex; background: #1e1f20; border-radius: 30px; padding: 10px 15px; width: 100%; max-width: 800px; border: 1px solid #444746; align-items: center;}
-        .input-wrapper input { flex: 1; padding: 8px; border: none; background: transparent; color: #fff; outline: none; font-size: 16px; }
-        .icon-btn { background: transparent; border: none; cursor: pointer; padding: 5px; } .icon-btn svg { fill: #c4c7c5; width: 24px; height: 24px; }
+        .input-wrapper { display: flex; background: #1e1f20; border-radius: 30px; padding: 10px 15px; width: 100%; max-width: 800px; border: 1px solid #444746; align-items: center; gap: 5px;}
+        .input-wrapper input { flex: 1; padding: 8px; border: none; background: transparent; color: #fff; outline: none; font-size: 16px; min-width: 0;}
+        .icon-btn { background: transparent; border: none; cursor: pointer; padding: 5px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: 0.3s;} 
+        .icon-btn svg { fill: #c4c7c5; width: 24px; height: 24px; transition: 0.3s; }
+        .icon-btn:hover { background: rgba(255,255,255,0.1); }
+        
+        /* Mic Animation */
+        .icon-btn.listening svg { fill: #ff6b6b; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
         
         .image-preview-container { display: none; width: 100%; max-width: 800px; margin-bottom: 10px; }
         .image-preview-box { position: relative; display: inline-block; }
@@ -86,10 +110,17 @@
 
     <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
     <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">Chat History</div>
-        <div class="history-list">
-            <div style="padding: 10px; color: #c4c7c5; font-size: 14px;">💬 NEXUS မှ ကြိုဆိုပါတယ်</div>
+        <div class="sidebar-header">
+            <span>Chats</span>
+            <button class="clear-history-btn" onclick="clearAllHistory()">🗑️ Clear</button>
         </div>
+        <div style="padding: 15px 15px 5px 15px;">
+            <button class="new-chat-btn" onclick="startNewChat()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="white"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+                New Chat
+            </button>
+        </div>
+        <div class="history-list" id="history-list-container"></div>
         <div class="sidebar-footer">
             <button class="login-btn" id="auth-btn" onclick="handleAuth()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#a8c7fa" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
@@ -105,10 +136,19 @@
             <div class="menu-btn" onclick="toggleSidebar()">☰</div>
             <div class="logo">NEXUS</div>
             <div style="position: relative;">
-                <button class="dropdown-btn" id="model-btn" onclick="toggleDropdown(event)">Flash ▼</button>
+                <button class="dropdown-btn" id="model-btn" onclick="toggleDropdown(event)">⚡ Flash ▼</button>
                 <div class="dropdown-menu" id="model-dropdown">
-                    <div class="dropdown-item" onclick="selectModel('Flash')">Flash (Fast AI)</div>
-                    <div class="dropdown-item" onclick="selectModel('Pro')">Pro (Image Gen & Admin)</div>
+                    <!-- AI Modes -->
+                    <div class="dropdown-item" onclick="selectModel('Flash')">⚡ Flash (Premium AI)</div>
+                    <div class="dropdown-item" onclick="selectModel('Dev')">👨‍💻 Developer Mode</div>
+                    <div class="dropdown-item" onclick="selectModel('Funny')">😎 Funny Mode</div>
+                    <div class="dropdown-divider"></div>
+                    <!-- Features -->
+                    <div class="dropdown-item" onclick="selectModel('ImageGen')">🎨 Create Image</div>
+                    <div class="dropdown-item" onclick="selectModel('VIP')">💎 VIP Request</div>
+                    <div class="dropdown-divider"></div>
+                    <!-- PDF Export -->
+                    <div class="dropdown-item" onclick="exportChatToPDF()">📄 Export to PDF</div>
                 </div>
             </div>
         </div>
@@ -129,6 +169,9 @@
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
                 </button>
                 <input type="text" id="user-input" placeholder="Enter a prompt here..." autocomplete="off" onkeypress="if(event.key === 'Enter') sendMessage()">
+                <button class="icon-btn" id="mic-btn" onclick="toggleMic()">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>
+                </button>
                 <button class="icon-btn" onclick="sendMessage()">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path fill="#a8c7fa" d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
                 </button>
@@ -137,7 +180,6 @@
     </div>
 
     <script>
-        // EmailJS ကို Initialize လုပ်ခြင်း (Public Key အသုံးပြုပြီး)
         emailjs.init("0OAPgzl3T2wge9sy6");
 
         const firebaseConfig = {
@@ -148,28 +190,22 @@
             messagingSenderId: "818963537476",
             appId: "1:818963537476:web:83e8b69fdf067001e62611"
         };
-        
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
         const auth = firebase.auth();
         let currentUser = null;
 
+        let chatSessions = JSON.parse(localStorage.getItem("nexus_chat_sessions")) || [];
+        let currentSessionId = null;
+
         auth.onAuthStateChanged(user => {
             const authBtn = document.getElementById("auth-btn");
             if (user) {
                 currentUser = user;
-                authBtn.innerHTML = `
-                    <div class="user-profile">
-                        <img src="${user.photoURL || 'https://via.placeholder.com/30'}" alt="profile">
-                        <span>${user.displayName}</span>
-                    </div>
-                `;
+                authBtn.innerHTML = `<div class="user-profile"><img src="${user.photoURL || 'https://via.placeholder.com/30'}" alt="profile"><span>${user.displayName}</span></div>`;
             } else {
                 currentUser = null;
-                authBtn.innerHTML = `
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#a8c7fa" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                    Login Account
-                `;
+                authBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"><path fill="#a8c7fa" d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg> Login Account`;
             }
         });
 
@@ -187,6 +223,8 @@
         let selectedImage = null;
 
         window.addEventListener('load', () => {
+            renderSidebar(); 
+            if(chatSessions.length > 0) loadChatSession(chatSessions[0].id);
             setTimeout(() => {
                 document.getElementById('logo-container').classList.add('rocket-launch');
                 setTimeout(() => {
@@ -199,7 +237,18 @@
 
         function toggleSidebar() { document.getElementById("sidebar").classList.toggle("open"); document.getElementById("overlay").classList.toggle("show"); }
         function toggleDropdown(e) { e.stopPropagation(); document.getElementById("model-dropdown").classList.toggle("show"); }
-        function selectModel(model) { currentModel = model; document.getElementById("model-btn").innerText = model + ' ▼'; document.getElementById("model-dropdown").classList.remove("show"); }
+        
+        function selectModel(model) { 
+            currentModel = model; 
+            let btnText = '⚡ Flash ▼';
+            if (model === 'Dev') btnText = '👨‍💻 Dev ▼';
+            if (model === 'Funny') btnText = '😎 Funny ▼';
+            if (model === 'ImageGen') btnText = '🎨 Image ▼';
+            if (model === 'VIP') btnText = '💎 VIP ▼';
+            
+            document.getElementById("model-btn").innerText = btnText; 
+            document.getElementById("model-dropdown").classList.remove("show"); 
+        }
         window.onclick = (e) => { if (!e.target.matches('.dropdown-btn')) document.getElementById("model-dropdown").classList.remove('show'); };
 
         function handleImageSelect(e) {
@@ -217,6 +266,81 @@
         }
         function removeImage() { selectedImage = null; document.getElementById("preview-container").style.display = "none"; }
 
+        // ==========================================
+        // PDF EXPORT SYSTEM
+        // ==========================================
+        function exportChatToPDF() {
+            document.getElementById("model-dropdown").classList.remove("show"); // Close dropdown
+            const chatElement = document.getElementById("chat-messages");
+            
+            // Check if there are messages to export
+            if(chatElement.innerText.includes("Hello, Welcome") && chatElement.children.length <= 1) {
+                alert("Export လုပ်ရန် Chat History မရှိသေးပါဗျ။");
+                return;
+            }
+
+            // Hide feedback buttons temporarily via body class
+            document.body.classList.add("exporting-pdf");
+            
+            const opt = {
+                margin:       10,
+                filename:     'NEXUS_Chat_History.pdf',
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#131314' },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            // Loading state
+            const oldText = document.getElementById("model-btn").innerText;
+            document.getElementById("model-btn").innerText = "📄 Exporting...";
+
+            html2pdf().set(opt).from(chatElement).save().then(() => {
+                document.body.classList.remove("exporting-pdf");
+                document.getElementById("model-btn").innerText = oldText;
+            }).catch(err => {
+                document.body.classList.remove("exporting-pdf");
+                document.getElementById("model-btn").innerText = oldText;
+                alert("PDF ပြောင်းရာတွင် အခက်အခဲဖြစ်သွားပါသည်။");
+            });
+        }
+
+        // VOICE INPUT SYSTEM
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        let recognition;
+        let isListening = false;
+
+        if (SpeechRecognition) {
+            recognition = new SpeechRecognition();
+            recognition.lang = 'my-MM'; 
+            recognition.continuous = false;
+            recognition.interimResults = false;
+
+            recognition.onstart = function() {
+                isListening = true;
+                document.getElementById("mic-btn").classList.add("listening");
+                document.getElementById("user-input").placeholder = "အသံဖမ်းယူနေပါသည်...";
+            };
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                const inputField = document.getElementById("user-input");
+                inputField.value += (inputField.value ? " " : "") + transcript; 
+            };
+            recognition.onerror = function(event) { resetMic(); };
+            recognition.onend = function() { resetMic(); };
+        }
+
+        function toggleMic() {
+            if (!SpeechRecognition) { alert("သင့် Browser သည် Voice Input ကို Support မလုပ်ပါဗျ။ Chrome ကို အသုံးပြုကြည့်ပါ။"); return; }
+            if (isListening) recognition.stop(); else recognition.start();
+        }
+
+        function resetMic() {
+            isListening = false;
+            const micBtn = document.getElementById("mic-btn");
+            if(micBtn) micBtn.classList.remove("listening");
+            document.getElementById("user-input").placeholder = "Enter a prompt here...";
+        }
+
         window.copyText = function(btn, text) {
             navigator.clipboard.writeText(text).then(() => {
                 let original = btn.innerHTML;
@@ -225,7 +349,68 @@
             });
         };
 
-        function appendMessage(text, isUser, img = null) {
+        function startNewChat() {
+            currentSessionId = null;
+            document.getElementById("chat-messages").innerHTML = '<div id="welcome-message">Hello, Welcome</div>';
+            renderSidebar();
+            if(window.innerWidth <= 768) toggleSidebar(); 
+        }
+
+        function renderSidebar() {
+            const container = document.getElementById("history-list-container");
+            container.innerHTML = "";
+            if(chatSessions.length === 0) {
+                container.innerHTML = '<div style="color: #c4c7c5; font-size: 13px; text-align: center; margin-top: 20px;">History မရှိသေးပါ</div>';
+                return;
+            }
+            chatSessions.forEach(session => {
+                const div = document.createElement("div");
+                div.className = `history-item ${session.id === currentSessionId ? 'active' : ''}`;
+                div.innerHTML = `💬 ${session.title}`;
+                div.onclick = () => loadChatSession(session.id);
+                container.appendChild(div);
+            });
+        }
+
+        function loadChatSession(id) {
+            currentSessionId = id;
+            const session = chatSessions.find(s => s.id === id);
+            if(session) {
+                document.getElementById("chat-messages").innerHTML = "";
+                session.messages.forEach(msg => { appendMessage(msg.text, msg.isUser, msg.img, false); });
+            }
+            renderSidebar();
+            if(window.innerWidth <= 768) toggleSidebar();
+        }
+
+        window.clearAllHistory = function() {
+            if(confirm("Chat History အားလုံးကို ဖျက်ပစ်ရန် သေချာပါသလား?")) {
+                localStorage.removeItem("nexus_chat_sessions");
+                chatSessions = [];
+                startNewChat();
+            }
+        };
+
+        function saveMessageToSession(text, isUser, img) {
+            if(!text && !img) return;
+            if(text.includes("NEXUS စဉ်းစားနေပါသည်") || text.includes("ပို့ဆောင်နေပါသည်") || text.includes("ပုံဆွဲပေးနေပါသည်")) return;
+
+            if (!currentSessionId) {
+                currentSessionId = Date.now().toString();
+                let titleText = text ? text : "Image Request";
+                let title = titleText.substring(0, 20) + (titleText.length > 20 ? "..." : "");
+                chatSessions.unshift({ id: currentSessionId, title: title, messages: [] });
+            }
+
+            const session = chatSessions.find(s => s.id === currentSessionId);
+            if(session) {
+                session.messages.push({ text: text, isUser: isUser, img: img });
+                localStorage.setItem("nexus_chat_sessions", JSON.stringify(chatSessions));
+                renderSidebar();
+            }
+        }
+
+        function appendMessage(text, isUser, img = null, saveToLocal = true) {
             const container = document.getElementById("chat-messages");
             const row = document.createElement("div");
             row.className = `message-row ${isUser ? 'user-message-row' : 'bot-message-row'}`;
@@ -241,7 +426,7 @@
             
             if (!isUser) {
                 let safeText = cleanText.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                if(text !== "NEXUS စဉ်းစားနေပါသည်..." && !text.includes("Admin ထံသို့ ပို့ဆောင်နေပါသည်")) {
+                if(!text.includes("NEXUS စဉ်းစားနေပါသည်") && !text.includes("ပို့ဆောင်နေပါသည်") && !text.includes("ပုံဆွဲပေးနေပါသည်")) {
                     html += `
                     <div class="feedback-btns">
                         <span onclick="window.copyText(this, '${safeText}')">📋 Copy</span>
@@ -254,6 +439,8 @@
             row.innerHTML = html;
             container.appendChild(row);
             container.scrollTop = container.scrollHeight;
+
+            if(saveToLocal) saveMessageToSession(text, isUser, img);
             return row;
         }
 
@@ -262,97 +449,73 @@
             const text = input.value.trim();
             const imgData = selectedImage;
             
+            if(isListening) recognition.stop();
             if (!text && !imgData) return;
-
             const welcome = document.getElementById("welcome-message");
             if (welcome) welcome.style.display = 'none';
 
-            // --------- PRO MODEL ---------
-            if (currentModel === 'Pro') {
-                if (!currentUser) {
-                    alert("Pro Feature ကို သုံးရန် ကျေးဇူးပြု၍ Account ဖွင့်ပါ (Sidebar မှ Login ဝင်ပါ)။");
-                    return;
-                }
-                
+            // ၁။ VIP REQUEST
+            if (currentModel === 'VIP') {
+                if (!currentUser) { alert("VIP Request အသုံးပြုရန် ကျေးဇူးပြု၍ Account ဖွင့်ပါ (Sidebar မှ Login ဝင်ပါ)။"); return; }
                 appendMessage(text, true, imgData);
-                input.value = "";
-                removeImage();
-                
-                const loadingMsg = appendMessage("🚀 Pro အသုံးပြုမှုအတွက် Admin ထံသို့ ပို့ဆောင်နေပါသည်... ကျေးဇူးပြု၍ ခဏစောင့်ပေးပါ။", false);
-                
+                input.value = ""; removeImage();
+                const loadingMsg = appendMessage("💎 VIP Request ကို Admin ထံသို့ ပို့ဆောင်နေပါသည်... ကျေးဇူးပြု၍ ခဏစောင့်ပေးပါ။", false);
                 try {
-                    const docRef = await db.collection("pro_requests").add({
-                        userId: currentUser.uid,
-                        userName: currentUser.displayName,
-                        userEmail: currentUser.email,
-                        userPrompt: text,
-                        userImage: imgData,
-                        adminReply: null,
-                        adminImage: null,
-                        status: "pending",
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
-                    });
-
-                    // Database ထဲအောင်မြင်စွာ ဝင်သွားပါက EmailJS ဖြင့် Admin ထံ Noti လှမ်းပို့မည်
-                    let emailParams = {
-                        user_name: currentUser.displayName || "Unknown User",
-                        user_email: currentUser.email || "No Email",
-                        message: text || "(စာသားမပါ၊ ပုံသာပါသည်)"
-                    };
-                    
-                    emailjs.send("service_xlzau1n", "template_qt6s5gv", emailParams)
-                        .then(function(response) {
-                            console.log('Email Sent Success!', response.status, response.text);
-                        }, function(error) {
-                            console.log('Email Sent Failed...', error);
-                        });
-                    
+                    const docRef = await db.collection("pro_requests").add({ userId: currentUser.uid, userName: currentUser.displayName, userEmail: currentUser.email, userPrompt: text, userImage: imgData, adminReply: null, adminImage: null, status: "pending", timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+                    let emailParams = { user_name: currentUser.displayName || "Unknown User", user_email: currentUser.email || "No Email", message: text || "(စာသားမပါ၊ ပုံသာပါသည်)" };
+                    emailjs.send("service_xlzau1n", "template_qt6s5gv", emailParams);
                     const unsubscribe = db.collection("pro_requests").doc(docRef.id).onSnapshot((doc) => {
                         const data = doc.data();
-                        if (data && data.status === "replied") {
-                            loadingMsg.remove(); 
-                            appendMessage(data.adminReply, false, data.adminImage);
-                            unsubscribe();
-                        }
+                        if (data && data.status === "replied") { loadingMsg.remove(); appendMessage(data.adminReply, false, data.adminImage); unsubscribe(); }
                     });
-                } catch (error) {
-                    loadingMsg.remove();
-                    appendMessage("ပို့ဆောင်ရာတွင် အမှားအယွင်းဖြစ်သွားပါသည်: " + error.message, false);
-                }
+                } catch (error) { loadingMsg.remove(); appendMessage("ပို့ဆောင်ရာတွင် အမှားအယွင်းဖြစ်သွားပါသည်: " + error.message, false); }
                 return;
             }
 
-            // --------- FLASH MODEL ---------
+            // ၂။ AI IMAGE GENERATION
+            if (currentModel === 'ImageGen') {
+                if (!text) { alert("ပုံဆွဲရန်အတွက် စာသားတစ်ခုခု ရိုက်ထည့်ပေးပါဗျ။ (ဥပမာ - A cute cat driving a car)"); return; }
+                appendMessage(text, true);
+                input.value = ""; removeImage();
+                const loadingMsg = appendMessage("🎨 NEXUS ပုံဆွဲပေးနေပါသည်... စက္ကန့်အနည်းငယ် စောင့်ပေးပါဗျ။", false);
+                try {
+                    const randomSeed = Math.floor(Math.random() * 100000);
+                    const encodedPrompt = encodeURIComponent(text);
+                    const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=1024&nologo=true&seed=${randomSeed}`;
+                    const imgObj = new Image();
+                    imgObj.onload = function() { loadingMsg.remove(); appendMessage(`🎨 <b>${text}</b> အတွက် ရေးဆွဲထားသော ပုံပါဗျ။`, false, imageUrl); };
+                    imgObj.onerror = function() { loadingMsg.remove(); appendMessage("⚠️ ပုံဆွဲရာတွင် အခက်အခဲဖြစ်သွားပါသည်၊ အခြားစာသားတစ်ခုဖြင့် ပြန်စမ်းကြည့်ပါဗျ။", false); };
+                    imgObj.src = imageUrl;
+                } catch (error) { loadingMsg.remove(); appendMessage("ပုံဖန်တီးရာတွင် အမှားအယွင်းဖြစ်သွားပါသည်။", false); }
+                return;
+            }
+
+            // ၃။ CHAT MODELS (Flash, Dev, Funny Modes)
             appendMessage(text, true, imgData);
-            input.value = "";
-            removeImage();
-
+            input.value = ""; removeImage();
             const loadingMsg = appendMessage("NEXUS စဉ်းစားနေပါသည်...", false);
-
             try {
-                let contents = [{ role: "user", parts: [] }];
-                const hiddenRule = "System Rule: You are 'NEXUS AI', a helpful AI assistant created by 'Min Thant Aung'. Never mention Google or Gemini. Answer politely in the user's language.\n\nUser Prompt: ";
-                let finalPrompt = "";
-                
-                if (text) finalPrompt = hiddenRule + text;
-                else if (imgData) finalPrompt = hiddenRule + "ဒီပုံထဲမှာ ဘာတွေပါလဲ ရှင်းပြပေးပါ။";
-
-                if (finalPrompt !== "") contents[0].parts.push({ text: finalPrompt });
-
+                let contents = [];
+                if (currentSessionId) {
+                    const session = chatSessions.find(s => s.id === currentSessionId);
+                    if (session && session.messages) {
+                        let validMessages = session.messages.filter(m => m.text && !m.text.includes("NEXUS စဉ်းစားနေပါသည်") && !m.text.includes("ပို့ဆောင်နေပါသည်") && !m.text.includes("ပုံဆွဲပေးနေပါသည်"));
+                        let recentHistory = validMessages.slice(-6); 
+                        recentHistory.forEach(msg => { contents.push({ role: msg.isUser ? "user" : "model", parts: [{ text: msg.text }] }); });
+                    }
+                }
+                let currentParts = [];
+                if (text) currentParts.push({ text: text });
                 if (imgData) {
                     const base64Data = imgData.split(',')[1];
                     const mimeType = imgData.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0];
-                    contents[0].parts.push({ inline_data: { mime_type: mimeType, data: base64Data } });
+                    currentParts.push({ inline_data: { mime_type: mimeType, data: base64Data } });
                 }
+                contents.push({ role: "user", parts: currentParts });
                 
-                const requestBody = { model: 'gemini-2.5-flash', contents: contents };
-                
-                const response = await fetch(BACKEND_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify(requestBody)
-                });
-                
+                // Backend သို့ AI Mode ပါ တစ်ပါတည်း လှမ်းပို့ခြင်း (Flash, Dev, Funny)
+                const requestBody = { model: 'gemini-2.5-flash', contents: contents, aiMode: currentModel };
+                const response = await fetch(BACKEND_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(requestBody) });
                 const data = await response.json();
                 loadingMsg.remove(); 
                 
@@ -363,14 +526,9 @@
                     let errStr = JSON.stringify(data);
                     if(errStr.includes("429") || errStr.includes("quota") || errStr.includes("RESOURCE_EXHAUSTED")) {
                         appendMessage("⚠️ ယခုအချိန်တွင် အသုံးပြုသူများပြားနေသဖြင့် Free Limit ပြည့်သွားပါသည်။ ခဏအကြာမှ ပြန်လည်ကြိုးစားကြည့်ပါဗျ။", false);
-                    } else {
-                        appendMessage("⚠️ ချိတ်ဆက်မှု အခက်အခဲဖြစ်နေပါသည်။", false);
-                    }
+                    } else { appendMessage("⚠️ ချက်ဆက်မှု အခက်အခဲဖြစ်နေပါသည်။", false); }
                 }
-            } catch (error) {
-                loadingMsg.remove();
-                appendMessage("အင်တာနက် သို့မဟုတ် Cloudflare ချိတ်ဆက်မှု အခက်အခဲဖြစ်နေပါသည်။", false);
-            }
+            } catch (error) { loadingMsg.remove(); appendMessage("အင်တာနက် သို့မဟုတ် Cloudflare ချိတ်ဆက်မှု အခက်အခဲဖြစ်နေပါသည်။", false); }
         }
     </script>
 </body>
