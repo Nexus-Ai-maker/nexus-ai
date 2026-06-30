@@ -5,12 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NEXUS AI | Premium</title>
     
-    <!-- Firebase SDKs -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
     
-    <!-- EmailJS & PDF & Markdown SDKs -->
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -24,15 +22,6 @@
             background: linear-gradient(135deg, #09090b 0%, #171026 50%, #09090b 100%); 
             color: #e3e3e3; 
             margin: 0; display: flex; height: 100vh; overflow: hidden; 
-        }
-        
-        /* Glass Effect Mixin Classes */
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
         }
 
         /* Splash Screen */
@@ -83,7 +72,8 @@
         .dropdown-divider { height: 1px; background: rgba(255,255,255,0.05); margin: 0; }
         
         /* Chat Messages */
-        .chat-messages { flex: 1; padding: 20px 20px 100px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; max-width: 800px; margin: 0 auto; width: 100%; position: relative; scroll-behavior: smooth; }
+        /* ⚠️ ပြင်ဆင်ချက် ၁: အောက်ခြေ Padding ကို ၁၅၀ အထိ တိုးထားသည် (စာကပ်မနေစေရန်) */
+        .chat-messages { flex: 1; padding: 20px 20px 150px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; max-width: 800px; margin: 0 auto; width: 100%; position: relative; scroll-behavior: smooth; }
         #welcome-message { position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); font-size: 32px; font-weight: bold; color: rgba(255,255,255,0.1); text-align: center;}
         
         .message-row { display: flex; flex-direction: column; } .user-message-row { align-items: flex-end; } .bot-message-row { align-items: flex-start; }
@@ -108,29 +98,33 @@
         .dot:nth-child(1) { animation-delay: -0.32s; } .dot:nth-child(2) { animation-delay: -0.16s; }
         @keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
         
-        .feedback-btns { display: flex; gap: 15px; margin-top: 8px; font-size: 13px; margin-left: 5px;}
-        .feedback-btns span { cursor: pointer; opacity: 0.5; transition: 0.2s; user-select: none; }
-        .feedback-btns span:hover { opacity: 1; color: #a8c7fa;}
+        /* ⚠️ ပြင်ဆင်ချက် ၂: Premium SVG Icons များအတွက် CSS အသစ် */
+        .feedback-btns { display: flex; gap: 15px; margin-top: 10px; margin-left: 5px; align-items: center; }
+        .feedback-btns button { background: transparent; border: none; cursor: pointer; padding: 5px; display: flex; justify-content: center; align-items: center; color: rgba(255,255,255,0.4); transition: 0.2s;}
+        .feedback-btns button:hover { color: #a8c7fa; transform: translateY(-2px); }
+        .feedback-btns svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
         
         /* FLOATING INPUT BOX */
         .chat-input-container { 
             position: absolute; bottom: 0; left: 0; width: 100%; 
-            padding: 10px 20px 20px; background: linear-gradient(to top, rgba(9,9,11,1) 40%, rgba(9,9,11,0)); 
+            padding: 10px 20px 20px; 
+            /* ⚠️ Input Box အနောက်က အရောင်ကို ပိုမည်းအောင်လုပ်ထားသည် */
+            background: linear-gradient(to top, rgba(9,9,11,1) 60%, rgba(9,9,11,0)); 
             display: flex; flex-direction: column; align-items: center; z-index: 20; pointer-events: none;
         }
         .input-wrapper { 
             pointer-events: auto;
             display: flex; align-items: center; gap: 5px; 
             width: 100%; max-width: 760px; 
-            background: rgba(30, 30, 40, 0.6); 
+            background: rgba(30, 30, 40, 0.7); 
             backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
             border: 1px solid rgba(255, 255, 255, 0.15); 
             border-radius: 40px; 
             padding: 8px 12px; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.4); 
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5); 
             transition: 0.3s;
         }
-        .input-wrapper:focus-within { background: rgba(40, 40, 55, 0.8); border-color: rgba(255, 255, 255, 0.3); box-shadow: 0 15px 40px rgba(107, 70, 193, 0.2); }
+        .input-wrapper:focus-within { background: rgba(40, 40, 55, 0.9); border-color: rgba(255, 255, 255, 0.3); box-shadow: 0 15px 40px rgba(107, 70, 193, 0.2); }
         .input-wrapper input { flex: 1; padding: 10px 15px; border: none; background: transparent; color: #fff; outline: none; font-size: 15px; min-width: 0;}
         .input-wrapper input::placeholder { color: rgba(255,255,255,0.4); }
         
@@ -180,24 +174,36 @@
         .vip-bubble { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 20px; padding: 15px 25px; border: 1px solid rgba(255,255,255,0.2); margin-bottom: 20px; display: inline-block; position: relative;}
         .vip-bubble::after { content: ''; position: absolute; bottom: -10px; left: 30px; border-width: 10px 10px 0; border-style: solid; border-color: rgba(255,255,255,0.1) transparent transparent transparent; }
         
-        /* Custom Robot PNG Styling with Blue Glow */
         .vip-robot-img { 
-            width: 220px; 
-            height: auto;
-            filter: drop-shadow(0 10px 30px rgba(0, 150, 255, 0.8));
+            width: 220px; height: auto; filter: drop-shadow(0 10px 30px rgba(0, 150, 255, 0.8));
             animation: float 3s ease-in-out infinite; 
         }
         @keyframes float { 0% {transform: translateY(0px);} 50% {transform: translateY(-15px);} 100% {transform: translateY(0px);} }
         
-        /* Swipe to Start */
+        /* ⚠️ ပြင်ဆင်ချက် ၃: Swipe Slider လေးအတွင်း၌ မြှားများ အလိုအလျောက်ပါဝင်ခြင်း (Animation) */
         .swipe-wrapper { width: 100%; max-width: 320px; height: 65px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 40px; position: relative; display: flex; align-items: center; overflow: hidden;}
         .swipe-text { position: absolute; width: 100%; text-align: center; color: rgba(255,255,255,0.6); font-size: 16px; font-weight: 500; pointer-events: none; letter-spacing: 1px;}
-        .swipe-arrows { position: absolute; right: 25px; color: rgba(255,255,255,0.3); letter-spacing: -2px; pointer-events: none; animation: pulseArrow 1.5s infinite;}
-        @keyframes pulseArrow { 0%{opacity:0.2; transform:translateX(0);} 50%{opacity:0.8; transform:translateX(5px);} 100%{opacity:0.2; transform:translateX(0);} }
         
         .swipe-input { -webkit-appearance: none; appearance: none; width: 100%; height: 100%; background: transparent; position: absolute; z-index: 10; outline: none; margin: 0;}
-        .swipe-input::-webkit-slider-thumb { -webkit-appearance: none; width: 55px; height: 55px; border-radius: 50%; background: linear-gradient(135deg, #b794f4, #805ad5); cursor: pointer; margin-left: 5px; box-shadow: 0 0 20px rgba(128, 90, 213, 0.5); transition: background 0.3s; position: relative;}
+        
+        .swipe-input::-webkit-slider-thumb { 
+            -webkit-appearance: none; width: 55px; height: 55px; border-radius: 50%; 
+            background-color: #b794f4;
+            /* ⚠️ SVG မြှားလေးများကို အဝိုင်းထဲသို့ ထည့်သွင်းထားသည် */
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 24 24' fill='none' stroke='white' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='13 17 18 12 13 7'/%3E%3Cpolyline points='6 17 11 12 6 7'/%3E%3C/svg%3E");
+            background-position: center;
+            background-repeat: no-repeat;
+            cursor: pointer; margin-left: 5px; 
+            box-shadow: 0 0 20px rgba(128, 90, 213, 0.5); transition: 0.3s;
+            animation: pulseThumb 1.5s infinite;
+        }
         .swipe-input::-webkit-slider-thumb:active { cursor: grabbing; transform: scale(0.95);}
+        
+        @keyframes pulseThumb {
+            0% { box-shadow: 0 0 0 0 rgba(183, 148, 244, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(183, 148, 244, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(183, 148, 244, 0); }
+        }
     </style>
 </head>
 <body>
@@ -209,29 +215,21 @@
         </div>
     </div>
 
-    <!-- VIP SLIDE OVERLAY -->
     <div class="vip-slide-container" id="vipSlide">
         <button class="vip-close-btn" onclick="closeVipSlide()">×</button>
-        
-        <div class="vip-header">
-            <h1>Meet the<br><span>NEXUS Pro!</span></h1>
-        </div>
+        <div class="vip-header"><h1>Meet the<br><span>NEXUS Pro!</span></h1></div>
         
         <div class="vip-robot-box">
             <div class="vip-bubble">Need Admin's help?</div><br>
-            <!-- FALLBACK (onerror) JUST IN CASE ROBOT.PNG IS NOT FOUND! -->
             <img src="robot.png" alt="Robot" class="vip-robot-img" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/8649/8649605.png';">
         </div>
         
-        <!-- Swipe Slider -->
         <div class="swipe-wrapper">
             <div class="swipe-text" id="swipeText">Get Started</div>
-            <div class="swipe-arrows" id="swipeArrows">>>></div>
             <input type="range" min="0" max="100" value="0" class="swipe-input" id="swipeSlider" oninput="handleSwipe(event)" onchange="snapSwipe(event)" ontouchend="snapSwipe(event)" onmouseup="snapSwipe(event)">
         </div>
     </div>
 
-    <!-- Fullscreen Image Modal -->
     <div class="modal-overlay-img" id="imageModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:10000; justify-content:center; align-items:center; flex-direction:column; backdrop-filter:blur(5px);">
         <span onclick="closeImageModal()" style="position:absolute; top:20px; right:30px; color:white; font-size:40px; cursor:pointer;">&times;</span>
         <img id="modalImage" src="" style="max-width:90%; max-height:75vh; border-radius:8px;">
@@ -240,7 +238,6 @@
 
     <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
     
-    <!-- Sidebar -->
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <span>Chats</span>
@@ -366,7 +363,6 @@
         let currentModel = 'Flash';
         let selectedImage = null;
 
-        // SplashScreen Fix:DOM load is enough!
         document.addEventListener('DOMContentLoaded', () => {
             renderSidebar(); 
             if(chatSessions.length > 0) loadChatSession(chatSessions[0].id);
@@ -404,14 +400,12 @@
             document.getElementById("vipSlide").classList.add("active");
             document.getElementById("swipeSlider").value = 0;
             document.getElementById("swipeText").style.opacity = 1;
-            document.getElementById("swipeArrows").style.opacity = 1;
         }
         function closeVipSlide() { document.getElementById("vipSlide").classList.remove("active"); }
         
         function handleSwipe(e) {
             let val = e.target.value; let opacity = 1 - (val / 50); 
             document.getElementById("swipeText").style.opacity = opacity > 0 ? opacity : 0;
-            document.getElementById("swipeArrows").style.opacity = opacity > 0 ? opacity : 0;
         }
         
         function snapSwipe(e) {
@@ -425,7 +419,7 @@
                 }, 300);
             } else {
                 slider.value = 0; 
-                document.getElementById("swipeText").style.opacity = 1; document.getElementById("swipeArrows").style.opacity = 1;
+                document.getElementById("swipeText").style.opacity = 1; 
             }
         }
 
@@ -480,7 +474,14 @@
         function toggleMic() { if (!SpeechRecognition) { alert("Voice Input not supported in this browser."); return; } if (isListening) recognition.stop(); else recognition.start(); }
         function resetMic() { isListening = false; const micBtn = document.getElementById("mic-btn"); if(micBtn) micBtn.classList.remove("listening"); document.getElementById("user-input").placeholder = "Message NEXUS..."; }
 
-        window.copyText = function(btn, text) { navigator.clipboard.writeText(text).then(() => { let original = btn.innerHTML; btn.innerHTML = "✅"; setTimeout(() => { btn.innerHTML = original; }, 2000); }); };
+        // ⚠️ ပြင်ဆင်ချက် ၄: Copy ကူးသည့်ခလုတ် (SVG မပျောက်စေရန် အဆင့်မြှင့်ထားသည်)
+        window.copyText = function(btn, text) { 
+            navigator.clipboard.writeText(text).then(() => { 
+                let original = btn.innerHTML; 
+                btn.innerHTML = `<svg viewBox="0 0 24 24" style="stroke:#a8c7fa"><polyline points="20 6 9 17 4 12"></polyline></svg>`; 
+                setTimeout(() => { btn.innerHTML = original; }, 2000); 
+            }); 
+        };
 
         function startNewChat() { currentSessionId = null; document.getElementById("chat-messages").innerHTML = '<div id="welcome-message">Hello, Welcome</div>'; renderSidebar(); if(window.innerWidth <= 768) { document.getElementById("sidebar").classList.remove("open"); document.getElementById("overlay").classList.remove("show"); } }
 
@@ -511,10 +512,23 @@
                 let displayHtml = "";
                 if (text) { displayHtml = (isUser || typeof marked === 'undefined') ? text.replace(/\n/g, '<br>') : marked.parse(text); }
                 if (text) html += `<span>${displayHtml}</span></div>`;
+                
+                // ⚠️ ပြင်ဆင်ချက် ၅: Outline SVG Icons အသစ်များ အသုံးပြုခြင်း
                 if (!isUser) {
                     let safeText = text ? text.replace(/'/g, "\\'").replace(/"/g, '&quot;') : "";
                     if(!text.includes("ပို့ဆောင်နေပါသည်") && !text.includes("ပုံဆွဲပေးနေပါသည်")) {
-                        html += `<div class="feedback-btns"><span onclick="window.copyText(this, '${safeText}')">📋 Copy</span><span onclick="this.innerHTML='👍'; this.nextElementSibling.style.display='none';">👍</span><span onclick="this.innerHTML='👎'; this.previousElementSibling.style.display='none';">👎</span></div>`;
+                        html += `
+                        <div class="feedback-btns">
+                            <button onclick="window.copyText(this, '${safeText}')" title="Copy">
+                                <svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                            </button>
+                            <button onclick="this.style.color='#a8c7fa'; this.nextElementSibling.style.display='none';" title="Good">
+                                <svg viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg>
+                            </button>
+                            <button onclick="this.style.color='#ff6b6b'; this.previousElementSibling.style.display='none';" title="Bad">
+                                <svg viewBox="0 0 24 24"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path></svg>
+                            </button>
+                        </div>`;
                     }
                 }
             }
@@ -571,17 +585,11 @@
                 if (imgData) { const base64Data = imgData.split(',')[1]; const mimeType = imgData.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0]; currentParts.push({ inline_data: { mime_type: mimeType, data: base64Data } }); }
                 contents.push({ role: "user", parts: currentParts });
                 
-                // ADDING EXPLICIT GENERATION CONFIG FOR BETTER CONTROL
                 const requestBody = { 
                     model: 'gemini-1.5-flash', 
                     contents: contents, 
                     aiMode: currentModel,
-                    generationConfig: {
-                        temperature: 0.5,    // Lower temperature = more focused/logical speech
-                        topK: 40,
-                        topP: 0.9,
-                        maxOutputTokens: 2048,
-                    }
+                    generationConfig: { temperature: 0.5, topK: 40, topP: 0.9, maxOutputTokens: 2048 }
                 };
                 
                 const response = await fetch(BACKEND_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(requestBody) });
