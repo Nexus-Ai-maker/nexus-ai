@@ -71,7 +71,8 @@
         .message-row { display: flex; flex-direction: column; } .user-message-row { align-items: flex-end; } .bot-message-row { align-items: flex-start; }
         .message-bubble { max-width: 85%; padding: 12px 16px; border-radius: 16px; line-height: 1.5; word-wrap: break-word; }
         .user-message { background: #1e1f20; border: 1px solid #333; } .bot-message { padding-left: 0; }
-        .message-image { max-width: 100%; max-height: 250px; border-radius: 8px; margin-bottom: 8px; }
+        .message-image { max-width: 100%; max-height: 250px; border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: 0.3s; }
+        .message-image:hover { opacity: 0.8; }
         
         /* Feedback & Copy Buttons */
         .feedback-btns { display: flex; gap: 15px; margin-top: 8px; font-size: 14px; }
@@ -97,6 +98,16 @@
         .image-preview-box { position: relative; display: inline-block; }
         .image-preview-box img { height: 60px; border-radius: 8px; border: 1px solid #444746; }
         .remove-image-btn { position: absolute; top: -5px; right: -5px; background: #444746; color: white; border: none; border-radius: 50%; cursor: pointer; width: 20px; height: 20px; font-size: 12px; }
+
+        /* --- Fullscreen Image Modal Styles --- */
+        .modal-overlay-img { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; justify-content: center; align-items: center; flex-direction: column; backdrop-filter: blur(5px); }
+        .modal-overlay-img.active { display: flex; }
+        .modal-content-img { max-width: 90%; max-height: 75vh; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.5); object-fit: contain; }
+        .modal-close-img { position: absolute; top: 20px; right: 30px; color: white; font-size: 40px; font-weight: bold; cursor: pointer; transition: 0.3s;}
+        .modal-close-img:hover { color: #ff6b6b; }
+        .modal-actions { margin-top: 20px; display: flex; gap: 15px; }
+        .download-btn { padding: 12px 24px; background: #1a73e8; color: white; border: none; border-radius: 8px; font-size: 16px; cursor: pointer; display: flex; align-items: center; gap: 8px; transition: 0.3s; font-family: 'Google Sans', sans-serif;}
+        .download-btn:hover { background: #1557b0; }
     </style>
 </head>
 <body>
@@ -105,6 +116,21 @@
         <div class="logo-container" id="logo-container">
             <div class="nexus-letters"><span>N</span><span>E</span><span>X</span><span>U</span><span>S</span></div>
             <div class="subtitle">Ai with you</div>
+        </div>
+    </div>
+
+    <!-- Fullscreen Image Modal -->
+    <div class="modal-overlay-img" id="imageModal">
+        <span class="modal-close-img" onclick="closeImageModal()">&times;</span>
+        <img class="modal-content-img" id="modalImage" src="">
+        <div class="modal-actions">
+            <button class="download-btn" onclick="downloadModalImage()">
+                <!-- Download Arrow Icon -->
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                  <path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/>
+                  <path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/>
+                </svg> Download Image
+            </button>
         </div>
     </div>
 
@@ -266,31 +292,46 @@
         }
         function removeImage() { selectedImage = null; document.getElementById("preview-container").style.display = "none"; }
 
-        // ==========================================
-        // PDF EXPORT SYSTEM
-        // ==========================================
+        // --- FULLSCREEN IMAGE MODAL FUNCTIONS ---
+        window.openImageModal = function(imgSrc) {
+            document.getElementById("modalImage").src = imgSrc;
+            document.getElementById("imageModal").classList.add("active");
+        }
+        window.closeImageModal = function() {
+            document.getElementById("imageModal").classList.remove("active");
+        }
+        window.downloadModalImage = async function() {
+            const imgSrc = document.getElementById("modalImage").src;
+            try {
+                const response = await fetch(imgSrc);
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.style.display = "none";
+                a.href = url;
+                a.download = "NEXUS_AI_Image_" + Date.now() + ".jpg";
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+            } catch (err) {
+                alert("ပုံကို Download ဆွဲရာတွင် အခက်အခဲဖြစ်သွားပါသည်။");
+            }
+        }
+
+        // --- PDF EXPORT SYSTEM ---
         function exportChatToPDF() {
-            document.getElementById("model-dropdown").classList.remove("show"); // Close dropdown
+            document.getElementById("model-dropdown").classList.remove("show"); 
             const chatElement = document.getElementById("chat-messages");
             
-            // Check if there are messages to export
             if(chatElement.innerText.includes("Hello, Welcome") && chatElement.children.length <= 1) {
                 alert("Export လုပ်ရန် Chat History မရှိသေးပါဗျ။");
                 return;
             }
 
-            // Hide feedback buttons temporarily via body class
             document.body.classList.add("exporting-pdf");
-            
-            const opt = {
-                margin:       10,
-                filename:     'NEXUS_Chat_History.pdf',
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, backgroundColor: '#131314' },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
+            const opt = { margin: 10, filename: 'NEXUS_Chat_History.pdf', image: { type: 'jpeg', quality: 0.98 }, html2canvas: { scale: 2, useCORS: true, backgroundColor: '#131314' }, jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }};
 
-            // Loading state
             const oldText = document.getElementById("model-btn").innerText;
             document.getElementById("model-btn").innerText = "📄 Exporting...";
 
@@ -304,7 +345,7 @@
             });
         }
 
-        // VOICE INPUT SYSTEM
+        // --- VOICE INPUT SYSTEM ---
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         let recognition;
         let isListening = false;
@@ -416,7 +457,8 @@
             row.className = `message-row ${isUser ? 'user-message-row' : 'bot-message-row'}`;
             
             let html = `<div class="message-bubble ${isUser ? 'user-message' : 'bot-message'}">`;
-            if (img) html += `<img src="${img}" class="message-image">`;
+            // ပုံကို နှိပ်လိုက်လျှင် Full-screen Modal ပေါ်စေရန် onclick ထည့်သွင်းထားသည်
+            if (img) html += `<img src="${img}" class="message-image" onclick="openImageModal('${img}')">`;
             
             let cleanText = text ? text : "";
             let displayHtml = text ? text.replace(/\n/g, '<br>') : "";
@@ -483,7 +525,7 @@
                     const encodedPrompt = encodeURIComponent(text);
                     const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1024&height=1024&nologo=true&seed=${randomSeed}`;
                     const imgObj = new Image();
-                    imgObj.onload = function() { loadingMsg.remove(); appendMessage(`🎨 <b>${text}</b> အတွက် ရေးဆွဲထားသော ပုံပါဗျ။`, false, imageUrl); };
+                    imgObj.onload = function() { loadingMsg.remove(); appendMessage(`🎨 <b>${text}</b> အတွက် ရေးဆွဲထားသော ပုံပါဗျ။ (ပုံကို နှိပ်၍ Download ဆွဲနိုင်ပါသည်)`, false, imageUrl); };
                     imgObj.onerror = function() { loadingMsg.remove(); appendMessage("⚠️ ပုံဆွဲရာတွင် အခက်အခဲဖြစ်သွားပါသည်၊ အခြားစာသားတစ်ခုဖြင့် ပြန်စမ်းကြည့်ပါဗျ။", false); };
                     imgObj.src = imageUrl;
                 } catch (error) { loadingMsg.remove(); appendMessage("ပုံဖန်တီးရာတွင် အမှားအယွင်းဖြစ်သွားပါသည်။", false); }
@@ -499,7 +541,14 @@
                 if (currentSessionId) {
                     const session = chatSessions.find(s => s.id === currentSessionId);
                     if (session && session.messages) {
-                        let validMessages = session.messages.filter(m => m.text && !m.text.includes("NEXUS စဉ်းစားနေပါသည်") && !m.text.includes("ပို့ဆောင်နေပါသည်") && !m.text.includes("ပုံဆွဲပေးနေပါသည်"));
+                        // AI ရဲ့ ပုံဆွဲပေးတဲ့ စာတွေကို History ထဲကနေ ဖယ်ထုတ်ပြီးမှ LLM ဆီပို့မည် (Context မရှုပ်စေရန်)
+                        let validMessages = session.messages.filter(m => 
+                            m.text && 
+                            !m.text.includes("NEXUS စဉ်းစားနေပါသည်") && 
+                            !m.text.includes("ပို့ဆောင်နေပါသည်") && 
+                            !m.text.includes("ပုံဆွဲပေးနေပါသည်") &&
+                            !m.text.includes("အတွက် ရေးဆွဲထားသော ပုံပါဗျ") // Image Gen Response များကို ဖယ်ထုတ်ထားခြင်း
+                        );
                         let recentHistory = validMessages.slice(-6); 
                         recentHistory.forEach(msg => { contents.push({ role: msg.isUser ? "user" : "model", parts: [{ text: msg.text }] }); });
                     }
@@ -513,7 +562,6 @@
                 }
                 contents.push({ role: "user", parts: currentParts });
                 
-                // Backend သို့ AI Mode ပါ တစ်ပါတည်း လှမ်းပို့ခြင်း (Flash, Dev, Funny)
                 const requestBody = { model: 'gemini-2.5-flash', contents: contents, aiMode: currentModel };
                 const response = await fetch(BACKEND_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(requestBody) });
                 const data = await response.json();
