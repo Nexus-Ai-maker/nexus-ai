@@ -46,7 +46,7 @@
         @keyframes launchUp { 20% { transform: translateY(15px) scale(0.95); } 100% { transform: translateY(-150vh) scale(1.1); opacity: 0; } }
         
         /* Sidebar (Glass) */
-        .sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: rgba(15, 15, 20, 0.7); backdrop-filter: blur(20px); z-index: 1000; transition: left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; border-right: 1px solid rgba(255,255,255,0.05); }
+        .sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: rgba(15, 15, 20, 0.7); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 1000; transition: left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; border-right: 1px solid rgba(255,255,255,0.05); }
         .sidebar.open { left: 0; }
         .sidebar-header { padding: 20px; font-size: 18px; font-weight: 500; border-bottom: 1px solid rgba(255,255,255,0.05); display: flex; justify-content: space-between; align-items: center; }
         .clear-history-btn { background: transparent; border: none; color: #ff6b6b; cursor: pointer; font-size: 13px; padding: 4px 8px; border-radius: 4px; }
@@ -63,12 +63,12 @@
         .login-btn:hover { background: rgba(255,255,255,0.1); }
         .user-profile img { width: 30px; height: 30px; border-radius: 50%; }
         
-        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(3px); z-index: 999; display: none; }
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(3px); -webkit-backdrop-filter: blur(3px); z-index: 999; display: none; }
         .overlay.show { display: block; }
         
         /* Main UI */
         .main-content { flex: 1; display: flex; flex-direction: column; width: 100%; height: 100vh; position: relative;}
-        .chat-header { padding: 15px 20px; display: flex; align-items: center; background: rgba(9, 9, 11, 0.5); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 10;}
+        .chat-header { padding: 15px 20px; display: flex; align-items: center; background: rgba(9, 9, 11, 0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 10;}
         .menu-btn { font-size: 24px; cursor: pointer; margin-right: 15px; }
         .logo { font-size: 20px; font-weight: bold; margin-right: 10px; letter-spacing: 2px;}
         
@@ -90,8 +90,8 @@
         
         /* Glass Bubbles */
         .message-bubble { max-width: 85%; padding: 14px 18px; border-radius: 20px; line-height: 1.5; word-wrap: break-word; font-size: 15px; }
-        .user-message { background: rgba(107, 70, 193, 0.2); backdrop-filter: blur(10px); border: 1px solid rgba(107, 70, 193, 0.4); border-bottom-right-radius: 4px;} 
-        .bot-message { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-bottom-left-radius: 4px; }
+        .user-message { background: rgba(107, 70, 193, 0.2); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(107, 70, 193, 0.4); border-bottom-right-radius: 4px;} 
+        .bot-message { background: rgba(255,255,255,0.05); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); border-bottom-left-radius: 4px; }
         
         .message-image { max-width: 100%; max-height: 250px; border-radius: 12px; margin-bottom: 8px; cursor: pointer; transition: 0.3s; border: 1px solid rgba(255,255,255,0.1);}
         .message-image:hover { opacity: 0.8; }
@@ -180,7 +180,7 @@
         .vip-bubble { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border-radius: 20px; padding: 15px 25px; border: 1px solid rgba(255,255,255,0.2); margin-bottom: 20px; display: inline-block; position: relative;}
         .vip-bubble::after { content: ''; position: absolute; bottom: -10px; left: 30px; border-width: 10px 10px 0; border-style: solid; border-color: rgba(255,255,255,0.1) transparent transparent transparent; }
         
-        /* UPDATED: Custom Robot PNG Styling with Blue Glow */
+        /* Custom Robot PNG Styling with Blue Glow */
         .vip-robot-img { 
             width: 220px; 
             height: auto;
@@ -219,8 +219,8 @@
         
         <div class="vip-robot-box">
             <div class="vip-bubble">Need Admin's help?</div><br>
-            <!-- UPDATED: Pointing directly to the robot.png -->
-            <img src="robot.png" alt="Robot" class="vip-robot-img">
+            <!-- FALLBACK (onerror) JUST IN CASE ROBOT.PNG IS NOT FOUND! -->
+            <img src="robot.png" alt="Robot" class="vip-robot-img" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/8649/8649605.png';">
         </div>
         
         <!-- Swipe Slider -->
@@ -366,17 +366,21 @@
         let currentModel = 'Flash';
         let selectedImage = null;
 
-        window.addEventListener('load', () => {
+        // SplashScreen Fix:DOM load is enough!
+        document.addEventListener('DOMContentLoaded', () => {
             renderSidebar(); 
             if(chatSessions.length > 0) loadChatSession(chatSessions[0].id);
             setTimeout(() => {
-                document.getElementById('logo-container').classList.add('rocket-launch');
+                const logo = document.getElementById('logo-container');
+                if(logo) logo.classList.add('rocket-launch');
                 setTimeout(() => {
                     const splash = document.getElementById('splash-screen');
-                    splash.style.opacity = '0';
-                    setTimeout(() => splash.style.display = 'none', 800);
+                    if(splash) {
+                        splash.style.opacity = '0';
+                        setTimeout(() => splash.style.display = 'none', 800);
+                    }
                 }, 800);
-            }, 3500);
+            }, 2500);
         });
 
         function toggleSidebar() { document.getElementById("sidebar").classList.toggle("open"); document.getElementById("overlay").classList.toggle("show"); }
@@ -478,7 +482,7 @@
 
         window.copyText = function(btn, text) { navigator.clipboard.writeText(text).then(() => { let original = btn.innerHTML; btn.innerHTML = "✅"; setTimeout(() => { btn.innerHTML = original; }, 2000); }); };
 
-        function startNewChat() { currentSessionId = null; document.getElementById("chat-messages").innerHTML = '<div id="welcome-message">Hello, Welcome</div>'; renderSidebar(); if(window.innerWidth <= 768) document.getElementById("sidebar").classList.remove("open"); document.getElementById("overlay").classList.remove("show"); }
+        function startNewChat() { currentSessionId = null; document.getElementById("chat-messages").innerHTML = '<div id="welcome-message">Hello, Welcome</div>'; renderSidebar(); if(window.innerWidth <= 768) { document.getElementById("sidebar").classList.remove("open"); document.getElementById("overlay").classList.remove("show"); } }
 
         function renderSidebar() {
             const container = document.getElementById("history-list-container"); container.innerHTML = "";
@@ -567,7 +571,19 @@
                 if (imgData) { const base64Data = imgData.split(',')[1]; const mimeType = imgData.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0]; currentParts.push({ inline_data: { mime_type: mimeType, data: base64Data } }); }
                 contents.push({ role: "user", parts: currentParts });
                 
-                const requestBody = { model: 'gemini-1.5-flash', contents: contents, aiMode: currentModel };
+                // ADDING EXPLICIT GENERATION CONFIG FOR BETTER CONTROL
+                const requestBody = { 
+                    model: 'gemini-1.5-flash', 
+                    contents: contents, 
+                    aiMode: currentModel,
+                    generationConfig: {
+                        temperature: 0.5,    // Lower temperature = more focused/logical speech
+                        topK: 40,
+                        topP: 0.9,
+                        maxOutputTokens: 2048,
+                    }
+                };
+                
                 const response = await fetch(BACKEND_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(requestBody) });
                 const data = await response.json();
                 loadingMsg.remove(); 
