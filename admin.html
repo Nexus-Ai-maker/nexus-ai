@@ -3,266 +3,192 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS - Admin Dashboard</title>
+    <title>NEXUS | Admin Control Panel</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-    
+
     <style>
-        * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0f172a; color: #e2e8f0; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh;}
+        body { font-family: 'Google Sans', sans-serif; background: #09090b; color: #e3e3e3; margin: 0; padding: 20px; }
+        .header { text-align: center; padding: 20px 0; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 30px; }
+        .header h1 { margin: 0; color: #d6bcfa; font-weight: 300; letter-spacing: 2px;}
+        .header h1 span { font-weight: bold; }
         
-        /* Navbar */
-        .navbar { background: #1e293b; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; }
-        .navbar h2 { margin: 0; font-size: 20px; color: #38bdf8; letter-spacing: 1px; }
-        .logout-btn { background: #ef4444; color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .users-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; }
+        .user-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
         
-        /* Login Section */
-        #login-section { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #0f172a; }
-        .login-box { background: #1e293b; padding: 40px; border-radius: 12px; text-align: center; border: 1px solid #334155; }
-        .login-box h3 { color: #f8fafc; margin-top: 0; }
-        .login-btn { background: #3b82f6; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; cursor: pointer; margin-top: 20px; transition: 0.2s;}
-        .login-btn:hover { background: #2563eb; }
+        .user-info { display: flex; align-items: center; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px;}
+        .user-info img { width: 45px; height: 45px; border-radius: 50%; }
+        .user-details { flex: 1; overflow: hidden;}
+        .user-name { font-size: 16px; font-weight: bold; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+        .user-email { font-size: 12px; color: #8e8e8e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
+
+        .plan-section { display: flex; justify-content: space-between; align-items: center; }
+        .plan-section span { font-size: 14px; font-weight: bold; color: #a8c7fa;}
+        .plan-select { background: rgba(0,0,0,0.5); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 8px; outline: none; }
+
+        .feature-control { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); padding: 10px 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05);}
+        .feature-name { font-size: 13px; color: #ccc; flex: 1;}
+        .limit-input { width: 50px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 4px; border-radius: 6px; text-align: center; margin-right: 15px; outline: none;}
         
-        /* ⚠️ ပြင်ဆင်ချက် ၁: TAB BUTTONS စနစ် (ဘယ်/ညာ ခလုတ်များ) */
-        .tabs-container { display: flex; background: #1e293b; padding: 15px 20px 0; border-bottom: 1px solid #334155; gap: 10px; }
-        .tab-btn { flex: 1; padding: 12px 10px; background: #0f172a; color: #94a3b8; border: 1px solid #334155; border-bottom: none; border-radius: 10px 10px 0 0; cursor: pointer; font-weight: bold; font-size: 14px; transition: 0.3s; text-align: center; }
-        .tab-btn.active { background: #38bdf8; color: #0f172a; border-color: #38bdf8; }
+        /* Toggle Switch */
+        .switch { position: relative; display: inline-block; width: 36px; height: 20px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.1); transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 14px; width: 14px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: #38bdf8; }
+        input:checked + .slider:before { transform: translateX(16px); }
+
+        .save-btn { width: 100%; padding: 12px; background: #9f7aea; color: #fff; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.2s; margin-top: 5px;}
+        .save-btn:hover { background: #b794f4; transform: translateY(-2px);}
+        .save-btn:active { transform: translateY(0);}
         
-        /* Content Area Container */
-        .content-area { flex: 1; position: relative; overflow: hidden; background: #0f172a; }
-        
-        /* Left Panel: VIP Requests */
-        .vip-panel { position: absolute; top: 0; left: 0; width: 100%; height: 100%; padding: 20px; overflow-y: auto; display: none; flex-direction: column; }
-        .vip-panel.active { display: flex; }
-        
-        .request-card { background: #1e293b; padding: 20px; border-radius: 10px; border: 1px solid #334155; margin-bottom: 20px; }
-        .user-info { font-weight: bold; color: #94a3b8; margin-bottom: 10px; font-size: 14px;}
-        .user-prompt { background: #0f172a; padding: 12px; border-radius: 6px; margin-bottom: 15px; color: #e2e8f0; border-left: 4px solid #3b82f6;}
-        .img-preview { max-width: 100%; max-height: 200px; border-radius: 6px; margin-bottom: 10px; object-fit: contain; background: #000;}
-        textarea { width: 100%; height: 80px; padding: 10px; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: white; margin-bottom: 10px; resize: none;}
-        .reply-btn { background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.2s;}
-        .reply-btn:hover { background: #059669; }
-        
-        /* Right Panel: API Tester */
-        .api-panel { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: none; flex-direction: column; background: #1e293b; }
-        .api-panel.active { display: flex; }
-        
-        .chat-box { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #0f172a; }
-        .bubble { padding: 12px 16px; border-radius: 12px; max-width: 85%; font-size: 14px; line-height: 1.5; word-wrap: break-word;}
-        .admin-msg { background: #3b82f6; align-self: flex-end; border-bottom-right-radius: 2px; }
-        .ai-msg { background: #334155; align-self: flex-start; border-bottom-left-radius: 2px; border: 1px solid #475569; }
-        
-        .engine-tag { display: inline-block; font-size: 11px; color: #f59e0b; margin-top: 8px; font-weight: bold; background: rgba(0,0,0,0.3); padding: 4px 8px; border-radius: 4px; border: 1px dashed rgba(245, 158, 11, 0.5);}
-        
-        .chat-input-area { padding: 15px; background: #1e293b; border-top: 1px solid #334155; display: flex; gap: 10px; }
-        .chat-input-area input { flex: 1; padding: 12px 15px; border-radius: 20px; border: 1px solid #475569; background: #0f172a; color: white; outline: none; font-size: 15px;}
-        .chat-input-area button { background: #38bdf8; color: #0f172a; border: none; padding: 10px 18px; border-radius: 20px; cursor: pointer; font-weight: bold; }
+        .toast { position: fixed; bottom: 20px; right: 20px; background: #4ade80; color: #000; padding: 12px 20px; border-radius: 10px; font-weight: bold; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 1000;}
     </style>
 </head>
 <body>
 
-    <div id="login-section">
-        <div class="login-box">
-            <h3>🛡️ NEXUS Admin Gateway</h3>
-            <p style="color: #94a3b8; font-size: 14px;">Authorized Personnel Only</p>
-            <button class="login-btn" onclick="adminLogin()">Authenticate with Google</button>
-        </div>
+    <div class="header">
+        <h1>NEXUS <span>Admin Panel</span></h1>
+        <p style="color:#8e8e8e; font-size:14px; margin-top:5px;">User Control & Limits Management</p>
     </div>
 
-    <div id="admin-content-wrapper" style="display: none; height: 100%; flex-direction: column;">
-        
-        <div class="navbar">
-            <h2>NEXUS Admin</h2>
-            <button class="logout-btn" onclick="adminLogout()">Logout</button>
-        </div>
-        
-        <div class="tabs-container">
-            <button class="tab-btn active" id="tab-vip" onclick="switchTab('vip')">💎 VIP Requests</button>
-            <button class="tab-btn" id="tab-api" onclick="switchTab('api')">⚡ API Tester</button>
-        </div>
-        
-        <div class="content-area">
-            
-            <div class="vip-panel active" id="panel-vip">
-                <div id="requests-container">
-                    <p style="color: #64748b; text-align: center; margin-top: 30px;">Loading requests...</p>
-                </div>
-            </div>
-            
-            <div class="api-panel" id="panel-api">
-                <div class="chat-box" id="admin-chat-box">
-                    <div class="bubble ai-msg">Welcome Admin! I am online. Ask me anything to test the current API status.</div>
-                </div>
-                
-                <div class="chat-input-area">
-                    <input type="text" id="admin-test-input" placeholder="Type prompt to test API..." onkeypress="if(event.key === 'Enter') testAPI()" autocomplete="off">
-                    <button onclick="testAPI()">Send</button>
-                </div>
-            </div>
-
-        </div>
+    <div class="users-container" id="users-container">
+        <div style="text-align: center; width: 100%; color: #8e8e8e;">Loading users...</div>
     </div>
+
+    <div class="toast" id="toast">✅ Saved Successfully!</div>
 
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyBuI_N7UY3HzLC1q4bTbr0pIjutn7oCez0",
-            authDomain: "nexus-36961.firebaseapp.com",
-            projectId: "nexus-36961",
-            storageBucket: "nexus-36961.firebasestorage.app",
-            messagingSenderId: "818963537476",
-            appId: "1:818963537476:web:83e8b69fdf067001e62611"
+        // Firebase Configuration (NEXUS AI)
+        const firebaseConfig = { 
+            apiKey: "AIzaSyBuI_N7UY3HzLC1q4bTbr0pIjutn7oCez0", 
+            authDomain: "nexus-36961.firebaseapp.com", 
+            projectId: "nexus-36961", 
+            storageBucket: "nexus-36961.firebasestorage.app", 
+            messagingSenderId: "818963537476", 
+            appId: "1:818963537476:web:83e8b69fdf067001e62611" 
         };
         
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore();
-        const auth = firebase.auth();
+        const usersContainer = document.getElementById('users-container');
 
-        // ⚠️ ADMIN GMAIL 
-        const ADMIN_EMAIL = "newtruckermyanmar1010@gmail.com"; 
-        
-        // ⚠️ BACKEND CLOUDFLARE URL
-        const BACKEND_URL = "https://nexus-backend.minthantaung2027.workers.dev";
-
-        // --- AUTHENTICATION ---
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                if (user.email === ADMIN_EMAIL) {
-                    document.getElementById('login-section').style.display = 'none';
-                    document.getElementById('admin-content-wrapper').style.display = 'flex';
-                    loadRequests(); 
-                } else {
-                    alert("Access Denied! Admin only.");
-                    auth.signOut();
-                }
-            } else {
-                document.getElementById('login-section').style.display = 'flex';
-                document.getElementById('admin-content-wrapper').style.display = 'none';
+        // Real-time listener for all users
+        db.collection("users").onSnapshot((snapshot) => {
+            usersContainer.innerHTML = '';
+            if(snapshot.empty) {
+                usersContainer.innerHTML = '<div style="text-align: center; width: 100%; color: #8e8e8e;">No users found.</div>';
+                return;
             }
+
+            snapshot.forEach((doc) => {
+                const user = doc.data();
+                const uid = doc.id;
+                
+                // Set defaults if data is missing
+                const plan = user.plan || "Free";
+                const imgLimit = user.limits?.image ?? 5;
+                const vidLimit = user.limits?.video ?? 0;
+                const ttsLimit = user.limits?.tts ?? 5;
+                
+                const imgAllowed = user.allowed?.image !== false; // Default true
+                const vidAllowed = user.allowed?.video !== false; 
+                const ttsAllowed = user.allowed?.tts !== false;
+
+                const cardHtml = `
+                    <div class="user-card" id="card-${uid}">
+                        <div class="user-info">
+                            <img src="${user.photoURL || 'https://via.placeholder.com/45'}" alt="Profile">
+                            <div class="user-details">
+                                <div class="user-name">${user.name || 'Unknown User'}</div>
+                                <div class="user-email">${user.email || 'No Email'}</div>
+                            </div>
+                        </div>
+                        
+                        <div class="plan-section">
+                            <span>VIP Plan:</span>
+                            <select class="plan-select" id="plan-${uid}">
+                                <option value="Free" ${plan === 'Free' ? 'selected' : ''}>Basic (Free)</option>
+                                <option value="Pro" ${plan === 'Pro' ? 'selected' : ''}>NEXUS Pro</option>
+                                <option value="Ultra" ${plan === 'Ultra' ? 'selected' : ''}>NEXUS Ultra</option>
+                            </select>
+                        </div>
+
+                        <div class="feature-control">
+                            <span class="feature-name">🎨 Image Gen</span>
+                            <input type="number" class="limit-input" id="limit-img-${uid}" value="${imgLimit}" title="Daily Limit">
+                            <label class="switch">
+                                <input type="checkbox" id="allow-img-${uid}" ${imgAllowed ? 'checked' : ''}>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="feature-control">
+                            <span class="feature-name">🎬 Video Gen</span>
+                            <input type="number" class="limit-input" id="limit-vid-${uid}" value="${vidLimit}" title="Daily Limit">
+                            <label class="switch">
+                                <input type="checkbox" id="allow-vid-${uid}" ${vidAllowed ? 'checked' : ''}>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="feature-control">
+                            <span class="feature-name">🔊 Voice (TTS)</span>
+                            <input type="number" class="limit-input" id="limit-tts-${uid}" value="${ttsLimit}" title="Daily Limit">
+                            <label class="switch">
+                                <input type="checkbox" id="allow-tts-${uid}" ${ttsAllowed ? 'checked' : ''}>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <button class="save-btn" onclick="saveUserData('${uid}')">💾 Save Changes</button>
+                    </div>
+                `;
+                usersContainer.innerHTML += cardHtml;
+            });
         });
 
-        function adminLogin() {
-            const provider = new firebase.auth.GoogleAuthProvider();
-            auth.signInWithPopup(provider).catch(err => alert("Login Error: " + err.message));
-        }
-        function adminLogout() {
-            if(confirm("Logout ထွက်မှာ သေချာပါသလား?")) auth.signOut();
-        }
-
-        // --- ⚠️ ပြင်ဆင်ချက် ၃: TAB လွှဲပြောင်းပေးသည့် Function ---
-        function switchTab(tabId) {
-            // Remove active class from all
-            document.getElementById('tab-vip').classList.remove('active');
-            document.getElementById('tab-api').classList.remove('active');
-            document.getElementById('panel-vip').classList.remove('active');
-            document.getElementById('panel-api').classList.remove('active');
-
-            // Add active class to selected
-            document.getElementById('tab-' + tabId).classList.add('active');
-            document.getElementById('panel-' + tabId).classList.add('active');
-        }
-
-        // --- VIP REQUESTS LOGIC ---
-        function loadRequests() {
-            const container = document.getElementById('requests-container');
-            db.collection("pro_requests").where("status", "==", "pending").orderBy("timestamp", "asc")
-              .onSnapshot((snapshot) => {
-                  container.innerHTML = "";
-                  if(snapshot.empty) { container.innerHTML = "<p style='color: #64748b; text-align: center; margin-top: 30px;'>No new VIP requests.</p>"; return; }
-                  
-                  snapshot.forEach((doc) => {
-                      const data = doc.data(); const docId = doc.id;
-                      let html = `
-                        <div class="request-card" id="card-${docId}">
-                            <div class="user-info">👤 ${data.userName} (${data.userEmail})</div>
-                            <div class="user-prompt">${data.userPrompt || '(Image Request Only)'}</div>
-                            ${data.userImage ? `<img src="${data.userImage}" class="img-preview">` : ''}
-                            
-                            <textarea id="reply-text-${docId}" placeholder="Admin Reply..."></textarea>
-                            <input type="file" id="reply-img-${docId}" accept="image/*" style="margin-bottom: 15px; color: #94a3b8;"><br>
-                            <button class="reply-btn" onclick="sendReply('${docId}')">Send Reply to User</button>
-                        </div>
-                      `;
-                      container.innerHTML += html;
-                  });
-              }, (error) => { alert("Error loading requests: " + error.message); });
-        }
-
-        function sendReply(docId) {
-            const replyText = document.getElementById(`reply-text-${docId}`).value;
-            const fileInput = document.getElementById(`reply-img-${docId}`);
-            if(!replyText && fileInput.files.length === 0) { alert("Please enter text or attach an image."); return; }
-
-            const updateData = { adminReply: replyText, status: "replied", repliedAt: firebase.firestore.FieldValue.serverTimestamp() };
-            document.querySelector(`#card-${docId} button`).innerText = "Sending...";
-
-            if (fileInput.files.length > 0) {
-                const reader = new FileReader();
-                reader.onload = (e) => { updateData.adminImage = e.target.result; pushToFirebase(docId, updateData); };
-                reader.readAsDataURL(fileInput.files[0]);
-            } else { pushToFirebase(docId, updateData); }
-        }
-
-        function pushToFirebase(docId, updateData) {
-            db.collection("pro_requests").doc(docId).update(updateData).catch((error) => { alert("Error sending reply: " + error); });
-        }
-
-        // --- API TESTER LOGIC ---
-        function appendAdminChat(text, isUser, engineName = null) {
-            const chatBox = document.getElementById("admin-chat-box");
-            let div = document.createElement("div");
-            div.className = `bubble ${isUser ? 'admin-msg' : 'ai-msg'}`;
+        // Save Function
+        async function saveUserData(uid) {
+            const plan = document.getElementById(`plan-${uid}`).value;
             
-            let displayText = text.replace(/\n/g, '<br>');
+            const imgLimit = parseInt(document.getElementById(`limit-img-${uid}`).value) || 0;
+            const vidLimit = parseInt(document.getElementById(`limit-vid-${uid}`).value) || 0;
+            const ttsLimit = parseInt(document.getElementById(`limit-tts-${uid}`).value) || 0;
             
-            if (!isUser && engineName) {
-                displayText += `<br><span class="engine-tag">🛡️ Active Engine: ${engineName}</span>`;
-            }
-            
-            div.innerHTML = displayText;
-            chatBox.appendChild(div);
-            chatBox.scrollTop = chatBox.scrollHeight;
-            return div;
-        }
+            const imgAllowed = document.getElementById(`allow-img-${uid}`).checked;
+            const vidAllowed = document.getElementById(`allow-vid-${uid}`).checked;
+            const ttsAllowed = document.getElementById(`allow-tts-${uid}`).checked;
 
-        async function testAPI() {
-            const input = document.getElementById("admin-test-input");
-            const text = input.value.trim();
-            if (!text) return;
-            
-            appendAdminChat(text, true);
-            input.value = "";
-            const loadingBubble = appendAdminChat("Testing Engine...", false);
-            
             try {
-                const requestBody = { 
-                    model: 'gemini-1.5-flash', 
-                    contents: [{ role: "user", parts: [{ text: text }] }],
-                    aiMode: 'Flash'
-                };
-                
-                const response = await fetch(BACKEND_URL, { 
-                    method: "POST", 
-                    headers: { "Content-Type": "application/json" }, 
-                    body: JSON.stringify(requestBody) 
-                });
-                
-                const data = await response.json();
-                loadingBubble.remove();
-                
-                if (data.candidates && data.candidates.length > 0) {
-                    const aiText = data.candidates[0].content.parts[0].text;
-                    const engineName = data.ai_source || "Unknown Engine"; 
-                    
-                    appendAdminChat(aiText, false, engineName);
-                } else {
-                    appendAdminChat("⚠️ Backend Error: " + JSON.stringify(data), false);
-                }
-            } catch (err) {
-                loadingBubble.remove();
-                appendAdminChat("⚠️ Network/Fetch Error: " + err.message, false);
+                // Update Firestore
+                await db.collection("users").doc(uid).set({
+                    plan: plan,
+                    limits: {
+                        image: imgLimit,
+                        video: vidLimit,
+                        tts: ttsLimit
+                    },
+                    allowed: {
+                        image: imgAllowed,
+                        video: vidAllowed,
+                        tts: ttsAllowed
+                    }
+                }, { merge: true }); // merge: true means it won't delete existing data like usage stats
+
+                showToast();
+            } catch (error) {
+                console.error("Error updating user: ", error);
+                alert("Error saving data!");
             }
+        }
+
+        function showToast() {
+            const toast = document.getElementById("toast");
+            toast.style.display = "block";
+            setTimeout(() => { toast.style.display = "none"; }, 2500);
         }
     </script>
 </body>
