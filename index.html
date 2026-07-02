@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NEXUS AI | Premium</title>
+    <title>NEXIS AI | Premium</title>
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
@@ -17,39 +17,30 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
 
     <style>
-        /* --- 🔒 ANTI-THEFT SECURITY CSS --- */
+        /* --- 🔒 ANTI-THEFT SECURITY --- */
         * { box-sizing: border-box; }
-        body { 
-            font-family: 'Google Sans', sans-serif; 
-            background: linear-gradient(135deg, #09090b 0%, #1a1025 50%, #09090b 100%); 
-            color: #e3e3e3; margin: 0; display: flex; height: 100vh; overflow: hidden; 
-            transition: background 0.5s, color 0.5s; 
-            /* Disable Text Selection */
-            -webkit-user-select: none; -ms-user-select: none; user-select: none;
-        }
-        /* Allow Text Selection ONLY in Inputs and Textareas */
+        body { font-family: 'Google Sans', sans-serif; background: linear-gradient(135deg, #09090b 0%, #1a1025 50%, #09090b 100%); color: #e3e3e3; margin: 0; display: flex; height: 100vh; overflow: hidden; transition: background 0.5s, color 0.5s; -webkit-user-select: none; -ms-user-select: none; user-select: none; }
         input, textarea, select, code { -webkit-user-select: text; -ms-user-select: text; user-select: text; }
 
         /* Splash Screen */
         #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #09090b; z-index: 9999; display: flex; justify-content: center; align-items: center; transition: opacity 0.8s; }
-        .nexus-letters { display: flex; gap: 15px; font-size: 48px; font-weight: bold; color: #fff; letter-spacing: 5px; }
-        .nexus-letters span { opacity: 0; transform: translateY(20px); animation: fadeUpIn 0.6s ease forwards; }
-        .nexus-letters span:nth-child(1) { animation-delay: 0.2s; } .nexus-letters span:nth-child(2) { animation-delay: 0.6s; } .nexus-letters span:nth-child(3) { animation-delay: 1.0s; } .nexus-letters span:nth-child(4) { animation-delay: 1.4s; } .nexus-letters span:nth-child(5) { animation-delay: 1.8s; }
+        .nexis-letters { display: flex; gap: 15px; font-size: 48px; font-weight: bold; color: #fff; letter-spacing: 5px; }
+        .nexis-letters span { opacity: 0; transform: translateY(20px); animation: fadeUpIn 0.6s ease forwards; }
+        .nexis-letters span:nth-child(1) { animation-delay: 0.2s; } .nexis-letters span:nth-child(2) { animation-delay: 0.6s; } .nexis-letters span:nth-child(3) { animation-delay: 1.0s; } .nexis-letters span:nth-child(4) { animation-delay: 1.4s; } .nexis-letters span:nth-child(5) { animation-delay: 1.8s; }
         .subtitle { margin-top: 15px; font-size: 16px; color: #a8c7fa; opacity: 0; text-align: center; animation: fadeIn 1s ease forwards; animation-delay: 2.5s; }
         @keyframes fadeUpIn { to { opacity: 1; transform: translateY(0); } } @keyframes fadeIn { to { opacity: 1; } }
         .rocket-launch { animation: launchUp 1s cubic-bezier(0.5, 0, 0.2, 1) forwards; }
         @keyframes launchUp { 20% { transform: translateY(15px) scale(0.95); } 100% { transform: translateY(-150vh) scale(1.1); opacity: 0; } }
         
         /* Glassmorphism Sidebar */
-        .sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: rgba(15, 15, 20, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 1000; transition: left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; border-right: 1px solid rgba(255,255,255,0.05); }
+        .sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: rgba(15, 15, 20, 0.6); backdrop-filter: blur(20px); z-index: 1000; transition: left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; border-right: 1px solid rgba(255,255,255,0.05); }
         .sidebar.open { left: 0; }
         .sidebar-header { padding: 20px; font-size: 20px; font-weight: bold; color: #fff; display: flex; justify-content: space-between; align-items: center; letter-spacing: 2px;}
         
         .nav-item { display: flex; align-items: center; gap: 15px; padding: 12px 20px; color: #e3e3e3; cursor: pointer; border-radius: 25px; margin: 5px 10px; font-size: 15px; transition: 0.2s; }
         .nav-item:hover { background: rgba(255,255,255,0.1); }
-        .nav-item svg { width: 22px; height: 22px; stroke: white; fill: none; stroke-width: 1.5; }
+        .nav-item svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.5; }
         
-        /* 🌟 Premium Sidebar Items */
         .premium-nav-item { border: 1px solid rgba(255,255,255,0.05); }
         .premium-nav-item svg { stroke: #a8c7fa; }
 
@@ -80,9 +71,11 @@
         .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(3px); z-index: 999; display: none; }
         .overlay.show { display: block; }
         
-        /* Main UI */
-        .main-content { flex: 1; display: flex; flex-direction: column; width: 100%; height: 100vh; position: relative;}
-        .chat-header { padding: 15px 20px; display: flex; align-items: center; background: rgba(9, 9, 11, 0.4); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 10;}
+        /* Main UI Wrappers */
+        .main-container { flex: 1; display: flex; flex-direction: column; width: 100%; height: 100vh; position: relative;}
+        
+        /* Chat Headers */
+        .chat-header { padding: 15px 20px; display: flex; align-items: center; background: rgba(9, 9, 11, 0.4); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 10;}
         .menu-btn { font-size: 24px; cursor: pointer; margin-right: 15px; color: #e3e3e3;}
         .logo { font-size: 20px; font-weight: bold; margin-right: auto; letter-spacing: 2px;}
         .dropdown-btn { background: rgba(255,255,255,0.05); color: #e3e3e3; border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; font-size: 14px; padding: 6px 14px; cursor: pointer; transition: 0.2s;}
@@ -105,7 +98,7 @@
         .user-message-wrapper:hover .edit-user-btn { display: block; }
         
         .message-bubble { max-width: 85%; padding: 14px 18px; border-radius: 20px; line-height: 1.6; word-wrap: break-word; font-size: 15px; }
-        .user-message { background: rgba(107, 70, 193, 0.3); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border: 1px solid rgba(159, 122, 234, 0.3); border-bottom-right-radius: 4px; color: #fff;} 
+        .user-message { background: rgba(107, 70, 193, 0.3); backdrop-filter: blur(15px); border: 1px solid rgba(159, 122, 234, 0.3); border-bottom-right-radius: 4px; color: #fff;} 
         .bot-message { background: transparent; border: none; padding: 0; color: #e3e3e3; }
         .message-image { max-width: 100%; max-height: 250px; border-radius: 12px; margin-bottom: 8px; cursor: pointer; border: 1px solid rgba(255,255,255,0.1);}
         
@@ -142,28 +135,27 @@
         .prompt-suggestions { width: 100%; max-width: 760px; display: flex; gap: 10px; overflow-x: auto; padding: 0 5px 15px; pointer-events: auto; scrollbar-width: none; }
         .prompt-suggestions::-webkit-scrollbar { display: none; }
         .prompt-pill { display: flex; align-items: center; gap: 8px; white-space: nowrap; background: rgba(30, 30, 40, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); padding: 8px 16px; border-radius: 20px; font-size: 13px; color: #e3e3e3; cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.3);}
-        .prompt-pill svg { width: 16px; height: 16px; stroke: #a8c7fa; fill: none; stroke-width: 1.8; transition: 0.3s; }
-        .prompt-pill:hover { background: rgba(168, 199, 250, 0.15); border-color: #a8c7fa; transform: translateY(-2px); }
-        .prompt-pill:hover svg { stroke: #fff; }
+        .prompt-pill svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.5; transition: 0.3s; }
+        .prompt-pill:hover { background: rgba(168, 199, 250, 0.15); border-color: #a8c7fa; transform: translateY(-2px); color: #fff;}
 
-        .input-wrapper { pointer-events: auto; display: flex; align-items: center; gap: 5px; width: 100%; max-width: 760px; background: rgba(40, 40, 55, 0.6); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 40px; padding: 8px 12px; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
+        .input-wrapper { pointer-events: auto; display: flex; align-items: center; gap: 5px; width: 100%; max-width: 760px; background: rgba(40, 40, 55, 0.6); backdrop-filter: blur(24px); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 40px; padding: 8px 12px; transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.5);}
         .input-wrapper:focus-within { background: rgba(50, 50, 70, 0.8); border-color: rgba(255,255,255,0.3); }
         .input-wrapper input { flex: 1; padding: 10px 15px; border: none; background: transparent; color: #fff; outline: none; font-size: 15px; min-width: 0;}
         
         .icon-btn { background: transparent; border: none; cursor: pointer; padding: 8px; display: flex; align-items: center; justify-content: center; border-radius: 50%; transition: 0.3s;} 
-        .icon-btn svg { fill: #c4c7c5; width: 22px; height: 22px; }
+        .icon-btn svg { stroke: #c4c7c5; fill: none; stroke-width: 1.5; width: 22px; height: 22px; }
         .icon-btn:hover { background: rgba(255,255,255,0.1); }
-        .icon-btn.primary svg { fill: #d6bcfa; }
+        .icon-btn.primary svg { stroke: #d6bcfa; }
         
         #stop-btn { display: none; color: #ff6b6b; }
-        #stop-btn svg { fill: #ff6b6b; }
+        #stop-btn svg { stroke: #ff6b6b; }
 
         .attachment-menu { pointer-events: auto; position: absolute; bottom: 85px; left: 50%; transform: translateX(-50%); width: calc(100% - 40px); max-width: 320px; background: rgba(30,30,40,0.8); backdrop-filter: blur(20px); border-radius: 20px; border: 1px solid rgba(255,255,255,0.1); padding: 20px; display: none; gap: 20px; justify-content: space-around; box-shadow: 0 15px 40px rgba(0,0,0,0.6); z-index: 100;}
         .attachment-menu.show { display: flex; }
         .attach-option { display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; }
         .attach-icon-circle { width: 54px; height: 54px; border-radius: 50%; background: rgba(255,255,255,0.05); display: flex; justify-content: center; align-items: center; border: 1px solid rgba(255,255,255,0.1); transition: 0.2s;}
         .attach-icon-circle:hover { background: rgba(255,255,255,0.15); transform: translateY(-3px);}
-        .attach-icon-circle svg { fill: #a8c7fa; width: 24px; height: 24px; }
+        .attach-icon-circle svg { stroke: #a8c7fa; fill: none; stroke-width: 1.5; width: 24px; height: 24px; }
         .attach-option span { font-size: 12px; color: #ccc;}
         
         .image-preview-container { pointer-events: auto; display: none; width: 100%; max-width: 760px; margin-bottom: 10px; padding: 0 15px;}
@@ -193,12 +185,12 @@
         
         .feature-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px;}
         .feature-list li { display: flex; align-items: center; gap: 10px; font-size: 14px; color: #e2e8f0;}
-        .feature-list li svg { width: 18px; height: 18px; fill: #4ade80; flex-shrink: 0;}
-        .feature-list li.unavail svg { fill: #ef4444; }
+        .feature-list li svg { width: 18px; height: 18px; stroke: #4ade80; fill: none; stroke-width: 2; flex-shrink: 0;}
+        .feature-list li.unavail svg { stroke: #ef4444; }
         .feature-list li.unavail { color: #64748b; }
 
         /* VIP Admin Slide (Intro) */
-        .vip-slide-container { position: fixed; top: 0; right: -100%; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(20, 10, 40, 0.95), rgba(40, 20, 70, 0.95)); backdrop-filter: blur(25px); z-index: 5000; transition: right 0.5s ease; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 60px 20px 40px; text-align: center;}
+        .vip-slide-container { position: fixed; top: 0; right: -100%; width: 100%; height: 100%; background: linear-gradient(135deg, rgba(20, 10, 40, 0.95), rgba(40, 20, 70, 0.95)); backdrop-filter: blur(25px); z-index: 5000; transition: right 0.4s ease; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 60px 20px 40px; text-align: center;}
         .vip-slide-container.active { right: 0; }
         .vip-close-btn { position: absolute; top: 20px; left: 20px; background: rgba(255,255,255,0.1); border: none; width: 40px; height: 40px; border-radius: 50%; color: white; font-size: 24px; cursor: pointer;}
         .vip-header h1 { margin: 0; font-size: 36px; font-weight: 300; color: #fff;}
@@ -214,7 +206,7 @@
         /* Current Active Mode Indicator */
         .active-mode-banner { position: absolute; top: 70px; left: 50%; transform: translateX(-50%); background: rgba(56, 189, 248, 0.15); border: 1px solid #38bdf8; color: #38bdf8; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; z-index: 5; display: none; gap: 5px; align-items: center;}
 
-        /* Settings & Image Modals */
+        /* Settings Modal */
         .settings-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(9, 9, 11, 0.95); backdrop-filter: blur(25px); z-index: 3000; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; }
         .settings-modal.active { transform: translateY(0); }
         .settings-header { padding: 20px; display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
@@ -258,7 +250,7 @@
         body.light-mode .sidebar-footer { border-top: 1px solid rgba(0, 0, 0, 0.1); }
         body.light-mode .login-btn { background: rgba(0, 0, 0, 0.03); color: #333; border: 1px solid rgba(0, 0, 0, 0.1); }
         body.light-mode .login-btn:hover { background: rgba(0, 0, 0, 0.08); }
-        body.light-mode .icon-btn, body.light-mode .sidebar-footer .icon-btn svg { color: #333; stroke: #333; }
+        body.light-mode .icon-btn, body.light-mode .sidebar-footer .icon-btn svg { stroke: #333; }
         body.light-mode .chat-header { background: rgba(255, 255, 255, 0.5); border-bottom: 1px solid rgba(0, 0, 0, 0.1); }
         body.light-mode .menu-btn, body.light-mode .logo { color: #1e1e1e; }
         body.light-mode .dropdown-btn { background: rgba(0, 0, 0, 0.05); color: #1e1e1e; border: 1px solid rgba(0, 0, 0, 0.1); }
@@ -273,47 +265,43 @@
         body.light-mode .input-wrapper { background: rgba(255, 255, 255, 0.7); border: 1px solid rgba(0, 0, 0, 0.15); box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
         body.light-mode .input-wrapper:focus-within { background: rgba(255, 255, 255, 0.95); border-color: rgba(107, 70, 193, 0.3); }
         body.light-mode .input-wrapper input { color: #1e1e1e; }
-        body.light-mode .input-wrapper input::placeholder { color: #888; }
-        body.light-mode .input-wrapper .icon-btn svg { fill: #555; }
-        body.light-mode .input-wrapper .icon-btn:hover { background: rgba(0,0,0,0.05); }
-        body.light-mode .prompt-pill { background: rgba(255, 255, 255, 0.6); border: 1px solid rgba(0, 0, 0, 0.1); color: #333; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        body.light-mode .prompt-pill { background: rgba(255, 255, 255, 0.6); border: 1px solid rgba(0, 0, 0, 0.1); color: #333; }
         body.light-mode .prompt-pill svg { stroke: #6b46c1; }
         body.light-mode .prompt-pill:hover { background: rgba(107, 70, 193, 0.05); border-color: #6b46c1; }
         body.light-mode .settings-modal { background: rgba(245, 245, 245, 0.95); }
         body.light-mode .settings-header h2 { color: #1e1e1e; }
-        body.light-mode .settings-close { color: #333; }
+        body.light-mode .settings-close, body.light-mode .settings-item { color: #333; }
         body.light-mode .settings-header { border-bottom: 1px solid rgba(0,0,0,0.1); }
         body.light-mode .settings-group { background: rgba(255,255,255,0.6); border: 1px solid rgba(0,0,0,0.1); }
-        body.light-mode .settings-item { border-bottom: 1px solid rgba(0,0,0,0.05); color: #1e1e1e; }
-        body.light-mode .settings-item.clickable:hover { background: rgba(0,0,0,0.03); }
+        body.light-mode .settings-item { border-bottom: 1px solid rgba(0,0,0,0.05); }
         body.light-mode .settings-profile-name { color: #1e1e1e; }
-        body.light-mode .settings-profile { border-bottom: 1px solid rgba(0,0,0,0.05); }
         body.light-mode .slider { background-color: rgba(0,0,0,0.15); }
         body.light-mode .message-bubble pre { background: rgba(0, 0, 0, 0.85); }
         body.light-mode .message-bubble code:not(pre code) { background: rgba(107, 70, 193, 0.1); color: #6b46c1; }
-        body.light-mode .feedback-btns button { color: #888; }
-        body.light-mode .feedback-btns button:hover { color: #6b46c1; }
+        body.light-mode .feedback-btns button svg { stroke: #888; }
+        body.light-mode .feedback-btns button:hover svg { stroke: #6b46c1; }
         body.light-mode .audio-wave { background: rgba(107, 70, 193, 0.1); border: 1px solid rgba(107, 70, 193, 0.2); }
         body.light-mode .audio-wave .bar { background: #6b46c1; }
         body.light-mode .audio-wave span { color: #6b46c1; }
         body.light-mode .attachment-menu { background: rgba(255, 255, 255, 0.9); border: 1px solid rgba(0, 0, 0, 0.1); }
         body.light-mode .attach-icon-circle { background: rgba(0, 0, 0, 0.03); border: 1px solid rgba(0, 0, 0, 0.1); }
-        body.light-mode .attach-icon-circle:hover { background: rgba(0, 0, 0, 0.08); }
         body.light-mode .attach-option span { color: #555; }
+        body.light-mode #about-content { color: #333; }
+        body.light-mode .about-title-text { color: #1e1e1e !important; }
     </style>
 </head>
 <body>
 
     <div id="splash-screen">
         <div class="logo-container" id="logo-container">
-            <div class="nexus-letters"><span>N</span><span>E</span><span>X</span><span>U</span><span>S</span></div>
+            <div class="nexis-letters"><span>N</span><span>E</span><span>X</span><span>I</span><span>S</span></div>
             <div class="subtitle">Ai with you</div>
         </div>
     </div>
 
     <div class="vip-slide-container" id="vipSlide">
         <button class="vip-close-btn" onclick="closeVipSlide()">×</button>
-        <div class="vip-header"><h1>Meet the<br><span>NEXUS Pro!</span></h1></div>
+        <div class="vip-header"><h1>Meet the<br><span>NEXIS Pro!</span></h1></div>
         <div class="vip-robot-box">
             <img src="https://cdn-icons-png.flaticon.com/512/8649/8649605.png" alt="Robot" class="vip-robot-img">
         </div>
@@ -325,9 +313,9 @@
 
     <div class="pricing-modal" id="pricingModal">
         <div class="pricing-header">
-            <h2>NEXUS <span>Premium Plans</span></h2>
+            <h2>NEXIS <span>Premium Plans</span></h2>
             <div style="display: flex; gap: 15px; align-items: center;">
-                <button class="contact-admin-btn" onclick="openVipSlide()"><svg viewBox="0 0 24 24" style="width:16px; fill:currentColor;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg> Admin</button>
+                <button class="contact-admin-btn" onclick="openVipSlide()"><svg viewBox="0 0 24 24" style="width:16px; stroke:currentColor; fill:none;"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg> Admin</button>
                 <button class="close-pricing" onclick="closePricingModal()">×</button>
             </div>
         </div>
@@ -337,32 +325,32 @@
                 <div class="plan-desc">Essential AI features for everyday tasks.</div>
                 <div class="plan-price">0 Ks <span>/ month</span></div>
                 <ul class="feature-list">
-                    <li><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg> Standard Chat Bot (Unlimited)</li>
-                    <li><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg> Image Generation (5 / day)</li>
-                    <li><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg> Text-to-Speech (5 / day)</li>
-                    <li class="unavail"><svg viewBox="0 0 24 24"><path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/></svg> Video Generation</li>
+                    <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Standard Chat Bot (Unlimited)</li>
+                    <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Image Generation (5 / day)</li>
+                    <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Text-to-Speech (5 / day)</li>
+                    <li class="unavail"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg> Video Generation</li>
                 </ul>
             </div>
             <div class="pricing-card recommended">
-                <div class="plan-title">NEXUS Pro</div>
+                <div class="plan-title">NEXIS Pro</div>
                 <div class="plan-desc">Advanced AI capabilities for creators.</div>
                 <div class="plan-price">5,000 Ks <span>/ month</span></div>
                 <ul class="feature-list">
-                    <li><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg> Premium Chat Bot (Unlimited)</li>
-                    <li><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg> Image Generation (30 / day)</li>
-                    <li><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg> Text-to-Speech (30 / day)</li>
-                    <li><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg> Video Generation (5 / day)</li>
+                    <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Premium Chat Bot (Unlimited)</li>
+                    <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Image Generation (30 / day)</li>
+                    <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Text-to-Speech (30 / day)</li>
+                    <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Video Generation (5 / day)</li>
                 </ul>
             </div>
             <div class="pricing-card">
-                <div class="plan-title">NEXUS Ultra</div>
+                <div class="plan-title">NEXIS Ultra</div>
                 <div class="plan-desc">Maximum power for professional users.</div>
                 <div class="plan-price">12,000 Ks <span>/ month</span></div>
                 <ul class="feature-list">
-                    <li><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg> Premium Chat Bot (Unlimited)</li>
-                    <li><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg> Image Generation (100 / day)</li>
-                    <li><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg> Text-to-Speech (100 / day)</li>
-                    <li><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg> Video Generation (20 / day)</li>
+                    <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Premium Chat Bot (Unlimited)</li>
+                    <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Image Generation (100 / day)</li>
+                    <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Text-to-Speech (100 / day)</li>
+                    <li><svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg> Video Generation (20 / day)</li>
                 </ul>
             </div>
         </div>
@@ -388,16 +376,14 @@
             </div>
             <div class="settings-group">
                 <div class="settings-item clickable" onclick="toggleAbout()" style="justify-content: space-between; border-bottom: none;">
-                    <div class="settings-item-left"><svg viewBox="0 0 24 24" style="stroke: #d6bcfa;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg><span style="font-weight: bold; color: #fff;" class="about-title-text">About NEXUS</span></div>
+                    <div class="settings-item-left"><svg viewBox="0 0 24 24" style="stroke: #d6bcfa;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg><span style="font-weight: bold; color: #fff;" class="about-title-text">About NEXIS</span></div>
                     <svg id="about-chevron" viewBox="0 0 24 24" style="width: 20px; height: 20px; stroke: #8e8e8e; fill: none; transition: 0.3s;"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </div>
                 <div id="about-content" style="display: none; font-size: 13px; color: #a8c7fa; grid-template-columns: 120px 1fr; gap: 10px; padding: 0 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); line-height: 1.5;">
-                    <span style="color: #8e8e8e;">AI Name:</span> <span>NEXUS AI</span>
-                    <span style="color: #8e8e8e;">Version:</span> <span>1.0 (Premium Build)</span>
+                    <span style="color: #8e8e8e;">AI Name:</span> <span>NEXIS AI</span>
+                    <span style="color: #8e8e8e;">Version:</span> <span>2.0 (Premium Build)</span>
                     <span style="color: #8e8e8e;">Core Engine:</span> <span>Gemini 2.5 Architecture</span>
-                    <span style="color: #8e8e8e;">Build Date:</span> <span>July 1, 2026</span>
                     <span style="color: #8e8e8e;">Concept & Dev:</span> <span class="about-title-text" style="color: #fff; font-weight: bold;">Min Thant Aung (KuroLab Studio)</span>
-                    <span style="color: #8e8e8e;">AI Co-Pilot:</span> <span style="color: #38bdf8;">Gemini AI</span>
                 </div>
             </div>
             <div class="settings-group">
@@ -408,20 +394,13 @@
         </div>
     </div>
 
-    <div class="modal-overlay-img" id="imageModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:10000; justify-content:center; align-items:center; flex-direction:column;">
-        <span onclick="closeImageModal()" style="position:absolute; top:20px; right:30px; color:white; font-size:40px; cursor:pointer;">&times;</span>
-        <img id="modalImage" src="" style="max-width:90%; max-height:75vh; border-radius:8px;">
-        <button onclick="downloadModalImage()" style="margin-top:20px; padding:12px 24px; background:#1a73e8; color:white; border:none; border-radius:8px; cursor:pointer;">Download Image</button>
-    </div>
-
     <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
     
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
-            <span>NEXUS</span>
+            <span>NEXIS</span>
             <div class="menu-btn" style="font-size: 24px; margin-right: 0;" onclick="toggleSidebar()">≡</div>
         </div>
-        
         <div style="padding: 10px 15px;">
             <div class="nav-item" onclick="startNewChat()">
                 <svg viewBox="0 0 24 24"><path d="M12 2v20M2 12h20" stroke-linecap="round"/></svg>
@@ -431,28 +410,22 @@
                 <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65" stroke-linecap="round"/></svg>
                 <span>Search chats</span>
             </div>
-            <div class="search-box" id="search-box">
-                <input type="text" id="search-input" placeholder="Search..." onkeyup="filterHistoryChats()" autocomplete="off">
-            </div>
+            <div class="search-box" id="search-box"><input type="text" id="search-input" placeholder="Search..." onkeyup="filterHistoryChats()" autocomplete="off"></div>
         </div>
 
         <div class="history-section">Premium AI Modes</div>
-        <div class="history-list" style="flex: 0; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 10px; overflow-y: visible;">
+        <div class="history-list" style="flex: 0; padding-bottom: 10px; border-bottom: 1px solid rgba(255,255,255,0.05); margin-bottom: 10px;">
             <div class="nav-item premium-nav-item" onclick="selectPremiumMode('ImageGen')">
                 <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
                 <span>Image Generation</span>
-            </div>
-            <div class="nav-item premium-nav-item" onclick="selectPremiumMode('Video')">
-                <svg viewBox="0 0 24 24"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
-                <span>Video Generation</span>
             </div>
             <div class="nav-item premium-nav-item" onclick="selectPremiumMode('TTS')">
                 <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
                 <span>Text to Voice</span>
             </div>
-            <div class="nav-item premium-nav-item" onclick="showPricingModal()" style="border-color: #38bdf8;">
-                <svg viewBox="0 0 24 24" style="stroke: #38bdf8;"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-                <span style="color: #38bdf8; font-weight: bold;">VIP / Pricing Plans</span>
+            <div class="nav-item premium-nav-item" onclick="openAdminChatHistory()" style="border-color: #d6bcfa;">
+                <svg viewBox="0 0 24 24" style="stroke: #d6bcfa;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M8 10h.01M12 10h.01M16 10h.01"></path></svg>
+                <span style="color: #d6bcfa; font-weight: bold;">Pro Admin Support</span>
             </div>
         </div>
 
@@ -471,14 +444,14 @@
     <input type="file" id="camera-input" accept="image/*" capture="environment" style="display: none;" onchange="handleImageSelect(event)">
     <input type="file" id="file-input" accept=".txt,.md,.csv,.json" style="display: none;" onchange="handleTextFileSelect(event)">
     
-    <div class="main-content">
+    <div class="main-container" id="ai-ui-container">
         <div class="chat-header">
             <div class="menu-btn" onclick="toggleSidebar()">☰</div>
-            <div class="logo">NEXUS</div>
+            <div class="logo">NEXIS</div>
             <div style="position: relative; margin-left: auto;">
                 <button class="dropdown-btn" id="model-btn" onclick="toggleDropdown(event)">⚡ Flash ▼</button>
                 <div class="dropdown-menu" id="model-dropdown">
-                    <div class="dropdown-item" onclick="selectModel('Flash')">⚡ Flash (Premium AI)</div>
+                    <div class="dropdown-item" onclick="selectModel('Flash')">⚡ Flash (Gemini 2.5)</div>
                     <div class="dropdown-item" onclick="selectModel('Dev')">👨‍💻 Developer Mode</div>
                     <div class="dropdown-item" onclick="selectModel('Funny')">😎 Funny Mode</div>
                     <div class="dropdown-divider"></div>
@@ -498,306 +471,262 @@
 
         <div class="chat-input-container">
             <div class="prompt-suggestions" id="prompt-suggestions">
-                <div class="prompt-pill" onclick="fillPrompt('မင်္ဂလာပါ NEXUS၊ ဒီနေ့ ဘာတွေကူညီပေးနိုင်မလဲ?')">
-                    <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg> မင်္ဂလာပါ
-                </div>
-                <div class="prompt-pill" onclick="fillPrompt('Facebook Post လေးတစ်ခုလောက် အလန်းစား ရေးပေးပါ')">
-                    <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg> Facebook Post ရေးရန်
-                </div>
-                <div class="prompt-pill" onclick="fillPrompt('HTML နဲ့ CSS သုံးပြီး လှပတဲ့ ခလုတ်တစ်ခုလောက် ရေးပြပါ')">
-                    <svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg> Code ရေးရန်
-                </div>
-                <div class="prompt-pill" onclick="fillPrompt('ရယ်စရာ ဟာသလေးတစ်ခုလောက် ပြောပြပါဦး')">
-                    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg> ဟာသပြောရန်
-                </div>
-                <div class="prompt-pill" onclick="fillPrompt('အင်္ဂလိပ်စာ တိုးတက်အောင် ဘယ်လိုလေ့လာရမလဲ?')">
-                    <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg> စာလေ့လာရန်
-                </div>
+                <div class="prompt-pill" onclick="fillPrompt('မင်္ဂလာပါ NEXIS၊ ဒီနေ့ ဘာတွေကူညီပေးနိုင်မလဲ?')"><svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg> မင်္ဂလာပါ</div>
+                <div class="prompt-pill" onclick="fillPrompt('HTML နဲ့ CSS သုံးပြီး လှပတဲ့ ခလုတ်တစ်ခုလောက် ရေးပြပါ')"><svg viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg> Code ရေးရန်</div>
             </div>
 
             <div class="attachment-menu" id="attachment-menu">
-                <div class="attach-option" onclick="document.getElementById('gallery-input').click(); toggleAttachmentMenu();">
-                    <div class="attach-icon-circle"><svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg></div><span>Photos</span>
-                </div>
-                <div class="attach-option" onclick="document.getElementById('camera-input').click(); toggleAttachmentMenu();">
-                    <div class="attach-icon-circle"><svg viewBox="0 0 24 24"><path d="M4 4h3l2-2h6l2 2h3c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2zm8 3c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zm0 8c-1.65 0-3-1.35-3-3s1.35-3 3-3 3 1.35 3 3-1.35 3-3 3z"/></svg></div><span>Camera</span>
-                </div>
-                <div class="attach-option" onclick="document.getElementById('file-input').click(); toggleAttachmentMenu();">
-                    <div class="attach-icon-circle"><svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg></div><span>Files</span>
-                </div>
+                <div class="attach-option" onclick="document.getElementById('gallery-input').click(); toggleAttachmentMenu();"><div class="attach-icon-circle"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg></div><span>Photos</span></div>
+                <div class="attach-option" onclick="document.getElementById('camera-input').click(); toggleAttachmentMenu();"><div class="attach-icon-circle"><svg viewBox="0 0 24 24"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg></div><span>Camera</span></div>
+                <div class="attach-option" onclick="document.getElementById('file-input').click(); toggleAttachmentMenu();"><div class="attach-icon-circle"><svg viewBox="0 0 24 24"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"></path><polyline points="13 2 13 9 20 9"></polyline></svg></div><span>Files</span></div>
             </div>
 
             <div class="image-preview-container" id="preview-container">
-                <div class="image-preview-box">
-                    <img id="preview-img" src="">
-                    <button class="remove-image-btn" onclick="removeImage()">✖</button>
-                </div>
+                <div class="image-preview-box"><img id="preview-img" src=""><button class="remove-image-btn" onclick="removeImage()">✖</button></div>
             </div>
 
             <div class="input-wrapper">
-                <button class="icon-btn" id="attach-btn" onclick="toggleAttachmentMenu(event)">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                </button>
-                
-                <input type="text" id="user-input" placeholder="Message NEXUS..." autocomplete="off" onkeypress="if(event.key === 'Enter') sendMessage()">
-                
-                <button class="icon-btn" id="mic-btn" onclick="toggleMic()">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 14c1.66 0 2.99-1.34 2.99-3L15 5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 14 6.7 11H5c0 3.41 2.72 6.23 6 6.72V21h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/></svg>
-                </button>
-
-                <button class="icon-btn" id="stop-btn" onclick="stopGenerating()">
-                    <svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2" ry="2"></rect></svg>
-                </button>
-                
-                <button class="icon-btn primary" id="send-btn" onclick="sendMessage()">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-                </button>
+                <button class="icon-btn" id="attach-btn" onclick="toggleAttachmentMenu(event)"><svg viewBox="0 0 24 24"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg></button>
+                <input type="text" id="user-input" placeholder="Message NEXIS..." autocomplete="off" onkeypress="if(event.key === 'Enter') sendMessage()">
+                <button class="icon-btn" id="mic-btn" onclick="toggleMic()"><svg viewBox="0 0 24 24"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="22"></line></svg></button>
+                <button class="icon-btn" id="stop-btn" onclick="stopGenerating()"><svg viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2" ry="2"></rect></svg></button>
+                <button class="icon-btn primary" id="send-btn" onclick="sendMessage()"><svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button>
             </div>
-            <div class="disclaimer-text">NEXUS AI can make mistakes. Please consider verifying important information.</div>
+            <div class="disclaimer-text">NEXIS AI can make mistakes. Please consider verifying important information.</div>
         </div>
+    </div>
+
+    <div class="main-container" id="admin-ui-container" style="display: none; background: linear-gradient(135deg, #100a1c 0%, #09090b 100%);">
+        <div class="chat-header">
+            <button class="icon-btn" onclick="backToAIChat()" style="margin-right:10px;"><svg viewBox="0 0 24 24" style="stroke:#fff;"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg></button>
+            <div class="logo" style="color: #d6bcfa;">💎 NEXIS Pro Support</div>
+        </div>
+        <div class="chat-messages" id="admin-chat-messages">
+            </div>
+        <div class="chat-input-container">
+            <div class="input-wrapper" style="border-color: rgba(214, 188, 250, 0.3);">
+                <input type="text" id="admin-input" placeholder="Send secure message to Admin..." autocomplete="off" onkeypress="if(event.key === 'Enter') sendAdminMessage()">
+                <button class="icon-btn primary" onclick="sendAdminMessage()"><svg viewBox="0 0 24 24" style="stroke:#d6bcfa;"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg></button>
+            </div>
+            <div class="disclaimer-text" style="color:#d6bcfa;">Your messages are End-to-End Encrypted.</div>
+        </div>
+    </div>
+
+    <div class="modal-overlay-img" id="imageModal">
+        <span onclick="closeImageModal()" style="position:absolute; top:20px; right:30px; color:white; font-size:40px; cursor:pointer;">&times;</span>
+        <img id="modalImage" src="" style="max-width:90%; max-height:75vh; border-radius:8px;">
+        <button onclick="downloadModalImage()" style="margin-top:20px; padding:12px 24px; background:#1a73e8; color:white; border:none; border-radius:8px; cursor:pointer;">Download Image</button>
     </div>
 
     <script>
         // =========================================================
-        // 🔒 ANTI-THEFT SYSTEM (Frontend လုံခြုံရေး)
+        // 🔒 FRONTEND SECURITY (Anti-Theft)
         // =========================================================
-        
-        // 1. Right Click ပိတ်ခြင်း
-        document.addEventListener('contextmenu', event => event.preventDefault());
-
-        // 2. Keyboard Shortcuts များ ပိတ်ခြင်း
+        document.addEventListener('contextmenu', e => e.preventDefault());
         document.onkeydown = function(e) {
-            // Disable F12
             if(e.keyCode == 123) return false;
-            // Disable Ctrl+Shift+I / J / C
-            if(e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'C'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0))) return false;
-            // Disable Ctrl+U (View Source)
-            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
+            if(e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 67 || e.keyCode == 74)) return false;
+            if(e.ctrlKey && e.keyCode == 85) return false;
         };
 
         // =========================================================
         // ⚙️ INITIALIZATION & FIREBASE
         // =========================================================
-
         emailjs.init("0OAPgzl3T2wge9sy6");
         const firebaseConfig = { apiKey: "AIzaSyBuI_N7UY3HzLC1q4bTbr0pIjutn7oCez0", authDomain: "nexus-36961.firebaseapp.com", projectId: "nexus-36961", storageBucket: "nexus-36961.firebasestorage.app", messagingSenderId: "818963537476", appId: "1:818963537476:web:83e8b69fdf067001e62611" };
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
         const db = firebase.firestore(); const auth = firebase.auth();
         
-        let currentUser = null; 
-        window.currentUserData = null; // Store realtime limits from DB
-
-        let chatSessions = JSON.parse(localStorage.getItem("nexus_chat_sessions")) || []; 
-        let currentSessionId = null;
-        let isStopGeneration = false; 
-
+        let currentUser = null; window.currentUserData = null;
+        let chatSessions = JSON.parse(localStorage.getItem("nexis_chat_sessions")) || []; 
+        let currentSessionId = null; let isStopGeneration = false; 
         const BACKEND_URL = "https://nexus-backend.minthantaung2027.workers.dev";
         let currentModel = 'Flash'; let selectedImage = null;
+        let adminChatUnsubscribe = null;
 
         let isHapticEnabled = localStorage.getItem("nexus_haptics") !== "false";
         let isLightMode = localStorage.getItem("nexus_theme") === "light";
         
         document.addEventListener('DOMContentLoaded', () => {
-            const hToggle = document.getElementById("haptic-toggle");
-            if(hToggle) hToggle.checked = isHapticEnabled;
+            const hToggle = document.getElementById("haptic-toggle"); if(hToggle) hToggle.checked = isHapticEnabled;
             if(isLightMode) { document.body.classList.add("light-mode"); const tToggle = document.getElementById("theme-toggle"); if(tToggle) tToggle.checked = true; }
-            
             renderSidebar(); if(chatSessions.length > 0 && !currentUser) loadChatSession(chatSessions[0].id);
             setTimeout(() => { const logo = document.getElementById('logo-container'); if(logo) logo.classList.add('rocket-launch'); setTimeout(() => { const splash = document.getElementById('splash-screen'); if(splash) { splash.style.opacity = '0'; setTimeout(() => splash.style.display = 'none', 800); } }, 800); }, 2500);
         });
 
-        // --- ⚙️ FIREBASE USER & LIMITS SYNC ---
         auth.onAuthStateChanged(async (user) => {
             const authBtn = document.getElementById("auth-btn");
             if (user) { 
                 currentUser = user; 
                 authBtn.innerHTML = `<div class="user-profile"><img src="${user.photoURL || 'https://via.placeholder.com/30'}"><span>${user.displayName}</span></div>`; 
-                
-                // Initialize or Update User in Firestore
-                const userRef = db.collection("users").doc(user.uid);
-                const doc = await userRef.get();
-                const today = new Date().toISOString().split('T')[0]; // Current date
-                
-                if (!doc.exists) {
-                    await userRef.set({
-                        name: user.displayName, email: user.email, photoURL: user.photoURL,
-                        plan: "Free", lastResetDate: today,
-                        limits: { image: 5, video: 0, tts: 5 },
-                        allowed: { image: true, video: true, tts: true },
-                        usage: { image: 0, video: 0, tts: 0 }
-                    });
-                } else {
-                    const data = doc.data();
-                    if (data.lastResetDate !== today) {
-                        await userRef.update({ lastResetDate: today, 'usage.image': 0, 'usage.video': 0, 'usage.tts': 0 });
-                    }
-                }
-
-                // Listen to Realtime Changes
+                const userRef = db.collection("users").doc(user.uid); const doc = await userRef.get(); const today = new Date().toISOString().split('T')[0];
+                if (!doc.exists) { await userRef.set({ name: user.displayName, email: user.email, photoURL: user.photoURL, plan: "Free", lastResetDate: today, limits: { image: 5, video: 0, tts: 5 }, allowed: { image: true, video: true, tts: true }, usage: { image: 0, video: 0, tts: 0 } }); } 
+                else { const data = doc.data(); if (data.lastResetDate !== today) { await userRef.update({ lastResetDate: today, 'usage.image': 0, 'usage.video': 0, 'usage.tts': 0 }); } }
                 userRef.onSnapshot(snap => { window.currentUserData = snap.data(); });
-                
-                loadFirebaseChats(); 
-                updateSettingsAuthUI();
+                loadFirebaseChats(); updateSettingsAuthUI();
             } 
-            else { 
-                currentUser = null; window.currentUserData = null;
-                authBtn.innerHTML = `Login Account`; updateSettingsAuthUI(); 
-            }
+            else { currentUser = null; window.currentUserData = null; authBtn.innerHTML = `Login Account`; updateSettingsAuthUI(); }
         });
 
         function handleAuth() { if (currentUser) { if(confirm("Logout?")) { auth.signOut(); toggleSettings(); } } else { const provider = new firebase.auth.GoogleAuthProvider(); auth.signInWithPopup(provider).then(()=>toggleSettings()).catch(err => alert("Error: " + err.message)); } }
 
-        // --- 🛡️ LIMIT CHECKING SYSTEM ---
         function checkUsageLimit(featureType) {
             if (!currentUser) { alert("Please Login to use Premium Features."); handleAuth(); return false; }
-            if (!window.currentUserData) { alert("Loading user data, please wait..."); return false; }
-            
+            if (!window.currentUserData) { alert("Loading user data..."); return false; }
             const data = window.currentUserData;
-            
-            if (data.allowed && data.allowed[featureType] === false) {
-                alert("This feature has been disabled by Admin for your account."); return false;
-            }
-            
-            const limit = data.limits ? (data.limits[featureType] || 0) : 0;
-            const used = data.usage ? (data.usage[featureType] || 0) : 0;
-            
-            if (used >= limit) {
-                showPricingModal(); // Show Plans if limit exceeded
-                return false;
-            }
+            if (data.allowed && data.allowed[featureType] === false) { alert("This feature has been disabled by Admin."); return false; }
+            const limit = data.limits ? (data.limits[featureType] || 0) : 0; const used = data.usage ? (data.usage[featureType] || 0) : 0;
+            if (used >= limit) { showPricingModal(); return false; }
             return true;
         }
 
-        async function incrementUsage(featureType) {
-            if(!currentUser) return;
-            const userRef = db.collection("users").doc(currentUser.uid);
-            await userRef.update({ [`usage.${featureType}`]: firebase.firestore.FieldValue.increment(1) });
-        }
+        async function incrementUsage(featureType) { if(!currentUser) return; await db.collection("users").doc(currentUser.uid).update({ [`usage.${featureType}`]: firebase.firestore.FieldValue.increment(1) }); }
 
         // --- UI TOGGLES ---
         function toggleThemePreference() { isLightMode = document.getElementById("theme-toggle").checked; if(isLightMode) { document.body.classList.add("light-mode"); localStorage.setItem("nexus_theme", "light"); } else { document.body.classList.remove("light-mode"); localStorage.setItem("nexus_theme", "dark"); } triggerVibration(); }
         function toggleAbout() { const content = document.getElementById("about-content"); const chevron = document.getElementById("about-chevron"); if (content.style.display === "none") { content.style.display = "grid"; chevron.style.transform = "rotate(180deg)"; } else { content.style.display = "none"; chevron.style.transform = "rotate(0deg)"; } triggerVibration(); }
         function toggleSettings() { const modal = document.getElementById("settingsModal"); if (modal.classList.contains("active")) { modal.classList.remove("active"); } else { updateSettingsAuthUI(); modal.classList.add("active"); if (window.innerWidth <= 768) { document.getElementById("sidebar").classList.remove("open"); document.getElementById("overlay").classList.remove("show"); } } }
-        function updateSettingsAuthUI() { const authGroup = document.getElementById("settings-auth-group"); if (currentUser) { authGroup.innerHTML = `<div class="settings-profile"><img src="${currentUser.photoURL || 'https://via.placeholder.com/50'}" alt="Profile"><div class="settings-profile-info"><span class="settings-profile-name">${currentUser.displayName || 'NEXUS User'}</span><span class="settings-profile-email">${currentUser.email}</span></div></div><div class="settings-item clickable" onclick="handleAuth()"><div class="settings-item-left"><svg stroke="#ff6b6b" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg><span style="color:#ff6b6b">Logout from NEXUS</span></div></div>`; } else { authGroup.innerHTML = `<div class="settings-item clickable" onclick="handleAuth()"><div class="settings-item-left"><svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg><span>Login with Google</span></div></div>`; } }
+        function updateSettingsAuthUI() { const authGroup = document.getElementById("settings-auth-group"); if (currentUser) { authGroup.innerHTML = `<div class="settings-profile"><img src="${currentUser.photoURL || 'https://via.placeholder.com/50'}" alt="Profile"><div class="settings-profile-info"><span class="settings-profile-name">${currentUser.displayName}</span><span class="settings-profile-email">${currentUser.email}</span></div></div><div class="settings-item clickable" onclick="handleAuth()"><div class="settings-item-left"><svg stroke="#ff6b6b" fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg><span style="color:#ff6b6b">Logout</span></div></div>`; } else { authGroup.innerHTML = `<div class="settings-item clickable" onclick="handleAuth()"><div class="settings-item-left"><svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg><span>Login with Google</span></div></div>`; } }
         function toggleHapticPreference() { isHapticEnabled = document.getElementById("haptic-toggle").checked; localStorage.setItem("nexus_haptics", isHapticEnabled); triggerVibration(); }
         function triggerVibration() { if (isHapticEnabled && navigator.vibrate) { navigator.vibrate(50); } }
-        
         function toggleSidebar() { document.getElementById("sidebar").classList.toggle("open"); document.getElementById("overlay").classList.toggle("show"); }
         function toggleDropdown(e) { e.stopPropagation(); document.getElementById("model-dropdown").classList.toggle("show"); triggerVibration(); }
         window.onclick = (e) => { if (!e.target.matches('.dropdown-btn')) document.getElementById("model-dropdown").classList.remove('show'); };
 
-        // ⚡ Chat Bot Model Selection (Flash, Dev, Funny)
         function selectModel(model) { 
             currentModel = model; 
             let texts = { 'Flash': '⚡ Flash ▼', 'Dev': '👨‍💻 Dev ▼', 'Funny': '😎 Funny ▼' };
             document.getElementById("model-btn").innerText = texts[model] || '⚡ Flash ▼'; 
-            document.getElementById("model-dropdown").classList.remove("show"); 
-            document.getElementById("mode-banner").style.display = 'none'; // Hide Premium banner
-            triggerVibration();
+            document.getElementById("mode-banner").style.display = 'none'; triggerVibration();
         }
-
-        // 🌟 Premium Sidebar Selection
         function selectPremiumMode(mode) {
-            if (!currentUser) { alert("Please Login to use Premium Features."); handleAuth(); return; }
-            toggleSidebar(); // Close sidebar
-            currentModel = mode;
-            document.getElementById("model-btn").innerText = '⭐ Premium Mode'; 
-            
-            const banner = document.getElementById("mode-banner");
-            const bannerText = document.getElementById("mode-banner-text");
+            if (!currentUser) { alert("Please Login."); handleAuth(); return; }
+            toggleSidebar(); currentModel = mode; document.getElementById("model-btn").innerText = '⭐ Premium Mode'; 
+            const banner = document.getElementById("mode-banner"); const bannerText = document.getElementById("mode-banner-text");
             if (mode === 'ImageGen') bannerText.innerText = "🎨 Image Generation Active";
-            if (mode === 'Video') bannerText.innerText = "🎬 Video Generation Active";
             if (mode === 'TTS') bannerText.innerText = "🔊 Text-to-Voice Active";
-            
-            banner.style.display = 'flex';
-            triggerVibration();
+            banner.style.display = 'flex'; triggerVibration();
         }
 
-        // --- PRICING & VIP MODAL ---
+        // --- 💎 VIP ADMIN CHAT UI SEPARATION LOGIC ---
         function showPricingModal() { if(window.innerWidth <= 768) { toggleSidebar(); } document.getElementById("pricingModal").classList.add("active"); triggerVibration();}
         function closePricingModal() { document.getElementById("pricingModal").classList.remove("active"); triggerVibration();}
 
         function openVipSlide() { 
-            if (!currentUser) { alert("Please Login to contact Admin."); handleAuth(); return; }
+            if (!currentUser) { alert("Please Login."); handleAuth(); return; }
             closePricingModal(); document.getElementById("model-dropdown").classList.remove("show"); document.getElementById("vipSlide").classList.add("active"); document.getElementById("swipeSlider").value = 0; document.getElementById("swipeText").style.opacity = 1; 
         }
         function closeVipSlide() { document.getElementById("vipSlide").classList.remove("active"); }
         function handleSwipe(e) { let opacity = 1 - (e.target.value / 50); document.getElementById("swipeText").style.opacity = opacity > 0 ? opacity : 0; }
-        function snapSwipe(e) { let slider = document.getElementById("swipeSlider"); if(slider.value > 85) { slider.value = 100; setTimeout(() => { closeVipSlide(); selectModel('VIP'); currentModel = 'VIP'; document.getElementById("model-btn").innerText = '💎 VIP Request'; document.getElementById("mode-banner").style.display = 'none'; startNewChat(); document.getElementById("welcome-message").innerHTML = "💎<br>VIP Admin Chat<br><span style='font-size:14px; font-weight:normal; color:#aaa;'>Your request is secured.</span>"; document.getElementById("welcome-message").style.display = 'block'; }, 300); } else { slider.value = 0; document.getElementById("swipeText").style.opacity = 1; } triggerVibration(); }
+        function snapSwipe(e) { let slider = document.getElementById("swipeSlider"); if(slider.value > 85) { slider.value = 100; setTimeout(() => { closeVipSlide(); openAdminChatRoom(); }, 300); } else { slider.value = 0; document.getElementById("swipeText").style.opacity = 1; } triggerVibration(); }
 
-        // --- FILE ATTACHMENTS & UTILS ---
+        function openAdminChatHistory() {
+            if (!currentUser) { alert("Please Login."); handleAuth(); return; }
+            toggleSidebar(); openAdminChatRoom();
+        }
+
+        function openAdminChatRoom() {
+            triggerVibration();
+            document.getElementById("ai-ui-container").style.display = "none";
+            document.getElementById("admin-ui-container").style.display = "flex";
+            const container = document.getElementById("admin-chat-messages");
+            container.innerHTML = "<div style='text-align:center; color:#8e8e8e; margin-top:20px;'>Securely connected to Admin.</div>";
+            
+            if (adminChatUnsubscribe) adminChatUnsubscribe();
+            adminChatUnsubscribe = db.collection("pro_requests").where("userId", "==", currentUser.uid).orderBy("timestamp", "asc")
+                .onSnapshot(snapshot => {
+                    container.innerHTML = "<div style='text-align:center; color:#8e8e8e; margin-top:20px; margin-bottom:20px;'>End-to-end encrypted Admin Chat</div>";
+                    snapshot.forEach(doc => {
+                        const data = doc.data();
+                        container.innerHTML += `<div class="message-row user-message-row"><div class="message-bubble user-message">${data.userPrompt}</div></div>`;
+                        if (data.adminReply) {
+                            container.innerHTML += `<div class="message-row bot-message-row"><div class="message-bubble bot-message" style="border: 1px solid #d6bcfa; background: rgba(214, 188, 250, 0.1);">💎 <b>Admin:</b><br>${data.adminReply}</div></div>`;
+                        }
+                    });
+                    container.scrollTop = container.scrollHeight;
+                });
+        }
+
+        function backToAIChat() {
+            triggerVibration();
+            if (adminChatUnsubscribe) adminChatUnsubscribe();
+            document.getElementById("admin-ui-container").style.display = "none";
+            document.getElementById("ai-ui-container").style.display = "flex";
+            currentModel = 'Flash'; selectModel('Flash'); // Reset to default
+        }
+
+        async function sendAdminMessage() {
+            const input = document.getElementById("admin-input"); const text = input.value.trim();
+            if (!text) return;
+            input.value = ""; triggerVibration();
+            const container = document.getElementById("admin-chat-messages");
+            const tempMsg = `<div class="message-row user-message-row" id="temp-admin-msg"><div class="message-bubble user-message" style="opacity: 0.5;">${text}</div></div>`;
+            container.innerHTML += tempMsg; container.scrollTop = container.scrollHeight;
+            try {
+                await db.collection("pro_requests").add({ userId: currentUser.uid, userName: currentUser.displayName, userEmail: currentUser.email, userPrompt: text, adminReply: null, status: "pending", timestamp: firebase.firestore.FieldValue.serverTimestamp() });
+                emailjs.send("service_xlzau1n", "template_qt6s5gv", { user_name: currentUser.displayName, user_email: currentUser.email, message: text });
+            } catch(e) { alert("Error sending to admin."); }
+        }
+
+        // --- FILE ATTACHMENTS ---
         function toggleAttachmentMenu(event) { if(event) event.stopPropagation(); document.getElementById("attachment-menu").classList.toggle("show"); triggerVibration(); }
         function handleImageSelect(e) { const file = e.target.files[0]; if (file) { const reader = new FileReader(); reader.onload = (event) => { selectedImage = event.target.result; document.getElementById("preview-img").src = selectedImage; document.getElementById("preview-container").style.display = "block"; }; reader.readAsDataURL(file); } e.target.value = ''; }
         function handleTextFileSelect(e) { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(event) { document.getElementById("user-input").value += `[File Content: ${file.name}]\n` + event.target.result + `\n`; }; reader.readAsText(file); e.target.value = ''; }
         function removeImage() { selectedImage = null; document.getElementById("preview-container").style.display = "none"; }
-        
         function openImageModal(src) { document.getElementById("modalImage").src = src; document.getElementById("imageModal").style.display = "flex"; }
         function closeImageModal() { document.getElementById("imageModal").style.display = "none"; }
-        function downloadModalImage() { const src = document.getElementById("modalImage").src; const link = document.createElement("a"); link.href = src; link.download = "nexus_image.jpg"; document.body.appendChild(link); link.click(); document.body.removeChild(link); }
-
-        function exportChatToPDF() { document.getElementById("model-dropdown").classList.remove("show"); const chatElement = document.getElementById("chat-messages"); html2pdf().set({ margin: 10, filename: 'NEXUS_Chat.pdf', html2canvas: { scale: 2, useCORS: true, backgroundColor: (isLightMode ? '#f8f9fa' : '#131314') } }).from(chatElement).save(); }
+        function downloadModalImage() { const src = document.getElementById("modalImage").src; const link = document.createElement("a"); link.href = src; link.download = "nexis_image.jpg"; document.body.appendChild(link); link.click(); document.body.removeChild(link); }
+        function exportChatToPDF() { document.getElementById("model-dropdown").classList.remove("show"); const chatElement = document.getElementById("chat-messages"); html2pdf().set({ margin: 10, filename: 'NEXIS_Chat.pdf', html2canvas: { scale: 2, useCORS: true, backgroundColor: (isLightMode ? '#f8f9fa' : '#131314') } }).from(chatElement).save(); }
 
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition; let recognition; let isListening = false;
-        if (SpeechRecognition) { recognition = new SpeechRecognition(); recognition.lang = 'my-MM'; recognition.onstart = function() { isListening = true; document.getElementById("mic-btn").style.color = '#38bdf8'; document.getElementById("user-input").placeholder = "Listening..."; triggerVibration(); }; recognition.onresult = function(event) { document.getElementById("user-input").value += event.results[0][0].transcript; }; recognition.onend = function() { isListening = false; document.getElementById("mic-btn").style.color = '#c4c7c5'; document.getElementById("user-input").placeholder = "Message NEXUS..."; }; }
+        if (SpeechRecognition) { recognition = new SpeechRecognition(); recognition.lang = 'my-MM'; recognition.onstart = function() { isListening = true; document.getElementById("mic-btn").style.stroke = '#38bdf8'; document.getElementById("user-input").placeholder = "Listening..."; triggerVibration(); }; recognition.onresult = function(event) { document.getElementById("user-input").value += event.results[0][0].transcript; }; recognition.onend = function() { isListening = false; document.getElementById("mic-btn").style.stroke = '#c4c7c5'; document.getElementById("user-input").placeholder = "Message NEXIS..."; }; }
         function toggleMic() { if (!SpeechRecognition) return alert("Not supported."); if (isListening) recognition.stop(); else recognition.start(); }
         
-        window.fallbackCopyTextToClipboard = function(text) { var textArea = document.createElement("textarea"); textArea.value = text; textArea.style.top = "0"; textArea.style.left = "0"; textArea.style.position = "fixed"; document.body.appendChild(textArea); textArea.focus(); textArea.select(); try { document.execCommand('copy'); } catch (err) { console.error('Fallback Error', err); } document.body.removeChild(textArea); };
-        window.copyText = function(btn, encodedText) { let text = decodeURIComponent(encodedText); triggerVibration(); if (!navigator.clipboard) { window.fallbackCopyTextToClipboard(text); let original = btn.innerHTML; btn.innerHTML = `<svg viewBox="0 0 24 24" style="stroke:#a8c7fa"><polyline points="20 6 9 17 4 12"></polyline></svg>`; setTimeout(() => { btn.innerHTML = original; }, 2000); return; } navigator.clipboard.writeText(text).then(() => { let original = btn.innerHTML; btn.innerHTML = `<svg viewBox="0 0 24 24" style="stroke:#a8c7fa"><polyline points="20 6 9 17 4 12"></polyline></svg>`; setTimeout(() => { btn.innerHTML = original; }, 2000); }).catch(err => { window.fallbackCopyTextToClipboard(text); let original = btn.innerHTML; btn.innerHTML = `<svg viewBox="0 0 24 24" style="stroke:#a8c7fa"><polyline points="20 6 9 17 4 12"></polyline></svg>`; setTimeout(() => { btn.innerHTML = original; }, 2000); }); };
+        window.fallbackCopyTextToClipboard = function(text) { var textArea = document.createElement("textarea"); textArea.value = text; textArea.style.top = "0"; textArea.style.left = "0"; textArea.style.position = "fixed"; document.body.appendChild(textArea); textArea.focus(); textArea.select(); try { document.execCommand('copy'); } catch (err) {} document.body.removeChild(textArea); };
+        window.copyText = function(btn, encodedText) { let text = decodeURIComponent(encodedText); triggerVibration(); if (!navigator.clipboard) { window.fallbackCopyTextToClipboard(text); let original = btn.innerHTML; btn.innerHTML = `<svg viewBox="0 0 24 24" stroke="#a8c7fa" fill="none" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>`; setTimeout(() => { btn.innerHTML = original; }, 2000); return; } navigator.clipboard.writeText(text).then(() => { let original = btn.innerHTML; btn.innerHTML = `<svg viewBox="0 0 24 24" stroke="#a8c7fa" fill="none" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>`; setTimeout(() => { btn.innerHTML = original; }, 2000); }).catch(err => { window.fallbackCopyTextToClipboard(text); let original = btn.innerHTML; btn.innerHTML = `<svg viewBox="0 0 24 24" stroke="#a8c7fa" fill="none" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>`; setTimeout(() => { btn.innerHTML = original; }, 2000); }); };
         
-        window.playCustomAudioUI = function(btn, encodedText) {
-            triggerVibration(); let svgPath = btn.querySelector('path');
-            if (btn.classList.contains('playing')) { window.speechSynthesis.cancel(); btn.classList.remove('playing'); svgPath.setAttribute('d', 'M8 5v14l11-7z'); let wave = btn.nextElementSibling; Array.from(wave.children).forEach(bar => bar.style.animationPlayState = 'paused'); return; }
-            window.speechSynthesis.cancel(); let text = decodeURIComponent(encodedText); let utterance = new SpeechSynthesisUtterance(text); utterance.lang = /[\u1000-\u109F]/.test(text) ? 'my-MM' : 'en-US';
-            btn.classList.add('playing'); svgPath.setAttribute('d', 'M6 19h4V5H6v14zm8-14v14h4V5h-4z'); let wave = btn.nextElementSibling; Array.from(wave.children).forEach(bar => bar.style.animationPlayState = 'running');
-            utterance.onend = () => { btn.classList.remove('playing'); svgPath.setAttribute('d', 'M8 5v14l11-7z'); Array.from(wave.children).forEach(bar => bar.style.animationPlayState = 'paused'); };
-            utterance.onerror = () => { btn.classList.remove('playing'); svgPath.setAttribute('d', 'M8 5v14l11-7z'); Array.from(wave.children).forEach(bar => bar.style.animationPlayState = 'paused'); };
-            window.speechSynthesis.speak(utterance);
-        };
-
         window.speakText = function(btn, encodedText) {
             triggerVibration();
             if ('speechSynthesis' in window) {
                 let text = decodeURIComponent(encodedText); window.speechSynthesis.cancel(); let utterance = new SpeechSynthesisUtterance(text); utterance.lang = /[\u1000-\u109F]/.test(text) ? 'my-MM' : 'en-US';
                 let existingWave = document.getElementById("current-wave"); if(existingWave) existingWave.remove();
-                let waveHtml = `<div class="audio-wave" id="current-wave"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><span>Speaking...</span></div>`;
-                btn.closest('.feedback-btns').insertAdjacentHTML('afterend', waveHtml); btn.classList.add("voice-playing");
-                utterance.onend = () => { btn.classList.remove("voice-playing"); let wave = document.getElementById("current-wave"); if(wave) wave.remove(); };
-                utterance.onerror = () => { btn.classList.remove("voice-playing"); let wave = document.getElementById("current-wave"); if(wave) wave.remove(); };
+                let waveHtml = `<div class="audio-wave" id="current-wave"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div><span style="color:#a8c7fa;">Speaking...</span></div>`;
+                btn.closest('.feedback-btns').insertAdjacentHTML('afterend', waveHtml); btn.style.stroke = '#a8c7fa';
+                utterance.onend = () => { btn.style.stroke = 'currentColor'; let wave = document.getElementById("current-wave"); if(wave) wave.remove(); };
+                utterance.onerror = () => { btn.style.stroke = 'currentColor'; let wave = document.getElementById("current-wave"); if(wave) wave.remove(); };
                 window.speechSynthesis.speak(utterance);
             } else { alert("Audio not supported."); }
         };
 
         window.editUserMessage = function(encodedText) { let text = decodeURIComponent(encodedText); document.getElementById("user-input").value = text; document.getElementById("user-input").focus(); triggerVibration(); };
-        window.regenerateMessage = async function() { if (!currentSessionId || (isStopGeneration === false && document.getElementById("stop-btn").style.display === "flex")) return; const session = chatSessions.find(s => s.id === currentSessionId); if (!session || session.messages.length < 2) return; triggerVibration(); if (!session.messages[session.messages.length - 1].isUser) { session.messages.pop(); const container = document.getElementById("chat-messages"); container.removeChild(container.lastChild); } const lastUserMsg = session.messages.pop(); const container = document.getElementById("chat-messages"); container.removeChild(container.lastChild); localStorage.setItem("nexus_chat_sessions", JSON.stringify(chatSessions)); document.getElementById("user-input").value = lastUserMsg.text || ""; if (lastUserMsg.img) { selectedImage = lastUserMsg.img; document.getElementById("preview-img").src = selectedImage; document.getElementById("preview-container").style.display = "block"; } sendMessage(); };
+        window.regenerateMessage = async function() { if (!currentSessionId || (isStopGeneration === false && document.getElementById("stop-btn").style.display === "flex")) return; const session = chatSessions.find(s => s.id === currentSessionId); if (!session || session.messages.length < 2) return; triggerVibration(); if (!session.messages[session.messages.length - 1].isUser) { session.messages.pop(); const container = document.getElementById("chat-messages"); container.removeChild(container.lastChild); } const lastUserMsg = session.messages.pop(); const container = document.getElementById("chat-messages"); container.removeChild(container.lastChild); localStorage.setItem("nexis_chat_sessions", JSON.stringify(chatSessions)); document.getElementById("user-input").value = lastUserMsg.text || ""; if (lastUserMsg.img) { selectedImage = lastUserMsg.img; document.getElementById("preview-img").src = selectedImage; document.getElementById("preview-container").style.display = "block"; } sendAIMessage(); };
 
-        // --- CHAT HISTORY LOGIC ---
-        window.clearAllHistoryFromSettings = function() { if(confirm("Are you sure you want to delete ALL chat history?")) { localStorage.removeItem("nexus_chat_sessions"); chatSessions = []; syncFirebaseChats(); startNewChat(); toggleSettings(); } };
+        // --- AI CHAT HISTORY LOGIC ---
+        window.clearAllHistoryFromSettings = function() { if(confirm("Are you sure you want to delete ALL AI chat history?")) { localStorage.removeItem("nexis_chat_sessions"); chatSessions = []; syncFirebaseChats(); startNewChat(); toggleSettings(); } };
         function toggleSearchBox() { const sb = document.getElementById("search-box"); if (sb.style.display === "block") { sb.style.display = "none"; document.getElementById("search-input").value = ""; filterHistoryChats(); } else { sb.style.display = "block"; document.getElementById("search-input").focus(); } }
         function filterHistoryChats() { const query = document.getElementById("search-input").value.toLowerCase(); const items = document.querySelectorAll(".history-item"); items.forEach(item => { const text = item.innerText.toLowerCase(); item.style.display = text.includes(query) ? "flex" : "none"; }); }
 
         function startNewChat() { currentSessionId = null; document.getElementById("chat-messages").innerHTML = '<div id="welcome-message">Hello, Welcome</div>'; document.getElementById("prompt-suggestions").style.display = 'flex'; renderSidebar(); if(window.innerWidth <= 768) { document.getElementById("sidebar").classList.remove("open"); document.getElementById("overlay").classList.remove("show"); } triggerVibration(); }
-        window.deleteChatSession = function(id, event) { event.stopPropagation(); triggerVibration(); if(confirm("ဒီ Chat မှတ်တမ်းကို ဖျက်မှာ သေချာပါသလား?")) { chatSessions = chatSessions.filter(s => s.id !== id); localStorage.setItem("nexus_chat_sessions", JSON.stringify(chatSessions)); syncFirebaseChats(); if(currentSessionId === id) { startNewChat(); } else { renderSidebar(); } } };
+        window.deleteChatSession = function(id, event) { event.stopPropagation(); triggerVibration(); if(confirm("Delete this AI Chat?")) { chatSessions = chatSessions.filter(s => s.id !== id); localStorage.setItem("nexis_chat_sessions", JSON.stringify(chatSessions)); syncFirebaseChats(); if(currentSessionId === id) { startNewChat(); } else { renderSidebar(); } } };
 
         function renderSidebar() { 
             const container = document.getElementById("history-list-container"); container.innerHTML = ""; 
             if(chatSessions.length === 0) return container.innerHTML = '<div style="color: #666; font-size: 13px; text-align: center; margin-top: 20px;">No History</div>'; 
             chatSessions.forEach(session => { 
-                const div = document.createElement("div"); 
-                div.className = `history-item ${session.id === currentSessionId ? 'active' : ''}`; 
-                div.innerHTML = `<svg class="icon-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke-linecap="round" stroke-linejoin="round"></path></svg> <span class="history-title">${session.title}</span> <button class="delete-chat-btn" onclick="deleteChatSession('${session.id}', event)" title="Delete Chat"><svg viewBox="0 0 24 24"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" stroke-linecap="round" stroke-linejoin="round"></path></svg></button>`; 
-                div.onclick = () => { loadChatSession(session.id); triggerVibration(); }; 
-                container.appendChild(div); 
-            }); 
-            filterHistoryChats();
+                const div = document.createElement("div"); div.className = `history-item ${session.id === currentSessionId ? 'active' : ''}`; 
+                div.innerHTML = `<svg class="icon-chat" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg> <span class="history-title">${session.title}</span> <button class="delete-chat-btn" onclick="deleteChatSession('${session.id}', event)"><svg viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>`; 
+                div.onclick = () => { loadChatSession(session.id); triggerVibration(); }; container.appendChild(div); 
+            }); filterHistoryChats();
         }
         
         function loadChatSession(id) { currentSessionId = id; const session = chatSessions.find(s => s.id === id); if(session) { document.getElementById("chat-messages").innerHTML = ""; document.getElementById("prompt-suggestions").style.display = 'none'; session.messages.forEach(msg => { appendMessage(msg.text, msg.isUser, msg.img, false); }); } renderSidebar(); if(window.innerWidth <= 768) { document.getElementById("sidebar").classList.remove("open"); document.getElementById("overlay").classList.remove("show"); } }
+        async function syncFirebaseChats() { if(!currentUser) return; try { await db.collection("user_chats").doc(currentUser.uid).set({ sessions: chatSessions }); } catch(e) {} }
         
         function saveMessageToSession(text, isUser, img) { 
             if(!text && !img) return; 
             if (!currentSessionId) { currentSessionId = Date.now().toString(); let titleText = text ? text : "Image Request"; chatSessions.unshift({ id: currentSessionId, title: titleText.substring(0, 20), messages: [] }); } 
             const activeSession = chatSessions.find(s => s.id === currentSessionId); 
-            if(activeSession) { activeSession.messages.push({ text: text, isUser: isUser, img: img }); localStorage.setItem("nexus_chat_sessions", JSON.stringify(chatSessions)); syncFirebaseChats(); renderSidebar(); } 
+            if(activeSession) { activeSession.messages.push({ text: text, isUser: isUser, img: img }); localStorage.setItem("nexis_chat_sessions", JSON.stringify(chatSessions)); syncFirebaseChats(); renderSidebar(); } 
         }
 
         // --- MESSAGE RENDERING ---
@@ -821,97 +750,56 @@
         function appendMessage(text, isUser, img = null, saveToLocal = true, isLoading = false, isStreaming = false) {
             const container = document.getElementById("chat-messages"); const row = document.createElement("div"); row.className = `message-row ${isUser ? 'user-message-row' : 'bot-message-row'}`;
             let html = "";
-            if (isLoading) { html = `<div class="typing-container"><span>NEXUS Thinking</span><div class="typing-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`; row.innerHTML = html; container.appendChild(row); container.scrollTop = container.scrollHeight; return row; } 
-            
-            if(isUser) {
-                let encText = text ? encodeURIComponent(text) : "";
-                html = `<div class="user-message-wrapper"><button class="edit-user-btn" onclick="window.editUserMessage('${encText}')" title="Edit"><svg viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a.996.996 0 0 0 0-1.41l-2.34-2.34a.996.996 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg></button><div class="message-bubble user-message">`;
+            if (isLoading) { html = `<div class="typing-container"><span>NEXIS Thinking</span><div class="typing-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`; row.innerHTML = html; container.appendChild(row); container.scrollTop = container.scrollHeight; return row; } 
+            if(isUser) { let encText = text ? encodeURIComponent(text) : ""; html = `<div class="user-message-wrapper"><button class="edit-user-btn" onclick="window.editUserMessage('${encText}')" title="Edit"><svg viewBox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></button><div class="message-bubble user-message">`;
             } else { html = `<div class="message-bubble bot-message">`; }
 
             if (img) html += `<img src="${img}" class="message-image" onclick="openImageModal('${img}')">`;
             
             let displayHtml = "";
             if (text && text.startsWith("[AUDIO_UI]")) { displayHtml = text.replace("[AUDIO_UI]", ""); } else if (text && !isStreaming) { displayHtml = (isUser || typeof marked === 'undefined') ? text.replace(/\n/g, '<br>') : marked.parse(text); }
-            
             html += `<span class="message-text-content">${displayHtml}</span></div>`; if (isUser) { html += `</div>`; } 
 
             if (!isUser && !isStreaming && (!text || !text.startsWith("[AUDIO_UI]"))) {
                 let encText = text ? encodeURIComponent(text) : "";
-                if(!text.includes("ပို့ဆောင်နေပါသည်") && !text.includes("ပုံဆွဲပေးနေပါသည်") && !text.includes("စနစ်ကို Cloudflare Backend မှာ")) {
-                    html += `<div class="feedback-btns"><button onclick="window.speakText(this, '${encText}')" title="Play Voice"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"></path></svg></button><button onclick="window.copyText(this, '${encText}')" title="Copy"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button><button onclick="window.regenerateMessage()" title="Regenerate"><svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.95 7.95 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button><button onclick="this.style.color='#a8c7fa'; this.nextElementSibling.style.display='none';"><svg viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg></button><button onclick="this.style.color='#ff6b6b'; this.previousElementSibling.style.display='none';"><svg viewBox="0 0 24 24"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path></svg></button></div>`;
+                if(!text.includes("ပို့ဆောင်နေပါသည်") && !text.includes("ပုံဆွဲပေးနေပါသည်")) {
+                    html += `<div class="feedback-btns"><button onclick="window.speakText(this, '${encText}')" title="Play Voice"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg></button><button onclick="window.copyText(this, '${encText}')" title="Copy"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button><button onclick="window.regenerateMessage()" title="Regenerate"><svg viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.3-11.27l-5.6 5.6"></path></svg></button><button onclick="this.style.color='#a8c7fa'; this.nextElementSibling.style.display='none';"><svg viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg></button><button onclick="this.style.color='#ff6b6b'; this.previousElementSibling.style.display='none';"><svg viewBox="0 0 24 24"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path></svg></button></div>`;
                 }
             }
             row.innerHTML = html; container.appendChild(row); 
             
             if(!isStreaming) {
-                row.querySelectorAll('pre').forEach((preBlock) => { let btn = document.createElement('button'); btn.className = 'copy-code-btn'; btn.innerHTML = '📋 Copy'; btn.onclick = () => { const codeText = preBlock.querySelector('code').innerText; if (!navigator.clipboard) { window.fallbackCopyTextToClipboard(codeText); } else { navigator.clipboard.writeText(codeText).catch(() => window.fallbackCopyTextToClipboard(codeText)); } btn.innerHTML = '✅ Copied!'; setTimeout(() => btn.innerHTML = '📋 Copy', 2000); }; preBlock.appendChild(btn); hljs.highlightElement(preBlock.querySelector('code')); }); container.scrollTop = container.scrollHeight; if(saveToLocal) saveMessageToSession(text, isUser, img);
+                row.querySelectorAll('pre').forEach((preBlock) => { let btn = document.createElement('button'); btn.className = 'copy-code-btn'; btn.innerHTML = '📋 Copy'; btn.onclick = () => { const codeText = preBlock.querySelector('code').innerText; if (!navigator.clipboard) { window.fallbackCopyTextToClipboard(codeText); } else { navigator.clipboard.writeText(codeText).catch(() => window.fallbackCopyTextToClipboard(codeText)); } btn.innerHTML = '✅ Copied!'; setTimeout(() => btn.innerHTML = '📋 Copy', 2000); }; preBlock.appendChild(btn); hljs.highlightElement(preBlock.querySelector('code')); });
+                container.scrollTop = container.scrollHeight; if(saveToLocal) saveMessageToSession(text, isUser, img);
             }
             return row;
         }
 
-        // --- CORE SEND MESSAGE LOGIC ---
-        async function sendMessage() {
+        // --- CORE AI SEND MESSAGE LOGIC ---
+        function sendMessage() { sendAIMessage(); }
+        
+        async function sendAIMessage() {
             const input = document.getElementById("user-input"); const text = input.value.trim(); const imgData = selectedImage;
             if(isListening) recognition.stop(); if (!text && !imgData) return;
-            
-            document.getElementById("prompt-suggestions").style.display = 'none';
-            const welcome = document.getElementById("welcome-message"); if (welcome) welcome.style.display = 'none';
-            triggerVibration();
+            document.getElementById("prompt-suggestions").style.display = 'none'; const welcome = document.getElementById("welcome-message"); if (welcome) welcome.style.display = 'none'; triggerVibration();
 
-            // --- 🛡️ VIP ADMIN CHAT LOGIC ---
-            if (currentModel === 'VIP') {
-                if (!currentUser) { alert("VIP Request အသုံးပြုရန် Account ဖွင့်ပါ (Sidebar မှ Login ဝင်ပါ)။"); return; }
-                appendMessage(text, true, imgData); input.value = ""; removeImage();
-                const loadingMsg = appendMessage("💎 VIP Request ကို Admin ထံသို့ ပို့ဆောင်နေပါသည်...", false, null, false);
-                try {
-                    const docRef = await db.collection("pro_requests").add({ userId: currentUser.uid, userName: currentUser.displayName, userEmail: currentUser.email, userPrompt: text, userImage: imgData, adminReply: null, adminImage: null, status: "pending", timestamp: firebase.firestore.FieldValue.serverTimestamp() });
-                    emailjs.send("service_xlzau1n", "template_qt6s5gv", { user_name: currentUser.displayName, user_email: currentUser.email, message: text || "(Image Only)" });
-                    db.collection("pro_requests").doc(docRef.id).onSnapshot((doc) => { const data = doc.data(); if (data && data.status === "replied") { loadingMsg.remove(); appendMessage(data.adminReply, false, data.adminImage); } });
-                } catch (error) { loadingMsg.remove(); appendMessage("Error: " + error.message, false); } return;
-            }
-
-            // --- 🛡️ LIMIT CHECKING FOR PREMIUM FEATURES ---
             if (currentModel === 'ImageGen' && !checkUsageLimit('image')) return;
-            if (currentModel === 'Video' && !checkUsageLimit('video')) return;
             if (currentModel === 'TTS' && !checkUsageLimit('tts')) return;
 
-            // --- 🔊 TTS LOGIC ---
             if (currentModel === 'TTS') {
                 appendMessage(text, true); input.value = ""; removeImage();
                 const loadingMsg = appendMessage("🔊 အသံဖိုင် ဖန်တီးနေပါသည်...", false, null, false);
-                setTimeout(() => {
-                    loadingMsg.remove();
-                    let encText = encodeURIComponent(text);
-                    let audioHtml = `[AUDIO_UI]🎵 သင့်စာသားကို အသံဖိုင်အဖြစ် ပြောင်းလဲပြီးပါပြီဗျ။<br><br><div style="display: flex; align-items: center; gap: 15px; background: rgba(56, 189, 248, 0.1); padding: 12px 20px; border-radius: 20px; border: 1px solid rgba(56, 189, 248, 0.3); max-width: 280px; width: 100%;"><button onclick="window.playCustomAudioUI(this, '${encText}')" style="background: #38bdf8; border: none; border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0;"><svg viewBox="0 0 24 24" style="width: 20px; height: 20px; fill: #09090b; margin-left: 3px;"><path d="M8 5v14l11-7z"/></svg></button><div class="audio-wave" style="margin: 0; padding: 0; border: none; background: transparent; flex: 1; justify-content: space-around;"><div class="bar" style="height: 10px; animation-duration: 0.8s; animation-play-state: paused;"></div><div class="bar" style="height: 18px; animation-duration: 1.2s; animation-play-state: paused;"></div><div class="bar" style="height: 12px; animation-duration: 0.9s; animation-play-state: paused;"></div><div class="bar" style="height: 22px; animation-duration: 1.1s; animation-play-state: paused;"></div><div class="bar" style="height: 14px; animation-duration: 1.0s; animation-play-state: paused;"></div></div></div>`;
-                    appendMessage(audioHtml, false);
-                    incrementUsage('tts'); 
-                }, 1000);
-                return;
+                setTimeout(() => { loadingMsg.remove(); let encText = encodeURIComponent(text); let audioHtml = `[AUDIO_UI]🎵 သင့်စာသားကို အသံဖိုင်အဖြစ် ပြောင်းလဲပြီးပါပြီဗျ။<br><br><div style="display: flex; align-items: center; gap: 15px; background: rgba(56, 189, 248, 0.1); padding: 12px 20px; border-radius: 20px; border: 1px solid rgba(56, 189, 248, 0.3); max-width: 280px; width: 100%;"><button onclick="window.playCustomAudioUI(this, '${encText}')" style="background: transparent; border: 1px solid #38bdf8; border-radius: 50%; width: 40px; height: 40px; display: flex; justify-content: center; align-items: center; cursor: pointer; flex-shrink: 0;"><svg viewBox="0 0 24 24" style="width: 20px; height: 20px; stroke: #38bdf8; fill: none; margin-left: 3px;"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg></button><div class="audio-wave" style="margin: 0; padding: 0; border: none; background: transparent; flex: 1; justify-content: space-around;"><div class="bar" style="height: 10px;"></div><div class="bar" style="height: 18px;"></div><div class="bar" style="height: 12px;"></div></div></div>`; appendMessage(audioHtml, false); incrementUsage('tts'); }, 1000); return;
             }
 
-            // --- 🎨 IMAGE GEN LOGIC ---
             if (currentModel === 'ImageGen') {
                 appendMessage(text, true); input.value = ""; removeImage(); const loadingMsg = appendMessage("🎨 ပုံဆွဲပေးနေပါသည်...", false, null, false);
                 const imageUrl = `https://image.pollinations.ai/prompt/${encodeURIComponent(text)}?width=1024&height=1024&nologo=true&seed=${Math.floor(Math.random()*10000)}`;
                 const imgObj = new Image(); imgObj.onload = () => { loadingMsg.remove(); appendMessage(`🎨 **${text}**`, false, imageUrl); incrementUsage('image'); }; imgObj.onerror = () => { loadingMsg.remove(); appendMessage("⚠️ Error.", false); }; imgObj.src = imageUrl; return;
             }
-            
-            // --- 🎬 VIDEO GEN LOGIC ---
-            if (currentModel === 'Video') {
-                appendMessage(text, true); input.value = ""; removeImage();
-                const loadingMsg = appendMessage("🎬 Generating Talking Avatar Video...", false, null, false);
-                setTimeout(() => {
-                    loadingMsg.remove();
-                    appendMessage("🎬 Video Generate စနစ်ကို Cloudflare Backend မှာ Video API Key ထည့်ပြီးမှ အသုံးပြုနိုင်ပါမည်။", false);
-                    incrementUsage('video'); 
-                }, 1500);
-                return;
-            }
 
-            // --- 💬 REGULAR CHAT (Flash, Dev, Funny) ---
             appendMessage(text, true, imgData); input.value = ""; removeImage(); 
             const loadingMsg = appendMessage("", false, null, false, true);
-            
             isStopGeneration = false; document.getElementById("send-btn").style.display = "none"; document.getElementById("stop-btn").style.display = "flex";
             
             try {
@@ -937,19 +825,14 @@
                     const replyText = data.candidates[0].content.parts[0].text;
                     const streamingRow = appendMessage("", false, null, false, false, true);
                     const textContentDiv = streamingRow.querySelector('.message-text-content');
-                    
                     await new Promise(resolve => typeWriterStreaming(textContentDiv, replyText, resolve));
                     
                     let encText = replyText ? encodeURIComponent(replyText) : "";
-                    let feedbackHtml = `<div class="feedback-btns" style="margin-top: 10px;"><button onclick="window.speakText(this, '${encText}')" title="Play Voice"><svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"></path></svg></button><button onclick="window.copyText(this, '${encText}')" title="Copy"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button><button onclick="window.regenerateMessage()" title="Regenerate"><svg viewBox="0 0 24 24"><path d="M17.65 6.35A7.95 7.95 0 0 0 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0 1 12 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg></button><button onclick="this.style.color='#a8c7fa'; this.nextElementSibling.style.display='none';"><svg viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg></button><button onclick="this.style.color='#ff6b6b'; this.previousElementSibling.style.display='none';"><svg viewBox="0 0 24 24"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path></svg></button></div>`;
+                    let feedbackHtml = `<div class="feedback-btns" style="margin-top: 10px;"><button onclick="window.speakText(this, '${encText}')" title="Play Voice"><svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg></button><button onclick="window.copyText(this, '${encText}')" title="Copy"><svg viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button><button onclick="window.regenerateMessage()" title="Regenerate"><svg viewBox="0 0 24 24"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.3-11.27l-5.6 5.6"></path></svg></button><button onclick="this.style.color='#a8c7fa'; this.nextElementSibling.style.display='none';"><svg viewBox="0 0 24 24"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"></path></svg></button><button onclick="this.style.color='#ff6b6b'; this.previousElementSibling.style.display='none';"><svg viewBox="0 0 24 24"><path d="M10 15v4a3 3 0 0 0 3 3l4-9V2H5.72a2 2 0 0 0-2 1.7l-1.38 9a2 2 0 0 0 2 2.3zm7-13h3a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-3"></path></svg></button></div>`;
                     textContentDiv.insertAdjacentHTML('afterend', feedbackHtml);
-                    
                     saveMessageToSession(replyText, false, null);
-                } 
-                else { appendMessage("⚠️ Network Error.", false); }
-                
+                } else { appendMessage("⚠️ Network Error.", false); }
             } catch (error) { loadingMsg.remove(); appendMessage("⚠️ Error.", false); }
-            
             document.getElementById("stop-btn").style.display = "none"; document.getElementById("send-btn").style.display = "flex";
         }
     </script>
