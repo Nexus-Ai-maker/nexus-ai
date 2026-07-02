@@ -10,9 +10,23 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
     <style>
+        /* --- Anti-Theft CSS (Copy ကူးခွင့် ပိတ်ထားခြင်း) --- */
         * { box-sizing: border-box; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #0f172a; color: #e2e8f0; margin: 0; padding: 0; display: flex; flex-direction: column; height: 100vh;}
-        
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            background: #0f172a; color: #e2e8f0; margin: 0; padding: 0; 
+            display: flex; flex-direction: column; height: 100vh;
+            -webkit-user-select: none; /* Safari */
+            -ms-user-select: none; /* IE 10 and IE 11 */
+            user-select: none; /* Standard syntax */
+        }
+        /* စာရိုက်ရမည့် နေရာများကိုတော့ Copy/Paste/Select လုပ်ခွင့်ပြုထားသည် */
+        input, textarea, select { 
+            -webkit-user-select: text; 
+            -ms-user-select: text; 
+            user-select: text; 
+        }
+
         /* Navbar */
         .navbar { background: #1e293b; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; }
         .navbar h2 { margin: 0; font-size: 20px; color: #38bdf8; letter-spacing: 1px; font-weight: bold; }
@@ -139,6 +153,31 @@
     <div class="toast" id="toast">✅ Saved Successfully!</div>
 
     <script>
+        // =========================================================
+        // 🔒 ANTI-THEFT SYSTEM (Code ခိုးယူခွင့် ပိတ်ပင်ခြင်း)
+        // =========================================================
+        
+        // 1. Right Click ပိတ်ခြင်း
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+        // 2. Keyboard Shortcuts ပိတ်ခြင်း (F12, Ctrl+U, Ctrl+Shift+I, Ctrl+Shift+J)
+        document.onkeydown = function(e) {
+            // Disable F12
+            if(e.keyCode == 123) { return false; }
+            // Disable Ctrl+Shift+I
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; }
+            // Disable Ctrl+Shift+C
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { return false; }
+            // Disable Ctrl+Shift+J
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { return false; }
+            // Disable Ctrl+U
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; }
+        };
+
+        // =========================================================
+        // ⚙️ FIREBASE & SYSTEM LOGIC
+        // =========================================================
+
         const firebaseConfig = {
             apiKey: "AIzaSyBuI_N7UY3HzLC1q4bTbr0pIjutn7oCez0",
             authDomain: "nexus-36961.firebaseapp.com",
@@ -242,6 +281,8 @@
                     `;
                     usersContainer.innerHTML += cardHtml;
                 });
+            }, (error) => {
+                usersContainer.innerHTML = `<div style="text-align: center; width: 100%; color: #ff6b6b;">Database Error: ${error.message}<br>Firebase Rules ကို သွားဖွင့်ပေးပါ။</div>`;
             });
         }
 
@@ -272,13 +313,17 @@
         // --- PANEL 2: VIP REQUESTS LOGIC ---
         function loadRequests() {
             const container = document.getElementById('requests-container');
-            db.collection("pro_requests").where("status", "==", "pending").orderBy("timestamp", "asc")
+            db.collection("pro_requests").where("status", "==", "pending")
               .onSnapshot((snapshot) => {
                   container.innerHTML = "";
                   if(snapshot.empty) { container.innerHTML = "<p style='color: #64748b; text-align: center; margin-top: 30px;'>No new VIP requests.</p>"; return; }
                   
-                  snapshot.forEach((doc) => {
-                      const data = doc.data(); const docId = doc.id;
+                  let requests = [];
+                  snapshot.forEach(doc => { requests.push({ id: doc.id, ...doc.data() }); });
+                  requests.sort((a, b) => (a.timestamp?.seconds || 0) - (b.timestamp?.seconds || 0));
+
+                  requests.forEach((data) => {
+                      const docId = data.id;
                       let html = `
                         <div class="request-card" id="card-${docId}">
                             <div style="font-weight: bold; color: #94a3b8; margin-bottom: 10px;">👤 ${data.userName} (${data.userEmail})</div>
@@ -292,7 +337,9 @@
                       `;
                       container.innerHTML += html;
                   });
-              }, (error) => { console.log("Request Error", error); });
+              }, (error) => { 
+                  container.innerHTML = `<p style="color: #ff6b6b; text-align: center; margin-top: 30px;">Error: ${error.message}</p>`; 
+              });
         }
 
         function sendReply(docId) {
