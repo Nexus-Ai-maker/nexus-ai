@@ -234,8 +234,8 @@
         document.addEventListener('contextmenu', event => event.preventDefault());
         document.onkeydown = function(e) {
             if(e.keyCode == 123) { return false; }
-            if(e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 67 || e.keyCode == 74)) { return false; }
-            if(e.ctrlKey && e.keyCode == 85) { return false; }
+            if(e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'C'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0))) { return false; }
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; }
         };
 
         // =========================================================
@@ -271,7 +271,7 @@
                     document.getElementById('login-section').style.display = 'none';
                     document.getElementById('admin-content-wrapper').style.display = 'flex';
                     loadUsers();
-                    loadVipChatUsers(); // Load Messenger Users
+                    loadVipChatUsers(); 
                 } else {
                     alert("Access Denied! Admin only.");
                     auth.signOut();
@@ -290,7 +290,6 @@
             if(confirm("Logout ထွက်မှာ သေချာပါသလား?")) auth.signOut();
         }
 
-        // --- TAB SWITCHER ---
         function switchTab(tabId) {
             document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
@@ -416,29 +415,23 @@
         }
 
         function openVipChat(uid, name, photo, email) {
-            // Set Active User Data
             activeChatUid = uid; activeChatName = name; activeChatEmail = email;
 
-            // Update UI Sidebar
             document.querySelectorAll('.ms-user-item').forEach(el => el.classList.remove('active'));
             document.getElementById(`user-item-${uid}`).classList.add('active');
 
-            // Toggle Panes
             document.getElementById("ms-no-chat").style.display = "none";
             document.getElementById("ms-chat-area").style.display = "flex";
 
-            // Set Header
             document.getElementById("ms-active-img").src = photo;
             document.getElementById("ms-active-name").innerText = name;
             document.getElementById("ms-active-email").innerText = email;
 
-            // Load Chat Messages
             const container = document.getElementById("ms-messages");
             container.innerHTML = "<div style='text-align:center; color:#64748b; margin-top:20px;'>Loading chat...</div>";
 
             if (activeChatUnsubscribe) activeChatUnsubscribe();
 
-            // Client-side Sort to prevent Index errors
             activeChatUnsubscribe = db.collection("pro_requests").where("userId", "==", uid)
                 .onSnapshot(snapshot => {
                     container.innerHTML = "<div style='text-align:center; color:#64748b; margin-top:20px; margin-bottom: 20px;'>End-to-End Encrypted Admin Chat</div>";
@@ -448,7 +441,6 @@
                     requests.sort((a, b) => (a.timestamp?.seconds || 0) - (b.timestamp?.seconds || 0));
 
                     requests.forEach(data => {
-                        // User Bubble
                         if (data.userPrompt && data.userPrompt !== "🔔 Admin Message") {
                             container.innerHTML += `<div class="ms-bubble ms-user-msg">${data.userPrompt.replace(/\n/g, '<br>')}</div>`;
                         } else if (data.userImage && !data.userPrompt) {
@@ -458,7 +450,6 @@
                             container.innerHTML += `<img src="${data.userImage}" class="ms-img" style="align-self: flex-start;">`;
                         }
 
-                        // Admin Bubble
                         if (data.adminReply) {
                             container.innerHTML += `<div class="ms-bubble ms-admin-msg">💎 <b>Admin:</b><br>${data.adminReply.replace(/\n/g, '<br>')}</div>`;
                         }
@@ -484,7 +475,7 @@
             removeAdminImage();
 
             try {
-                // Find pending requests to clear them
+                // FIXED BUG: Admin's reply now properly attaches to the LATEST message, or creates a new one cleanly.
                 const pendingSnapshot = await db.collection("pro_requests")
                     .where("userId", "==", activeChatUid)
                     .where("status", "==", "pending")
@@ -494,9 +485,14 @@
                 let updatedExisting = false;
 
                 if (!pendingSnapshot.empty) {
-                    // Attach reply to the first pending request
-                    const firstDoc = pendingSnapshot.docs[0];
-                    batch.update(firstDoc.ref, {
+                    // Sort pending requests to find the most recent one
+                    let pendingDocs = [];
+                    pendingSnapshot.forEach(doc => pendingDocs.push(doc));
+                    pendingDocs.sort((a, b) => (a.data().timestamp?.seconds || 0) - (b.data().timestamp?.seconds || 0));
+
+                    // Update ONLY the newest document with the reply
+                    const lastDoc = pendingDocs[pendingDocs.length - 1];
+                    batch.update(lastDoc.ref, {
                         adminReply: text || null,
                         adminImage: imgData || null,
                         status: "replied",
@@ -504,20 +500,20 @@
                     });
                     updatedExisting = true;
 
-                    // Set remaining pending requests as replied
-                    for (let i = 1; i < pendingSnapshot.docs.length; i++) {
-                        batch.update(pendingSnapshot.docs[i].ref, { status: "replied" });
+                    // Set remaining older pending requests to "replied" to clear them out without moving them
+                    for (let i = 0; i < pendingDocs.length - 1; i++) {
+                        batch.update(pendingDocs[i].ref, { status: "replied" });
                     }
                 }
 
                 if (!updatedExisting) {
-                    // Create new document (Admin Initiated)
+                    // Admin initiates chat
                     const newDocRef = db.collection("pro_requests").doc();
                     batch.set(newDocRef, {
                         userId: activeChatUid,
                         userName: activeChatName,
                         userEmail: activeChatEmail,
-                        userPrompt: "🔔 Admin Message", // Prevents empty bubble error on User UI
+                        userPrompt: "🔔 Admin Message",
                         userImage: null,
                         adminReply: text || null,
                         adminImage: imgData || null,
@@ -567,7 +563,6 @@
             adminSelectedImage = null;
             document.getElementById("ms-preview-box").style.display = "none";
         }
-
 
         // =========================================================
         // ⚡ PANEL 3: API TESTER
