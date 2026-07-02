@@ -33,13 +33,13 @@
         @keyframes launchUp { 20% { transform: translateY(15px) scale(0.95); } 100% { transform: translateY(-150vh) scale(1.1); opacity: 0; } }
         
         /* Glassmorphism Sidebar */
-        .sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: rgba(15, 15, 20, 0.6); backdrop-filter: blur(20px); z-index: 1000; transition: left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; border-right: 1px solid rgba(255,255,255,0.05); }
+        .sidebar { position: fixed; top: 0; left: -300px; width: 280px; height: 100%; background: rgba(15, 15, 20, 0.6); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); z-index: 1000; transition: left 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; border-right: 1px solid rgba(255,255,255,0.05); }
         .sidebar.open { left: 0; }
         .sidebar-header { padding: 20px; font-size: 20px; font-weight: bold; color: #fff; display: flex; justify-content: space-between; align-items: center; letter-spacing: 2px;}
         
-        .nav-item { display: flex; align-items: center; gap: 15px; padding: 12px 20px; color: #e3e3e3; cursor: pointer; border-radius: 25px; margin: 5px 10px; font-size: 15px; transition: 0.2s; }
+        .nav-item { display: flex; align-items: center; gap: 15px; padding: 12px 20px; color: #e3e3e3; cursor: pointer; border-radius: 25px; margin: 5px 10px; font-size: 14px; transition: 0.2s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         .nav-item:hover { background: rgba(255,255,255,0.1); }
-        .nav-item svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.5; }
+        .nav-item svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.5; flex-shrink: 0;}
         
         .premium-nav-item { border: 1px solid rgba(255,255,255,0.05); }
         .premium-nav-item svg { stroke: #a8c7fa; }
@@ -47,7 +47,7 @@
         .search-box { padding: 0 15px 10px; display: none; }
         .search-box input { width: 100%; padding: 10px 15px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.05); color: #fff; outline: none; font-size: 14px;}
         
-        .history-section { padding: 20px 20px 5px; color: #8e8e8e; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
+        .history-section { padding: 15px 20px 5px; color: #8e8e8e; font-size: 11px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px;}
         .history-list { padding: 0 10px; overflow-y: auto; flex: 1; }
         .history-item { padding: 10px 15px; color: #c4c7c5; font-size: 14px; cursor: pointer; border-radius: 20px; margin-bottom: 2px; white-space: nowrap; transition: 0.2s; display: flex; align-items: center; gap: 12px;}
         .history-item:hover { background: rgba(255,255,255,0.1); }
@@ -267,7 +267,7 @@
         body.light-mode .input-wrapper input { color: #1e1e1e; }
         body.light-mode .prompt-pill { background: rgba(255, 255, 255, 0.6); border: 1px solid rgba(0, 0, 0, 0.1); color: #333; }
         body.light-mode .prompt-pill svg { stroke: #6b46c1; }
-        body.light-mode .prompt-pill:hover { background: rgba(107, 70, 193, 0.05); border-color: #6b46c1; }
+        body.light-mode .prompt-pill:hover { background: rgba(107, 70, 193, 0.05); border-color: #6b46c1; color:#000; }
         body.light-mode .settings-modal { background: rgba(245, 245, 245, 0.95); }
         body.light-mode .settings-header h2 { color: #1e1e1e; }
         body.light-mode .settings-close, body.light-mode .settings-item { color: #333; }
@@ -300,7 +300,7 @@
     </div>
 
     <div class="vip-slide-container" id="vipSlide">
-        <button class="vip-close-btn" onclick="closeVipSlide()">×</button>
+        <button class="vip-close-btn" onclick="closeVipSlide(); triggerVibration();">×</button>
         <div class="vip-header"><h1>Meet the<br><span>NEXIS Pro!</span></h1></div>
         <div class="vip-robot-box">
             <img src="https://cdn-icons-png.flaticon.com/512/8649/8649605.png" alt="Robot" class="vip-robot-img">
@@ -358,7 +358,7 @@
 
     <div class="settings-modal" id="settingsModal">
         <div class="settings-header">
-            <button class="settings-close" onclick="toggleSettings()">×</button>
+            <button class="settings-close" onclick="toggleSettings(); triggerVibration();">×</button>
             <h2>Settings</h2>
             <div style="width:24px;"></div>
         </div>
@@ -383,6 +383,7 @@
                     <span style="color: #8e8e8e;">AI Name:</span> <span>NEXIS AI</span>
                     <span style="color: #8e8e8e;">Version:</span> <span>2.0 (Premium Build)</span>
                     <span style="color: #8e8e8e;">Core Engine:</span> <span>Gemini 2.5 Architecture</span>
+                    <span style="color: #8e8e8e;">Build Date:</span> <span>July 1, 2026</span>
                     <span style="color: #8e8e8e;">Concept & Dev:</span> <span class="about-title-text" style="color: #fff; font-weight: bold;">Min Thant Aung (KuroLab Studio)</span>
                 </div>
             </div>
@@ -394,12 +395,12 @@
         </div>
     </div>
 
-    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+    <div class="overlay" id="overlay" onclick="toggleSidebar(); triggerVibration();"></div>
     
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <span>NEXIS</span>
-            <div class="menu-btn" style="font-size: 24px; margin-right: 0;" onclick="toggleSidebar()">≡</div>
+            <div class="menu-btn" style="font-size: 24px; margin-right: 0;" onclick="toggleSidebar(); triggerVibration();">≡</div>
         </div>
         <div style="padding: 10px 15px;">
             <div class="nav-item" onclick="startNewChat()">
@@ -423,7 +424,11 @@
                 <svg viewBox="0 0 24 24"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
                 <span>Text to Voice</span>
             </div>
-            <div class="nav-item premium-nav-item" onclick="openAdminChatHistory()" style="border-color: #d6bcfa;">
+            <div class="nav-item premium-nav-item" onclick="showPricingModal()" style="border-color: #38bdf8;">
+                <svg viewBox="0 0 24 24" style="stroke: #38bdf8;"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                <span style="color: #38bdf8; font-weight: bold;">VIP / Pricing Plans</span>
+            </div>
+            <div class="nav-item premium-nav-item" onclick="openAdminChatHistory()" style="border-color: #d6bcfa; margin-top: 10px;">
                 <svg viewBox="0 0 24 24" style="stroke: #d6bcfa;"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path><path d="M8 10h.01M12 10h.01M16 10h.01"></path></svg>
                 <span style="color: #d6bcfa; font-weight: bold;">Pro Admin Support</span>
             </div>
@@ -446,7 +451,7 @@
     
     <div class="main-container" id="ai-ui-container">
         <div class="chat-header">
-            <div class="menu-btn" onclick="toggleSidebar()">☰</div>
+            <div class="menu-btn" onclick="toggleSidebar(); triggerVibration();">☰</div>
             <div class="logo">NEXIS</div>
             <div style="position: relative; margin-left: auto;">
                 <button class="dropdown-btn" id="model-btn" onclick="toggleDropdown(event)">⚡ Flash ▼</button>
@@ -482,7 +487,7 @@
             </div>
 
             <div class="image-preview-container" id="preview-container">
-                <div class="image-preview-box"><img id="preview-img" src=""><button class="remove-image-btn" onclick="removeImage()">✖</button></div>
+                <div class="image-preview-box"><img id="preview-img" src=""><button class="remove-image-btn" onclick="removeImage(); triggerVibration();">✖</button></div>
             </div>
 
             <div class="input-wrapper">
@@ -513,9 +518,9 @@
     </div>
 
     <div class="modal-overlay-img" id="imageModal">
-        <span onclick="closeImageModal()" style="position:absolute; top:20px; right:30px; color:white; font-size:40px; cursor:pointer;">&times;</span>
+        <span onclick="closeImageModal(); triggerVibration();" style="position:absolute; top:20px; right:30px; color:white; font-size:40px; cursor:pointer;">&times;</span>
         <img id="modalImage" src="" style="max-width:90%; max-height:75vh; border-radius:8px;">
-        <button onclick="downloadModalImage()" style="margin-top:20px; padding:12px 24px; background:#1a73e8; color:white; border:none; border-radius:8px; cursor:pointer;">Download Image</button>
+        <button onclick="downloadModalImage(); triggerVibration();" style="margin-top:20px; padding:12px 24px; background:#1a73e8; color:white; border:none; border-radius:8px; cursor:pointer;">Download Image</button>
     </div>
 
     <script>
@@ -568,7 +573,7 @@
             else { currentUser = null; window.currentUserData = null; authBtn.innerHTML = `Login Account`; updateSettingsAuthUI(); }
         });
 
-        function handleAuth() { if (currentUser) { if(confirm("Logout?")) { auth.signOut(); toggleSettings(); } } else { const provider = new firebase.auth.GoogleAuthProvider(); auth.signInWithPopup(provider).then(()=>toggleSettings()).catch(err => alert("Error: " + err.message)); } }
+        function handleAuth() { triggerVibration(); if (currentUser) { if(confirm("Logout?")) { auth.signOut(); toggleSettings(); } } else { const provider = new firebase.auth.GoogleAuthProvider(); auth.signInWithPopup(provider).then(()=>toggleSettings()).catch(err => alert("Error: " + err.message)); } }
 
         function checkUsageLimit(featureType) {
             if (!currentUser) { alert("Please Login to use Premium Features."); handleAuth(); return false; }
@@ -585,7 +590,7 @@
         // --- UI TOGGLES ---
         function toggleThemePreference() { isLightMode = document.getElementById("theme-toggle").checked; if(isLightMode) { document.body.classList.add("light-mode"); localStorage.setItem("nexus_theme", "light"); } else { document.body.classList.remove("light-mode"); localStorage.setItem("nexus_theme", "dark"); } triggerVibration(); }
         function toggleAbout() { const content = document.getElementById("about-content"); const chevron = document.getElementById("about-chevron"); if (content.style.display === "none") { content.style.display = "grid"; chevron.style.transform = "rotate(180deg)"; } else { content.style.display = "none"; chevron.style.transform = "rotate(0deg)"; } triggerVibration(); }
-        function toggleSettings() { const modal = document.getElementById("settingsModal"); if (modal.classList.contains("active")) { modal.classList.remove("active"); } else { updateSettingsAuthUI(); modal.classList.add("active"); if (window.innerWidth <= 768) { document.getElementById("sidebar").classList.remove("open"); document.getElementById("overlay").classList.remove("show"); } } }
+        function toggleSettings() { triggerVibration(); const modal = document.getElementById("settingsModal"); if (modal.classList.contains("active")) { modal.classList.remove("active"); } else { updateSettingsAuthUI(); modal.classList.add("active"); if (window.innerWidth <= 768) { document.getElementById("sidebar").classList.remove("open"); document.getElementById("overlay").classList.remove("show"); } } }
         function updateSettingsAuthUI() { const authGroup = document.getElementById("settings-auth-group"); if (currentUser) { authGroup.innerHTML = `<div class="settings-profile"><img src="${currentUser.photoURL || 'https://via.placeholder.com/50'}" alt="Profile"><div class="settings-profile-info"><span class="settings-profile-name">${currentUser.displayName}</span><span class="settings-profile-email">${currentUser.email}</span></div></div><div class="settings-item clickable" onclick="handleAuth()"><div class="settings-item-left"><svg stroke="#ff6b6b" fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg><span style="color:#ff6b6b">Logout</span></div></div>`; } else { authGroup.innerHTML = `<div class="settings-item clickable" onclick="handleAuth()"><div class="settings-item-left"><svg stroke="currentColor" fill="none" stroke-width="2" viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg><span>Login with Google</span></div></div>`; } }
         function toggleHapticPreference() { isHapticEnabled = document.getElementById("haptic-toggle").checked; localStorage.setItem("nexus_haptics", isHapticEnabled); triggerVibration(); }
         function triggerVibration() { if (isHapticEnabled && navigator.vibrate) { navigator.vibrate(50); } }
@@ -614,9 +619,9 @@
 
         function openVipSlide() { 
             if (!currentUser) { alert("Please Login."); handleAuth(); return; }
-            closePricingModal(); document.getElementById("model-dropdown").classList.remove("show"); document.getElementById("vipSlide").classList.add("active"); document.getElementById("swipeSlider").value = 0; document.getElementById("swipeText").style.opacity = 1; 
+            closePricingModal(); document.getElementById("model-dropdown").classList.remove("show"); document.getElementById("vipSlide").classList.add("active"); document.getElementById("swipeSlider").value = 0; document.getElementById("swipeText").style.opacity = 1; triggerVibration();
         }
-        function closeVipSlide() { document.getElementById("vipSlide").classList.remove("active"); }
+        function closeVipSlide() { document.getElementById("vipSlide").classList.remove("active"); triggerVibration();}
         function handleSwipe(e) { let opacity = 1 - (e.target.value / 50); document.getElementById("swipeText").style.opacity = opacity > 0 ? opacity : 0; }
         function snapSwipe(e) { let slider = document.getElementById("swipeSlider"); if(slider.value > 85) { slider.value = 100; setTimeout(() => { closeVipSlide(); openAdminChatRoom(); }, 300); } else { slider.value = 0; document.getElementById("swipeText").style.opacity = 1; } triggerVibration(); }
 
@@ -672,15 +677,15 @@
         function toggleAttachmentMenu(event) { if(event) event.stopPropagation(); document.getElementById("attachment-menu").classList.toggle("show"); triggerVibration(); }
         function handleImageSelect(e) { const file = e.target.files[0]; if (file) { const reader = new FileReader(); reader.onload = (event) => { selectedImage = event.target.result; document.getElementById("preview-img").src = selectedImage; document.getElementById("preview-container").style.display = "block"; }; reader.readAsDataURL(file); } e.target.value = ''; }
         function handleTextFileSelect(e) { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(event) { document.getElementById("user-input").value += `[File Content: ${file.name}]\n` + event.target.result + `\n`; }; reader.readAsText(file); e.target.value = ''; }
-        function removeImage() { selectedImage = null; document.getElementById("preview-container").style.display = "none"; }
-        function openImageModal(src) { document.getElementById("modalImage").src = src; document.getElementById("imageModal").style.display = "flex"; }
-        function closeImageModal() { document.getElementById("imageModal").style.display = "none"; }
-        function downloadModalImage() { const src = document.getElementById("modalImage").src; const link = document.createElement("a"); link.href = src; link.download = "nexis_image.jpg"; document.body.appendChild(link); link.click(); document.body.removeChild(link); }
-        function exportChatToPDF() { document.getElementById("model-dropdown").classList.remove("show"); const chatElement = document.getElementById("chat-messages"); html2pdf().set({ margin: 10, filename: 'NEXIS_Chat.pdf', html2canvas: { scale: 2, useCORS: true, backgroundColor: (isLightMode ? '#f8f9fa' : '#131314') } }).from(chatElement).save(); }
+        function removeImage() { selectedImage = null; document.getElementById("preview-container").style.display = "none"; triggerVibration(); }
+        function openImageModal(src) { document.getElementById("modalImage").src = src; document.getElementById("imageModal").style.display = "flex"; triggerVibration(); }
+        function closeImageModal() { document.getElementById("imageModal").style.display = "none"; triggerVibration(); }
+        function downloadModalImage() { const src = document.getElementById("modalImage").src; const link = document.createElement("a"); link.href = src; link.download = "nexis_image.jpg"; document.body.appendChild(link); link.click(); document.body.removeChild(link); triggerVibration(); }
+        function exportChatToPDF() { document.getElementById("model-dropdown").classList.remove("show"); const chatElement = document.getElementById("chat-messages"); html2pdf().set({ margin: 10, filename: 'NEXIS_Chat.pdf', html2canvas: { scale: 2, useCORS: true, backgroundColor: (isLightMode ? '#f8f9fa' : '#131314') } }).from(chatElement).save(); triggerVibration(); }
 
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition; let recognition; let isListening = false;
         if (SpeechRecognition) { recognition = new SpeechRecognition(); recognition.lang = 'my-MM'; recognition.onstart = function() { isListening = true; document.getElementById("mic-btn").style.stroke = '#38bdf8'; document.getElementById("user-input").placeholder = "Listening..."; triggerVibration(); }; recognition.onresult = function(event) { document.getElementById("user-input").value += event.results[0][0].transcript; }; recognition.onend = function() { isListening = false; document.getElementById("mic-btn").style.stroke = '#c4c7c5'; document.getElementById("user-input").placeholder = "Message NEXIS..."; }; }
-        function toggleMic() { if (!SpeechRecognition) return alert("Not supported."); if (isListening) recognition.stop(); else recognition.start(); }
+        function toggleMic() { triggerVibration(); if (!SpeechRecognition) return alert("Not supported."); if (isListening) recognition.stop(); else recognition.start(); }
         
         window.fallbackCopyTextToClipboard = function(text) { var textArea = document.createElement("textarea"); textArea.value = text; textArea.style.top = "0"; textArea.style.left = "0"; textArea.style.position = "fixed"; document.body.appendChild(textArea); textArea.focus(); textArea.select(); try { document.execCommand('copy'); } catch (err) {} document.body.removeChild(textArea); };
         window.copyText = function(btn, encodedText) { let text = decodeURIComponent(encodedText); triggerVibration(); if (!navigator.clipboard) { window.fallbackCopyTextToClipboard(text); let original = btn.innerHTML; btn.innerHTML = `<svg viewBox="0 0 24 24" stroke="#a8c7fa" fill="none" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>`; setTimeout(() => { btn.innerHTML = original; }, 2000); return; } navigator.clipboard.writeText(text).then(() => { let original = btn.innerHTML; btn.innerHTML = `<svg viewBox="0 0 24 24" stroke="#a8c7fa" fill="none" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>`; setTimeout(() => { btn.innerHTML = original; }, 2000); }).catch(err => { window.fallbackCopyTextToClipboard(text); let original = btn.innerHTML; btn.innerHTML = `<svg viewBox="0 0 24 24" stroke="#a8c7fa" fill="none" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>`; setTimeout(() => { btn.innerHTML = original; }, 2000); }); };
@@ -703,7 +708,7 @@
 
         // --- AI CHAT HISTORY LOGIC ---
         window.clearAllHistoryFromSettings = function() { if(confirm("Are you sure you want to delete ALL AI chat history?")) { localStorage.removeItem("nexis_chat_sessions"); chatSessions = []; syncFirebaseChats(); startNewChat(); toggleSettings(); } };
-        function toggleSearchBox() { const sb = document.getElementById("search-box"); if (sb.style.display === "block") { sb.style.display = "none"; document.getElementById("search-input").value = ""; filterHistoryChats(); } else { sb.style.display = "block"; document.getElementById("search-input").focus(); } }
+        function toggleSearchBox() { const sb = document.getElementById("search-box"); if (sb.style.display === "block") { sb.style.display = "none"; document.getElementById("search-input").value = ""; filterHistoryChats(); } else { sb.style.display = "block"; document.getElementById("search-input").focus(); } triggerVibration(); }
         function filterHistoryChats() { const query = document.getElementById("search-input").value.toLowerCase(); const items = document.querySelectorAll(".history-item"); items.forEach(item => { const text = item.innerText.toLowerCase(); item.style.display = text.includes(query) ? "flex" : "none"; }); }
 
         function startNewChat() { currentSessionId = null; document.getElementById("chat-messages").innerHTML = '<div id="welcome-message">Hello, Welcome</div>'; document.getElementById("prompt-suggestions").style.display = 'flex'; renderSidebar(); if(window.innerWidth <= 768) { document.getElementById("sidebar").classList.remove("open"); document.getElementById("overlay").classList.remove("show"); } triggerVibration(); }
@@ -745,12 +750,13 @@
             }, 15);
         }
 
-        window.fillPrompt = function(text) { document.getElementById("user-input").value = text; document.getElementById("prompt-suggestions").style.display = 'none'; sendMessage(); };
+        window.fillPrompt = function(text) { document.getElementById("user-input").value = text; document.getElementById("prompt-suggestions").style.display = 'none'; triggerVibration(); sendMessage(); };
 
         function appendMessage(text, isUser, img = null, saveToLocal = true, isLoading = false, isStreaming = false) {
             const container = document.getElementById("chat-messages"); const row = document.createElement("div"); row.className = `message-row ${isUser ? 'user-message-row' : 'bot-message-row'}`;
             let html = "";
             if (isLoading) { html = `<div class="typing-container"><span>NEXIS Thinking</span><div class="typing-dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`; row.innerHTML = html; container.appendChild(row); container.scrollTop = container.scrollHeight; return row; } 
+            
             if(isUser) { let encText = text ? encodeURIComponent(text) : ""; html = `<div class="user-message-wrapper"><button class="edit-user-btn" onclick="window.editUserMessage('${encText}')" title="Edit"><svg viewBox="0 0 24 24"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg></button><div class="message-bubble user-message">`;
             } else { html = `<div class="message-bubble bot-message">`; }
 
