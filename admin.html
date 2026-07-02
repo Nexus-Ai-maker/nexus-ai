@@ -10,22 +10,15 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 
     <style>
-        /* --- Anti-Theft CSS (Copy ကူးခွင့် ပိတ်ထားခြင်း) --- */
+        /* --- 🔒 ANTI-THEFT CSS --- */
         * { box-sizing: border-box; }
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
             background: #0f172a; color: #e2e8f0; margin: 0; padding: 0; 
             display: flex; flex-direction: column; height: 100vh;
-            -webkit-user-select: none; /* Safari */
-            -ms-user-select: none; /* IE 10 and IE 11 */
-            user-select: none; /* Standard syntax */
+            -webkit-user-select: none; -ms-user-select: none; user-select: none; 
         }
-        /* စာရိုက်ရမည့် နေရာများကိုတော့ Copy/Paste/Select လုပ်ခွင့်ပြုထားသည် */
-        input, textarea, select { 
-            -webkit-user-select: text; 
-            -ms-user-select: text; 
-            user-select: text; 
-        }
+        input, textarea, select { -webkit-user-select: text; -ms-user-select: text; user-select: text; }
 
         /* Navbar */
         .navbar { background: #1e293b; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; }
@@ -46,29 +39,25 @@
         .tab-btn.active { background: #38bdf8; color: #0f172a; border-color: #38bdf8; }
         
         /* Content Area */
-        .content-area { flex: 1; position: relative; overflow-y: auto; background: #0f172a; padding: 20px;}
-        .tab-panel { display: none; flex-direction: column; height: 100%;}
+        .content-area { flex: 1; position: relative; overflow: hidden; background: #0f172a;}
+        .tab-panel { display: none; flex-direction: column; height: 100%; overflow-y: auto;}
         .tab-panel.active { display: flex; }
         
         /* --- PANEL 1: User Limits --- */
-        .users-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; width: 100%;}
+        .users-container { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; max-width: 1200px; margin: 0 auto; width: 100%; padding: 20px;}
         .user-card { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
-        
         .user-info { display: flex; align-items: center; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 15px;}
         .user-info img { width: 45px; height: 45px; border-radius: 50%; }
         .user-details { flex: 1; overflow: hidden;}
         .user-name { font-size: 16px; font-weight: bold; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
         .user-email { font-size: 12px; color: #8e8e8e; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-
         .plan-section { display: flex; justify-content: space-between; align-items: center; }
         .plan-section span { font-size: 14px; font-weight: bold; color: #a8c7fa;}
         .plan-select { background: rgba(0,0,0,0.5); color: #fff; border: 1px solid rgba(255,255,255,0.2); padding: 5px 10px; border-radius: 8px; outline: none; }
-
         .feature-control { display: flex; justify-content: space-between; align-items: center; background: rgba(0,0,0,0.3); padding: 10px 15px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.05);}
         .feature-name { font-size: 13px; color: #ccc; flex: 1;}
         .limit-input { width: 50px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: #fff; padding: 4px; border-radius: 6px; text-align: center; margin-right: 15px; outline: none;}
         
-        /* Toggle Switch */
         .switch { position: relative; display: inline-block; width: 36px; height: 20px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.1); transition: .4s; border-radius: 34px; }
@@ -78,18 +67,10 @@
 
         .save-btn { width: 100%; padding: 12px; background: #9f7aea; color: #fff; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.2s; margin-top: 5px;}
         .save-btn:hover { background: #b794f4; transform: translateY(-2px);}
-        
         .toast { position: fixed; bottom: 20px; right: 20px; background: #4ade80; color: #000; padding: 12px 20px; border-radius: 10px; font-weight: bold; display: none; box-shadow: 0 4px 15px rgba(0,0,0,0.3); z-index: 1000;}
 
-        /* --- PANEL 2: VIP Requests --- */
-        .request-card { background: #1e293b; padding: 20px; border-radius: 10px; border: 1px solid #334155; margin-bottom: 20px; width: 100%; max-width: 800px; margin: 0 auto 20px;}
-        .user-prompt { background: #0f172a; padding: 12px; border-radius: 6px; margin-bottom: 15px; color: #e2e8f0; border-left: 4px solid #3b82f6;}
-        .img-preview { max-width: 100%; max-height: 200px; border-radius: 6px; margin-bottom: 10px; object-fit: contain; background: #000;}
-        textarea { width: 100%; height: 80px; padding: 10px; border-radius: 6px; border: 1px solid #475569; background: #0f172a; color: white; margin-bottom: 10px; resize: none;}
-        .reply-btn { background: #10b981; color: white; border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.2s;}
-        .reply-btn:hover { background: #059669; }
-
         /* --- PANEL 3: API Tester --- */
+        .api-container { padding: 20px; height: 100%; display: flex; flex-direction: column; }
         .chat-box { flex: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #0f172a; border: 1px solid #334155; border-radius: 10px; margin-bottom: 15px;}
         .bubble { padding: 12px 16px; border-radius: 12px; max-width: 85%; font-size: 14px; line-height: 1.5; word-wrap: break-word;}
         .admin-msg { background: #3b82f6; align-self: flex-end; border-bottom-right-radius: 2px; }
@@ -98,6 +79,52 @@
         .chat-input-area { display: flex; gap: 10px; }
         .chat-input-area input { flex: 1; padding: 12px 15px; border-radius: 10px; border: 1px solid #475569; background: #1e293b; color: white; outline: none; font-size: 15px;}
         .chat-input-area button { background: #38bdf8; color: #0f172a; border: none; padding: 10px 25px; border-radius: 10px; cursor: pointer; font-weight: bold; }
+
+        /* --- 💬 PANEL 2: MESSENGER VIP CHAT (NEW) --- */
+        .messenger-wrapper { display: flex; height: 100%; width: 100%; }
+        
+        /* Left Sidebar (User List) */
+        .ms-sidebar { width: 320px; background: #1e293b; border-right: 1px solid #334155; display: flex; flex-direction: column; flex-shrink: 0;}
+        @media (max-width: 768px) { .ms-sidebar { width: 100px; } .ms-user-details { display: none; } }
+        .ms-header { padding: 15px 20px; font-weight: bold; color: #38bdf8; border-bottom: 1px solid #334155; }
+        .ms-user-list { flex: 1; overflow-y: auto; }
+        .ms-user-item { display: flex; align-items: center; gap: 15px; padding: 15px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); cursor: pointer; transition: 0.2s;}
+        .ms-user-item:hover, .ms-user-item.active { background: rgba(56, 189, 248, 0.1); border-left: 4px solid #38bdf8; }
+        .ms-user-item img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover;}
+        .ms-user-name { font-size: 15px; font-weight: bold; color: #fff; }
+        .ms-user-email { font-size: 12px; color: #94a3b8; }
+        
+        /* Right Chat Area */
+        .ms-chat-area { flex: 1; display: flex; flex-direction: column; background: #0f172a; position: relative;}
+        .ms-chat-header { padding: 15px 20px; background: #1e293b; border-bottom: 1px solid #334155; display: flex; justify-content: space-between; align-items: center;}
+        .ms-active-user { display: flex; align-items: center; gap: 15px; }
+        .ms-active-user img { width: 45px; height: 45px; border-radius: 50%; }
+        .ms-active-name { font-size: 16px; font-weight: bold; color: #fff; }
+        .ms-active-email { font-size: 13px; color: #94a3b8; }
+        .trash-btn { background: transparent; border: 1px solid #ef4444; color: #ef4444; padding: 8px 15px; border-radius: 8px; cursor: pointer; font-weight: bold; display: flex; align-items: center; gap: 5px; transition: 0.2s;}
+        .trash-btn:hover { background: #ef4444; color: #fff; }
+
+        .ms-messages { flex: 1; padding: 20px; overflow-y: auto; display: flex; flex-direction: column; gap: 15px; }
+        .ms-bubble { padding: 12px 18px; border-radius: 15px; max-width: 75%; line-height: 1.5; word-wrap: break-word; font-size: 15px;}
+        .ms-user-msg { background: #334155; align-self: flex-start; border-bottom-left-radius: 2px; color: #e2e8f0; border: 1px solid #475569;}
+        .ms-admin-msg { background: rgba(214, 188, 250, 0.2); border: 1px solid #d6bcfa; align-self: flex-end; border-bottom-right-radius: 2px; color: #fff;}
+        .ms-img { max-width: 250px; border-radius: 10px; margin-top: 5px; cursor: pointer;}
+        
+        .ms-input-area { padding: 15px 20px; background: #1e293b; border-top: 1px solid #334155; display: flex; gap: 10px; align-items: center;}
+        .plus-btn { background: rgba(255,255,255,0.1); border: none; width: 45px; height: 45px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; transition: 0.2s;}
+        .plus-btn:hover { background: rgba(255,255,255,0.2); }
+        .plus-btn svg { width: 24px; height: 24px; stroke: #d6bcfa; fill: none; stroke-width: 2;}
+        .ms-input-area input[type="text"] { flex: 1; padding: 15px 20px; border-radius: 25px; border: 1px solid #475569; background: #0f172a; color: white; outline: none; font-size: 15px;}
+        .ms-send-btn { background: #38bdf8; color: #0f172a; border: none; padding: 12px 25px; border-radius: 25px; cursor: pointer; font-weight: bold; font-size: 15px;}
+
+        /* Image Preview Box */
+        .ms-preview-box { display: none; padding: 10px 20px; background: #1e293b; border-top: 1px solid #334155;}
+        .ms-preview-inner { position: relative; display: inline-block;}
+        .ms-preview-inner img { height: 60px; border-radius: 8px; border: 1px solid #475569;}
+        .ms-remove-img { position: absolute; top: -8px; right: -8px; background: #ef4444; color: white; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 12px; cursor: pointer;}
+
+        .no-chat-selected { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #64748b;}
+        .no-chat-selected svg { width: 64px; height: 64px; stroke: currentColor; fill: none; stroke-width: 1; margin-bottom: 15px;}
     </style>
 </head>
 <body>
@@ -131,19 +158,67 @@
                 </div>
             </div>
             
-            <div class="tab-panel" id="panel-vip">
-                <div id="requests-container" style="width: 100%;">
-                    <p style="color: #64748b; text-align: center; margin-top: 30px;">Loading requests...</p>
+            <div class="tab-panel" id="panel-vip" style="padding: 0;">
+                <div class="messenger-wrapper">
+                    
+                    <div class="ms-sidebar">
+                        <div class="ms-header">Chats</div>
+                        <div class="ms-user-list" id="ms-user-list">
+                            <div style="text-align: center; padding: 20px; color: #64748b;">Loading...</div>
+                        </div>
+                    </div>
+
+                    <div class="ms-chat-area" id="ms-chat-area" style="display: none;">
+                        <div class="ms-chat-header">
+                            <div class="ms-active-user">
+                                <img id="ms-active-img" src="">
+                                <div>
+                                    <div class="ms-active-name" id="ms-active-name">User Name</div>
+                                    <div class="ms-active-email" id="ms-active-email">Email</div>
+                                </div>
+                            </div>
+                            <button class="trash-btn" onclick="clearAdminChatHistory()">
+                                <svg viewBox="0 0 24 24" style="width:16px; height:16px; fill:none; stroke:currentColor; stroke-width:2;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg> Clear
+                            </button>
+                        </div>
+                        
+                        <div class="ms-messages" id="ms-messages">
+                            </div>
+
+                        <div class="ms-preview-box" id="ms-preview-box">
+                            <div class="ms-preview-inner">
+                                <img id="ms-preview-img" src="">
+                                <button class="ms-remove-img" onclick="removeAdminImage()">✖</button>
+                            </div>
+                        </div>
+
+                        <div class="ms-input-area">
+                            <button class="plus-btn" onclick="document.getElementById('admin-file-input').click()">
+                                <svg viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            </button>
+                            <input type="file" id="admin-file-input" accept="image/*" style="display:none;" onchange="handleAdminImageSelect(event)">
+                            <input type="text" id="admin-chat-input" placeholder="Message to user..." autocomplete="off" onkeypress="if(event.key === 'Enter') sendAdminChatMsg()">
+                            <button class="ms-send-btn" onclick="sendAdminChatMsg()">Send</button>
+                        </div>
+                    </div>
+
+                    <div class="no-chat-selected" id="ms-no-chat">
+                        <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+                        Select a user from the list to start chatting
+                    </div>
+
                 </div>
             </div>
             
             <div class="tab-panel" id="panel-api">
-                <div class="chat-box" id="admin-chat-box">
-                    <div class="bubble ai-msg">Welcome Admin! I am online. Ask me anything to test the current API status.</div>
-                </div>
-                <div class="chat-input-area">
-                    <input type="text" id="admin-test-input" placeholder="Type prompt to test API..." onkeypress="if(event.key === 'Enter') testAPI()" autocomplete="off">
-                    <button onclick="testAPI()">Send Request</button>
+                <div class="api-container">
+                    <div class="chat-box" id="admin-chat-box">
+                        <div class="bubble ai-msg">Welcome Admin! I am online. Ask me anything to test the current API status.</div>
+                    </div>
+                    <div class="chat-input-area">
+                        <input type="text" id="admin-test-input" placeholder="Type prompt to test API..." onkeypress="if(event.key === 'Enter') testAPI()" autocomplete="off">
+                        <button onclick="testAPI()">Send Request</button>
+                    </div>
                 </div>
             </div>
 
@@ -156,28 +231,16 @@
         // =========================================================
         // 🔒 ANTI-THEFT SYSTEM (Code ခိုးယူခွင့် ပိတ်ပင်ခြင်း)
         // =========================================================
-        
-        // 1. Right Click ပိတ်ခြင်း
         document.addEventListener('contextmenu', event => event.preventDefault());
-
-        // 2. Keyboard Shortcuts ပိတ်ခြင်း (F12, Ctrl+U, Ctrl+Shift+I, Ctrl+Shift+J)
         document.onkeydown = function(e) {
-            // Disable F12
             if(e.keyCode == 123) { return false; }
-            // Disable Ctrl+Shift+I
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) { return false; }
-            // Disable Ctrl+Shift+C
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) { return false; }
-            // Disable Ctrl+Shift+J
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) { return false; }
-            // Disable Ctrl+U
-            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) { return false; }
+            if(e.ctrlKey && e.shiftKey && (e.keyCode == 73 || e.keyCode == 67 || e.keyCode == 74)) { return false; }
+            if(e.ctrlKey && e.keyCode == 85) { return false; }
         };
 
         // =========================================================
         // ⚙️ FIREBASE & SYSTEM LOGIC
         // =========================================================
-
         const firebaseConfig = {
             apiKey: "AIzaSyBuI_N7UY3HzLC1q4bTbr0pIjutn7oCez0",
             authDomain: "nexus-36961.firebaseapp.com",
@@ -194,6 +257,13 @@
         const ADMIN_EMAIL = "newtruckermyanmar1010@gmail.com"; 
         const BACKEND_URL = "https://nexus-backend.minthantaung2027.workers.dev";
 
+        // Global Variables for Messenger
+        let activeChatUid = null;
+        let activeChatName = "";
+        let activeChatEmail = "";
+        let adminSelectedImage = null;
+        let activeChatUnsubscribe = null;
+
         // --- AUTHENTICATION ---
         auth.onAuthStateChanged(user => {
             if (user) {
@@ -201,7 +271,7 @@
                     document.getElementById('login-section').style.display = 'none';
                     document.getElementById('admin-content-wrapper').style.display = 'flex';
                     loadUsers();
-                    loadRequests(); 
+                    loadVipChatUsers(); // Load Messenger Users
                 } else {
                     alert("Access Denied! Admin only.");
                     auth.signOut();
@@ -228,13 +298,15 @@
             document.getElementById('panel-' + tabId).classList.add('active');
         }
 
-        // --- PANEL 1: USER LIMITS LOGIC ---
+        // =========================================================
+        // 👥 PANEL 1: USER LIMITS
+        // =========================================================
         function loadUsers() {
             const usersContainer = document.getElementById('users-container');
             db.collection("users").onSnapshot((snapshot) => {
                 usersContainer.innerHTML = '';
                 if(snapshot.empty) {
-                    usersContainer.innerHTML = '<div style="text-align: center; width: 100%; color: #8e8e8e;">No users found yet. Users will appear here when they login to the app.</div>';
+                    usersContainer.innerHTML = '<div style="text-align: center; width: 100%; color: #8e8e8e;">No users found yet.</div>';
                     return;
                 }
 
@@ -257,8 +329,8 @@
                                 <span>VIP Plan:</span>
                                 <select class="plan-select" id="plan-${uid}">
                                     <option value="Free" ${plan === 'Free' ? 'selected' : ''}>Basic (Free)</option>
-                                    <option value="Pro" ${plan === 'Pro' ? 'selected' : ''}>NEXUS Pro</option>
-                                    <option value="Ultra" ${plan === 'Ultra' ? 'selected' : ''}>NEXUS Ultra</option>
+                                    <option value="Pro" ${plan === 'Pro' ? 'selected' : ''}>NEXIS Pro</option>
+                                    <option value="Ultra" ${plan === 'Ultra' ? 'selected' : ''}>NEXIS Ultra</option>
                                 </select>
                             </div>
                             <div class="feature-control">
@@ -281,8 +353,6 @@
                     `;
                     usersContainer.innerHTML += cardHtml;
                 });
-            }, (error) => {
-                usersContainer.innerHTML = `<div style="text-align: center; width: 100%; color: #ff6b6b;">Database Error: ${error.message}<br>Firebase Rules ကို သွားဖွင့်ပေးပါ။</div>`;
             });
         }
 
@@ -310,58 +380,198 @@
             setTimeout(() => { toast.style.display = "none"; }, 2500);
         }
 
-        // --- PANEL 2: VIP REQUESTS LOGIC ---
-        function loadRequests() {
-            const container = document.getElementById('requests-container');
-            db.collection("pro_requests").where("status", "==", "pending")
-              .onSnapshot((snapshot) => {
-                  container.innerHTML = "";
-                  if(snapshot.empty) { container.innerHTML = "<p style='color: #64748b; text-align: center; margin-top: 30px;'>No new VIP requests.</p>"; return; }
-                  
-                  let requests = [];
-                  snapshot.forEach(doc => { requests.push({ id: doc.id, ...doc.data() }); });
-                  requests.sort((a, b) => (a.timestamp?.seconds || 0) - (b.timestamp?.seconds || 0));
+        // =========================================================
+        // 💬 PANEL 2: MESSENGER VIP CHAT (NEW)
+        // =========================================================
+        function loadVipChatUsers() {
+            const userListContainer = document.getElementById('ms-user-list');
+            db.collection("users").onSnapshot((snapshot) => {
+                userListContainer.innerHTML = '';
+                if(snapshot.empty) {
+                    userListContainer.innerHTML = '<div style="text-align: center; padding: 20px; color: #64748b;">No users available.</div>';
+                    return;
+                }
 
-                  requests.forEach((data) => {
-                      const docId = data.id;
-                      let html = `
-                        <div class="request-card" id="card-${docId}">
-                            <div style="font-weight: bold; color: #94a3b8; margin-bottom: 10px;">👤 ${data.userName} (${data.userEmail})</div>
-                            <div class="user-prompt">${data.userPrompt || '(Image Request Only)'}</div>
-                            ${data.userImage ? `<img src="${data.userImage}" class="img-preview">` : ''}
-                            
-                            <textarea id="reply-text-${docId}" placeholder="Admin Reply..."></textarea>
-                            <input type="file" id="reply-img-${docId}" accept="image/*" style="margin-bottom: 15px; color: #94a3b8;"><br>
-                            <button class="reply-btn" onclick="sendReply('${docId}')">Send Reply to User</button>
+                snapshot.forEach((doc) => {
+                    const user = doc.data(); const uid = doc.id;
+                    const userPhoto = user.photoURL || 'https://via.placeholder.com/45';
+                    const userName = user.name || 'Unknown User';
+                    const userEmail = user.email || 'No Email';
+
+                    const item = document.createElement("div");
+                    item.className = "ms-user-item";
+                    item.id = `user-item-${uid}`;
+                    item.innerHTML = `
+                        <img src="${userPhoto}" alt="Profile">
+                        <div class="ms-user-details">
+                            <div class="ms-user-name">${userName}</div>
+                            <div class="ms-user-email">${userEmail}</div>
                         </div>
-                      `;
-                      container.innerHTML += html;
-                  });
-              }, (error) => { 
-                  container.innerHTML = `<p style="color: #ff6b6b; text-align: center; margin-top: 30px;">Error: ${error.message}</p>`; 
-              });
+                    `;
+                    
+                    item.onclick = () => openVipChat(uid, userName, userPhoto, userEmail);
+                    userListContainer.appendChild(item);
+                });
+            });
         }
 
-        function sendReply(docId) {
-            const replyText = document.getElementById(`reply-text-${docId}`).value;
-            const fileInput = document.getElementById(`reply-img-${docId}`);
-            if(!replyText && fileInput.files.length === 0) { alert("Please enter text or attach an image."); return; }
+        function openVipChat(uid, name, photo, email) {
+            // Set Active User Data
+            activeChatUid = uid; activeChatName = name; activeChatEmail = email;
 
-            const updateData = { adminReply: replyText, status: "replied", repliedAt: firebase.firestore.FieldValue.serverTimestamp() };
-            document.querySelector(`#card-${docId} button`).innerText = "Sending...";
+            // Update UI Sidebar
+            document.querySelectorAll('.ms-user-item').forEach(el => el.classList.remove('active'));
+            document.getElementById(`user-item-${uid}`).classList.add('active');
 
-            if (fileInput.files.length > 0) {
+            // Toggle Panes
+            document.getElementById("ms-no-chat").style.display = "none";
+            document.getElementById("ms-chat-area").style.display = "flex";
+
+            // Set Header
+            document.getElementById("ms-active-img").src = photo;
+            document.getElementById("ms-active-name").innerText = name;
+            document.getElementById("ms-active-email").innerText = email;
+
+            // Load Chat Messages
+            const container = document.getElementById("ms-messages");
+            container.innerHTML = "<div style='text-align:center; color:#64748b; margin-top:20px;'>Loading chat...</div>";
+
+            if (activeChatUnsubscribe) activeChatUnsubscribe();
+
+            // Client-side Sort to prevent Index errors
+            activeChatUnsubscribe = db.collection("pro_requests").where("userId", "==", uid)
+                .onSnapshot(snapshot => {
+                    container.innerHTML = "<div style='text-align:center; color:#64748b; margin-top:20px; margin-bottom: 20px;'>End-to-End Encrypted Admin Chat</div>";
+                    
+                    let requests = [];
+                    snapshot.forEach(doc => { requests.push(doc.data()); });
+                    requests.sort((a, b) => (a.timestamp?.seconds || 0) - (b.timestamp?.seconds || 0));
+
+                    requests.forEach(data => {
+                        // User Bubble
+                        if (data.userPrompt && data.userPrompt !== "🔔 Admin Message") {
+                            container.innerHTML += `<div class="ms-bubble ms-user-msg">${data.userPrompt.replace(/\n/g, '<br>')}</div>`;
+                        } else if (data.userImage && !data.userPrompt) {
+                            container.innerHTML += `<div class="ms-bubble ms-user-msg">(Image Attached)</div>`;
+                        }
+                        if (data.userImage) {
+                            container.innerHTML += `<img src="${data.userImage}" class="ms-img" style="align-self: flex-start;">`;
+                        }
+
+                        // Admin Bubble
+                        if (data.adminReply) {
+                            container.innerHTML += `<div class="ms-bubble ms-admin-msg">💎 <b>Admin:</b><br>${data.adminReply.replace(/\n/g, '<br>')}</div>`;
+                        }
+                        if (data.adminImage) {
+                            container.innerHTML += `<img src="${data.adminImage}" class="ms-img" style="align-self: flex-end;">`;
+                        }
+                    });
+                    
+                    container.scrollTop = container.scrollHeight;
+                });
+        }
+
+        async function sendAdminChatMsg() {
+            if (!activeChatUid) return;
+
+            const input = document.getElementById("admin-chat-input");
+            const text = input.value.trim();
+            const imgData = adminSelectedImage;
+
+            if (!text && !imgData) return;
+            
+            input.value = "";
+            removeAdminImage();
+
+            try {
+                // Find pending requests to clear them
+                const pendingSnapshot = await db.collection("pro_requests")
+                    .where("userId", "==", activeChatUid)
+                    .where("status", "==", "pending")
+                    .get();
+                
+                const batch = db.batch();
+                let updatedExisting = false;
+
+                if (!pendingSnapshot.empty) {
+                    // Attach reply to the first pending request
+                    const firstDoc = pendingSnapshot.docs[0];
+                    batch.update(firstDoc.ref, {
+                        adminReply: text || null,
+                        adminImage: imgData || null,
+                        status: "replied",
+                        repliedAt: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                    updatedExisting = true;
+
+                    // Set remaining pending requests as replied
+                    for (let i = 1; i < pendingSnapshot.docs.length; i++) {
+                        batch.update(pendingSnapshot.docs[i].ref, { status: "replied" });
+                    }
+                }
+
+                if (!updatedExisting) {
+                    // Create new document (Admin Initiated)
+                    const newDocRef = db.collection("pro_requests").doc();
+                    batch.set(newDocRef, {
+                        userId: activeChatUid,
+                        userName: activeChatName,
+                        userEmail: activeChatEmail,
+                        userPrompt: "🔔 Admin Message", // Prevents empty bubble error on User UI
+                        userImage: null,
+                        adminReply: text || null,
+                        adminImage: imgData || null,
+                        status: "replied",
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    });
+                }
+
+                await batch.commit();
+
+            } catch (error) {
+                console.error("Send Error:", error);
+                alert("Error sending message.");
+            }
+        }
+
+        async function clearAdminChatHistory() {
+            if (!activeChatUid) return;
+            if(!confirm("Are you sure you want to delete ALL messages for this user?")) return;
+
+            try {
+                const snapshot = await db.collection("pro_requests").where("userId", "==", activeChatUid).get();
+                const batch = db.batch();
+                snapshot.docs.forEach(doc => { batch.delete(doc.ref); });
+                await batch.commit();
+                alert("Chat cleared successfully!");
+            } catch(e) {
+                alert("Failed to clear history.");
+            }
+        }
+
+        function handleAdminImageSelect(e) {
+            const file = e.target.files[0];
+            if (file) {
                 const reader = new FileReader();
-                reader.onload = (e) => { updateData.adminImage = e.target.result; pushToFirebase(docId, updateData); };
-                reader.readAsDataURL(fileInput.files[0]);
-            } else { pushToFirebase(docId, updateData); }
+                reader.onload = (event) => {
+                    adminSelectedImage = event.target.result;
+                    document.getElementById("ms-preview-img").src = adminSelectedImage;
+                    document.getElementById("ms-preview-box").style.display = "block";
+                };
+                reader.readAsDataURL(file);
+            }
+            e.target.value = '';
         }
 
-        function pushToFirebase(docId, updateData) {
-            db.collection("pro_requests").doc(docId).update(updateData).catch((error) => { alert("Error sending reply: " + error); });
+        function removeAdminImage() {
+            adminSelectedImage = null;
+            document.getElementById("ms-preview-box").style.display = "none";
         }
 
-        // --- PANEL 3: API TESTER LOGIC ---
+
+        // =========================================================
+        // ⚡ PANEL 3: API TESTER
+        // =========================================================
         function appendAdminChat(text, isUser, engineName = null) {
             const chatBox = document.getElementById("admin-chat-box");
             let div = document.createElement("div");
@@ -383,7 +593,8 @@
             const loadingBubble = appendAdminChat("Testing Engine...", false);
             
             try {
-                const requestBody = { model: 'gemini-1.5-flash', contents: [{ role: "user", parts: [{ text: text }] }], aiMode: 'Flash' };
+                // Testing API uses default flash model
+                const requestBody = { model: 'gemini-2.5-flash', contents: [{ role: "user", parts: [{ text: text }] }], aiMode: 'Flash' };
                 const response = await fetch(BACKEND_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(requestBody) });
                 const data = await response.json();
                 loadingBubble.remove();
