@@ -17,8 +17,18 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
 
     <style>
+        /* --- 🔒 ANTI-THEFT SECURITY CSS --- */
         * { box-sizing: border-box; }
-        body { font-family: 'Google Sans', sans-serif; background: linear-gradient(135deg, #09090b 0%, #1a1025 50%, #09090b 100%); color: #e3e3e3; margin: 0; display: flex; height: 100vh; overflow: hidden; transition: background 0.5s, color 0.5s; }
+        body { 
+            font-family: 'Google Sans', sans-serif; 
+            background: linear-gradient(135deg, #09090b 0%, #1a1025 50%, #09090b 100%); 
+            color: #e3e3e3; margin: 0; display: flex; height: 100vh; overflow: hidden; 
+            transition: background 0.5s, color 0.5s; 
+            /* Disable Text Selection */
+            -webkit-user-select: none; -ms-user-select: none; user-select: none;
+        }
+        /* Allow Text Selection ONLY in Inputs and Textareas */
+        input, textarea, select, code { -webkit-user-select: text; -ms-user-select: text; user-select: text; }
 
         /* Splash Screen */
         #splash-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #09090b; z-index: 9999; display: flex; justify-content: center; align-items: center; transition: opacity 0.8s; }
@@ -39,7 +49,7 @@
         .nav-item:hover { background: rgba(255,255,255,0.1); }
         .nav-item svg { width: 22px; height: 22px; stroke: white; fill: none; stroke-width: 1.5; }
         
-        /* Premium Sidebar Items */
+        /* 🌟 Premium Sidebar Items */
         .premium-nav-item { border: 1px solid rgba(255,255,255,0.05); }
         .premium-nav-item svg { stroke: #a8c7fa; }
 
@@ -123,10 +133,7 @@
 
         .audio-wave { display: flex; align-items: center; gap: 4px; margin-top: 15px; margin-bottom: 5px; padding: 8px 15px; background: rgba(56, 189, 248, 0.1); border-radius: 20px; width: fit-content; border: 1px solid rgba(56, 189, 248, 0.3);}
         .audio-wave .bar { width: 4px; height: 15px; background: #38bdf8; border-radius: 4px; animation: wave 1s ease-in-out infinite; }
-        .audio-wave .bar:nth-child(2) { animation-delay: 0.2s; }
-        .audio-wave .bar:nth-child(3) { animation-delay: 0.4s; }
-        .audio-wave .bar:nth-child(4) { animation-delay: 0.6s; }
-        .audio-wave .bar:nth-child(5) { animation-delay: 0.8s; }
+        .audio-wave .bar:nth-child(2) { animation-delay: 0.2s; } .audio-wave .bar:nth-child(3) { animation-delay: 0.4s; } .audio-wave .bar:nth-child(4) { animation-delay: 0.6s; } .audio-wave .bar:nth-child(5) { animation-delay: 0.8s; }
         .audio-wave span { font-size: 13px; margin-left: 8px; color: #38bdf8; font-weight: bold; letter-spacing: 1px;}
         @keyframes wave { 0%, 100% { height: 10px; } 50% { height: 22px; } }
 
@@ -160,7 +167,7 @@
         .attach-option span { font-size: 12px; color: #ccc;}
         
         .image-preview-container { pointer-events: auto; display: none; width: 100%; max-width: 760px; margin-bottom: 10px; padding: 0 15px;}
-        .image-preview-box { position: relative; display: inline-block; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 5px; border-radius: 12px;}
+        .image-preview-box { position: relative; display: inline-block; background: rgba(255,255,255,0.1); padding: 5px; border-radius: 12px;}
         .image-preview-box img { height: 60px; border-radius: 8px; object-fit: cover;}
         .remove-image-btn { position: absolute; top: -8px; right: -8px; background: #ff4757; color: white; border: none; border-radius: 50%; cursor: pointer; width: 22px; height: 22px; font-size: 12px; display: flex; align-items: center; justify-content: center; }
         .disclaimer-text { font-size: 11px; color: rgba(255,255,255,0.4); text-align: center; margin-top: 15px; pointer-events: auto; }
@@ -207,34 +214,32 @@
         /* Current Active Mode Indicator */
         .active-mode-banner { position: absolute; top: 70px; left: 50%; transform: translateX(-50%); background: rgba(56, 189, 248, 0.15); border: 1px solid #38bdf8; color: #38bdf8; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: bold; z-index: 5; display: none; gap: 5px; align-items: center;}
 
-        /* Light Mode Settings */
+        /* Settings & Image Modals */
         .settings-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(9, 9, 11, 0.95); backdrop-filter: blur(25px); z-index: 3000; transform: translateY(100%); transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1); display: flex; flex-direction: column; }
         .settings-modal.active { transform: translateY(0); }
         .settings-header { padding: 20px; display: flex; align-items: center; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .settings-header h2 { flex: 1; text-align: center; margin: 0; font-size: 18px; color: #fff; font-weight: 500;}
         .settings-close { background: transparent; border: none; color: #e3e3e3; font-size: 28px; cursor: pointer; padding: 0 10px;}
         .settings-content { flex: 1; overflow-y: auto; padding: 20px; max-width: 600px; margin: 0 auto; width: 100%; }
-        
         .settings-group { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 16px; margin-bottom: 20px; overflow: hidden; }
         .settings-item { padding: 15px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid rgba(255,255,255,0.05); color: #e3e3e3; font-size: 15px; }
-        .settings-item:last-child { border-bottom: none; }
         .settings-item.clickable { cursor: pointer; transition: 0.2s; }
         .settings-item.clickable:hover { background: rgba(255,255,255,0.05); }
         .settings-item-left { display: flex; align-items: center; gap: 15px; }
         .settings-item-left svg { width: 22px; height: 22px; stroke: #a8c7fa; fill: none; stroke-width: 1.5; }
-        
         .settings-profile { padding: 20px; display: flex; align-items: center; gap: 15px; border-bottom: 1px solid rgba(255,255,255,0.05); }
         .settings-profile img { width: 50px; height: 50px; border-radius: 50%; }
         .settings-profile-info { display: flex; flex-direction: column; flex: 1;}
         .settings-profile-name { font-size: 16px; font-weight: bold; color: #fff; }
         .settings-profile-email { font-size: 13px; color: #8e8e8e; }
-        
         .switch { position: relative; display: inline-block; width: 44px; height: 24px; }
         .switch input { opacity: 0; width: 0; height: 0; }
         .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.1); transition: .4s; border-radius: 34px; }
         .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
         input:checked + .slider { background-color: #38bdf8; }
         input:checked + .slider:before { transform: translateX(20px); }
+
+        .modal-overlay-img { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.9); z-index:10000; justify-content:center; align-items:center; flex-direction:column; }
         
         /* Light Mode Styles */
         body.light-mode { background: linear-gradient(135deg, #f8f9fa 0%, #eef2ff 50%, #f8f9fa 100%); color: #1e1e1e; }
@@ -295,10 +300,6 @@
         body.light-mode .attach-icon-circle { background: rgba(0, 0, 0, 0.03); border: 1px solid rgba(0, 0, 0, 0.1); }
         body.light-mode .attach-icon-circle:hover { background: rgba(0, 0, 0, 0.08); }
         body.light-mode .attach-option span { color: #555; }
-        body.light-mode #about-content { color: #333; border-bottom: 1px solid rgba(0,0,0,0.05); }
-        body.light-mode .about-title-text { color: #1e1e1e !important; }
-        body.light-mode #about-content span[style*="color: #fff"] { color: #1e1e1e !important; }
-        body.light-mode #about-content span[style*="color: #38bdf8"] { color: #0284c7 !important; }
     </style>
 </head>
 <body>
@@ -314,7 +315,7 @@
         <button class="vip-close-btn" onclick="closeVipSlide()">×</button>
         <div class="vip-header"><h1>Meet the<br><span>NEXUS Pro!</span></h1></div>
         <div class="vip-robot-box">
-            <img src="robot.png" alt="Robot" class="vip-robot-img" onerror="this.onerror=null; this.src='https://cdn-icons-png.flaticon.com/512/8649/8649605.png';">
+            <img src="https://cdn-icons-png.flaticon.com/512/8649/8649605.png" alt="Robot" class="vip-robot-img">
         </div>
         <div class="swipe-wrapper">
             <div class="swipe-text" id="swipeText">Request Access</div>
@@ -330,7 +331,6 @@
                 <button class="close-pricing" onclick="closePricingModal()">×</button>
             </div>
         </div>
-        
         <div class="pricing-cards-container">
             <div class="pricing-card">
                 <div class="plan-title">Basic (Free)</div>
@@ -343,7 +343,6 @@
                     <li class="unavail"><svg viewBox="0 0 24 24"><path d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"/></svg> Video Generation</li>
                 </ul>
             </div>
-
             <div class="pricing-card recommended">
                 <div class="plan-title">NEXUS Pro</div>
                 <div class="plan-desc">Advanced AI capabilities for creators.</div>
@@ -355,7 +354,6 @@
                     <li><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg> Video Generation (5 / day)</li>
                 </ul>
             </div>
-
             <div class="pricing-card">
                 <div class="plan-title">NEXUS Ultra</div>
                 <div class="plan-desc">Maximum power for professional users.</div>
@@ -377,39 +375,20 @@
             <div style="width:24px;"></div>
         </div>
         <div class="settings-content">
-            
-            <div class="settings-group" id="settings-auth-group">
-                </div>
-
+            <div class="settings-group" id="settings-auth-group"></div>
             <div class="settings-group">
                 <div class="settings-item">
-                    <div class="settings-item-left">
-                        <svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-                        <span>Light Mode</span>
-                    </div>
-                    <label class="switch">
-                        <input type="checkbox" id="theme-toggle" onchange="toggleThemePreference()">
-                        <span class="slider"></span>
-                    </label>
+                    <div class="settings-item-left"><svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg><span>Light Mode</span></div>
+                    <label class="switch"><input type="checkbox" id="theme-toggle" onchange="toggleThemePreference()"><span class="slider"></span></label>
                 </div>
                 <div class="settings-item">
-                    <div class="settings-item-left">
-                        <svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
-                        <span>Haptic feedback</span>
-                    </div>
-                    <label class="switch">
-                        <input type="checkbox" id="haptic-toggle" onchange="toggleHapticPreference()">
-                        <span class="slider"></span>
-                    </label>
+                    <div class="settings-item-left"><svg viewBox="0 0 24 24"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg><span>Haptic feedback</span></div>
+                    <label class="switch"><input type="checkbox" id="haptic-toggle" onchange="toggleHapticPreference()"><span class="slider"></span></label>
                 </div>
             </div>
-
             <div class="settings-group">
                 <div class="settings-item clickable" onclick="toggleAbout()" style="justify-content: space-between; border-bottom: none;">
-                    <div class="settings-item-left">
-                        <svg viewBox="0 0 24 24" style="stroke: #d6bcfa;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-                        <span style="font-weight: bold; color: #fff;" class="about-title-text">About NEXUS</span>
-                    </div>
+                    <div class="settings-item-left"><svg viewBox="0 0 24 24" style="stroke: #d6bcfa;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg><span style="font-weight: bold; color: #fff;" class="about-title-text">About NEXUS</span></div>
                     <svg id="about-chevron" viewBox="0 0 24 24" style="width: 20px; height: 20px; stroke: #8e8e8e; fill: none; transition: 0.3s;"><polyline points="6 9 12 15 18 9"></polyline></svg>
                 </div>
                 <div id="about-content" style="display: none; font-size: 13px; color: #a8c7fa; grid-template-columns: 120px 1fr; gap: 10px; padding: 0 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); line-height: 1.5;">
@@ -421,13 +400,9 @@
                     <span style="color: #8e8e8e;">AI Co-Pilot:</span> <span style="color: #38bdf8;">Gemini AI</span>
                 </div>
             </div>
-
             <div class="settings-group">
                 <div class="settings-item clickable" onclick="clearAllHistoryFromSettings()">
-                    <div class="settings-item-left">
-                        <svg stroke="#ff6b6b" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                        <span style="color:#ff6b6b">Clear all chats</span>
-                    </div>
+                    <div class="settings-item-left"><svg stroke="#ff6b6b" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg><span style="color:#ff6b6b">Clear all chats</span></div>
                 </div>
             </div>
         </div>
@@ -583,6 +558,27 @@
     </div>
 
     <script>
+        // =========================================================
+        // 🔒 ANTI-THEFT SYSTEM (Frontend လုံခြုံရေး)
+        // =========================================================
+        
+        // 1. Right Click ပိတ်ခြင်း
+        document.addEventListener('contextmenu', event => event.preventDefault());
+
+        // 2. Keyboard Shortcuts များ ပိတ်ခြင်း
+        document.onkeydown = function(e) {
+            // Disable F12
+            if(e.keyCode == 123) return false;
+            // Disable Ctrl+Shift+I / J / C
+            if(e.ctrlKey && e.shiftKey && (e.keyCode == 'I'.charCodeAt(0) || e.keyCode == 'C'.charCodeAt(0) || e.keyCode == 'J'.charCodeAt(0))) return false;
+            // Disable Ctrl+U (View Source)
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) return false;
+        };
+
+        // =========================================================
+        // ⚙️ INITIALIZATION & FIREBASE
+        // =========================================================
+
         emailjs.init("0OAPgzl3T2wge9sy6");
         const firebaseConfig = { apiKey: "AIzaSyBuI_N7UY3HzLC1q4bTbr0pIjutn7oCez0", authDomain: "nexus-36961.firebaseapp.com", projectId: "nexus-36961", storageBucket: "nexus-36961.firebasestorage.app", messagingSenderId: "818963537476", appId: "1:818963537476:web:83e8b69fdf067001e62611" };
         if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
@@ -658,12 +654,10 @@
             
             const data = window.currentUserData;
             
-            // Check if feature is turned OFF by Admin
             if (data.allowed && data.allowed[featureType] === false) {
                 alert("This feature has been disabled by Admin for your account."); return false;
             }
             
-            // Check Usage vs Limit
             const limit = data.limits ? (data.limits[featureType] || 0) : 0;
             const used = data.usage ? (data.usage[featureType] || 0) : 0;
             
@@ -680,20 +674,18 @@
             await userRef.update({ [`usage.${featureType}`]: firebase.firestore.FieldValue.increment(1) });
         }
 
+        // --- UI TOGGLES ---
         function toggleThemePreference() { isLightMode = document.getElementById("theme-toggle").checked; if(isLightMode) { document.body.classList.add("light-mode"); localStorage.setItem("nexus_theme", "light"); } else { document.body.classList.remove("light-mode"); localStorage.setItem("nexus_theme", "dark"); } triggerVibration(); }
         function toggleAbout() { const content = document.getElementById("about-content"); const chevron = document.getElementById("about-chevron"); if (content.style.display === "none") { content.style.display = "grid"; chevron.style.transform = "rotate(180deg)"; } else { content.style.display = "none"; chevron.style.transform = "rotate(0deg)"; } triggerVibration(); }
         function toggleSettings() { const modal = document.getElementById("settingsModal"); if (modal.classList.contains("active")) { modal.classList.remove("active"); } else { updateSettingsAuthUI(); modal.classList.add("active"); if (window.innerWidth <= 768) { document.getElementById("sidebar").classList.remove("open"); document.getElementById("overlay").classList.remove("show"); } } }
         function updateSettingsAuthUI() { const authGroup = document.getElementById("settings-auth-group"); if (currentUser) { authGroup.innerHTML = `<div class="settings-profile"><img src="${currentUser.photoURL || 'https://via.placeholder.com/50'}" alt="Profile"><div class="settings-profile-info"><span class="settings-profile-name">${currentUser.displayName || 'NEXUS User'}</span><span class="settings-profile-email">${currentUser.email}</span></div></div><div class="settings-item clickable" onclick="handleAuth()"><div class="settings-item-left"><svg stroke="#ff6b6b" viewBox="0 0 24 24"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg><span style="color:#ff6b6b">Logout from NEXUS</span></div></div>`; } else { authGroup.innerHTML = `<div class="settings-item clickable" onclick="handleAuth()"><div class="settings-item-left"><svg viewBox="0 0 24 24"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg><span>Login with Google</span></div></div>`; } }
         function toggleHapticPreference() { isHapticEnabled = document.getElementById("haptic-toggle").checked; localStorage.setItem("nexus_haptics", isHapticEnabled); triggerVibration(); }
         function triggerVibration() { if (isHapticEnabled && navigator.vibrate) { navigator.vibrate(50); } }
-        window.clearAllHistoryFromSettings = function() { if(confirm("Are you sure you want to delete ALL chat history?")) { localStorage.removeItem("nexus_chat_sessions"); chatSessions = []; syncFirebaseChats(); startNewChat(); toggleSettings(); } };
-
-        async function loadFirebaseChats() { if(!currentUser) return; try { const snapshot = await db.collection("user_chats").doc(currentUser.uid).get(); if(snapshot.exists && snapshot.data().sessions) { chatSessions = snapshot.data().sessions; localStorage.setItem("nexus_chat_sessions", JSON.stringify(chatSessions)); renderSidebar(); if(chatSessions.length > 0) loadChatSession(chatSessions[0].id); } } catch(e) { console.log("Firebase Load Error", e); } }
-        async function syncFirebaseChats() { if(!currentUser) return; try { await db.collection("user_chats").doc(currentUser.uid).set({ sessions: chatSessions }); } catch(e) { console.log("Firebase Sync Error", e); } }
-
+        
         function toggleSidebar() { document.getElementById("sidebar").classList.toggle("open"); document.getElementById("overlay").classList.toggle("show"); }
         function toggleDropdown(e) { e.stopPropagation(); document.getElementById("model-dropdown").classList.toggle("show"); triggerVibration(); }
-        
+        window.onclick = (e) => { if (!e.target.matches('.dropdown-btn')) document.getElementById("model-dropdown").classList.remove('show'); };
+
         // ⚡ Chat Bot Model Selection (Flash, Dev, Funny)
         function selectModel(model) { 
             currentModel = model; 
@@ -703,19 +695,16 @@
             document.getElementById("mode-banner").style.display = 'none'; // Hide Premium banner
             triggerVibration();
         }
-        window.onclick = (e) => { if (!e.target.matches('.dropdown-btn')) document.getElementById("model-dropdown").classList.remove('show'); };
 
         // 🌟 Premium Sidebar Selection
         function selectPremiumMode(mode) {
             if (!currentUser) { alert("Please Login to use Premium Features."); handleAuth(); return; }
             toggleSidebar(); // Close sidebar
-            
             currentModel = mode;
             document.getElementById("model-btn").innerText = '⭐ Premium Mode'; 
             
             const banner = document.getElementById("mode-banner");
             const bannerText = document.getElementById("mode-banner-text");
-            
             if (mode === 'ImageGen') bannerText.innerText = "🎨 Image Generation Active";
             if (mode === 'Video') bannerText.innerText = "🎬 Video Generation Active";
             if (mode === 'TTS') bannerText.innerText = "🔊 Text-to-Voice Active";
@@ -725,28 +714,27 @@
         }
 
         // --- PRICING & VIP MODAL ---
-        function showPricingModal() { 
-            if(window.innerWidth <= 768) { toggleSidebar(); }
-            document.getElementById("pricingModal").classList.add("active"); 
-            triggerVibration();
-        }
+        function showPricingModal() { if(window.innerWidth <= 768) { toggleSidebar(); } document.getElementById("pricingModal").classList.add("active"); triggerVibration();}
         function closePricingModal() { document.getElementById("pricingModal").classList.remove("active"); triggerVibration();}
 
         function openVipSlide() { 
             if (!currentUser) { alert("Please Login to contact Admin."); handleAuth(); return; }
-            closePricingModal(); 
-            document.getElementById("model-dropdown").classList.remove("show"); 
-            document.getElementById("vipSlide").classList.add("active"); 
-            document.getElementById("swipeSlider").value = 0; document.getElementById("swipeText").style.opacity = 1; 
+            closePricingModal(); document.getElementById("model-dropdown").classList.remove("show"); document.getElementById("vipSlide").classList.add("active"); document.getElementById("swipeSlider").value = 0; document.getElementById("swipeText").style.opacity = 1; 
         }
         function closeVipSlide() { document.getElementById("vipSlide").classList.remove("active"); }
         function handleSwipe(e) { let opacity = 1 - (e.target.value / 50); document.getElementById("swipeText").style.opacity = opacity > 0 ? opacity : 0; }
         function snapSwipe(e) { let slider = document.getElementById("swipeSlider"); if(slider.value > 85) { slider.value = 100; setTimeout(() => { closeVipSlide(); selectModel('VIP'); currentModel = 'VIP'; document.getElementById("model-btn").innerText = '💎 VIP Request'; document.getElementById("mode-banner").style.display = 'none'; startNewChat(); document.getElementById("welcome-message").innerHTML = "💎<br>VIP Admin Chat<br><span style='font-size:14px; font-weight:normal; color:#aaa;'>Your request is secured.</span>"; document.getElementById("welcome-message").style.display = 'block'; }, 300); } else { slider.value = 0; document.getElementById("swipeText").style.opacity = 1; } triggerVibration(); }
 
+        // --- FILE ATTACHMENTS & UTILS ---
         function toggleAttachmentMenu(event) { if(event) event.stopPropagation(); document.getElementById("attachment-menu").classList.toggle("show"); triggerVibration(); }
         function handleImageSelect(e) { const file = e.target.files[0]; if (file) { const reader = new FileReader(); reader.onload = (event) => { selectedImage = event.target.result; document.getElementById("preview-img").src = selectedImage; document.getElementById("preview-container").style.display = "block"; }; reader.readAsDataURL(file); } e.target.value = ''; }
         function handleTextFileSelect(e) { const file = e.target.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(event) { document.getElementById("user-input").value += `[File Content: ${file.name}]\n` + event.target.result + `\n`; }; reader.readAsText(file); e.target.value = ''; }
         function removeImage() { selectedImage = null; document.getElementById("preview-container").style.display = "none"; }
+        
+        function openImageModal(src) { document.getElementById("modalImage").src = src; document.getElementById("imageModal").style.display = "flex"; }
+        function closeImageModal() { document.getElementById("imageModal").style.display = "none"; }
+        function downloadModalImage() { const src = document.getElementById("modalImage").src; const link = document.createElement("a"); link.href = src; link.download = "nexus_image.jpg"; document.body.appendChild(link); link.click(); document.body.removeChild(link); }
+
         function exportChatToPDF() { document.getElementById("model-dropdown").classList.remove("show"); const chatElement = document.getElementById("chat-messages"); html2pdf().set({ margin: 10, filename: 'NEXUS_Chat.pdf', html2canvas: { scale: 2, useCORS: true, backgroundColor: (isLightMode ? '#f8f9fa' : '#131314') } }).from(chatElement).save(); }
 
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition; let recognition; let isListening = false;
@@ -757,18 +745,10 @@
         window.copyText = function(btn, encodedText) { let text = decodeURIComponent(encodedText); triggerVibration(); if (!navigator.clipboard) { window.fallbackCopyTextToClipboard(text); let original = btn.innerHTML; btn.innerHTML = `<svg viewBox="0 0 24 24" style="stroke:#a8c7fa"><polyline points="20 6 9 17 4 12"></polyline></svg>`; setTimeout(() => { btn.innerHTML = original; }, 2000); return; } navigator.clipboard.writeText(text).then(() => { let original = btn.innerHTML; btn.innerHTML = `<svg viewBox="0 0 24 24" style="stroke:#a8c7fa"><polyline points="20 6 9 17 4 12"></polyline></svg>`; setTimeout(() => { btn.innerHTML = original; }, 2000); }).catch(err => { window.fallbackCopyTextToClipboard(text); let original = btn.innerHTML; btn.innerHTML = `<svg viewBox="0 0 24 24" style="stroke:#a8c7fa"><polyline points="20 6 9 17 4 12"></polyline></svg>`; setTimeout(() => { btn.innerHTML = original; }, 2000); }); };
         
         window.playCustomAudioUI = function(btn, encodedText) {
-            triggerVibration();
-            let svgPath = btn.querySelector('path');
-            if (btn.classList.contains('playing')) {
-                window.speechSynthesis.cancel(); btn.classList.remove('playing');
-                svgPath.setAttribute('d', 'M8 5v14l11-7z');
-                let wave = btn.nextElementSibling; Array.from(wave.children).forEach(bar => bar.style.animationPlayState = 'paused');
-                return;
-            }
-            window.speechSynthesis.cancel(); 
-            let text = decodeURIComponent(encodedText); let utterance = new SpeechSynthesisUtterance(text); utterance.lang = /[\u1000-\u109F]/.test(text) ? 'my-MM' : 'en-US';
-            btn.classList.add('playing'); svgPath.setAttribute('d', 'M6 19h4V5H6v14zm8-14v14h4V5h-4z');
-            let wave = btn.nextElementSibling; Array.from(wave.children).forEach(bar => bar.style.animationPlayState = 'running');
+            triggerVibration(); let svgPath = btn.querySelector('path');
+            if (btn.classList.contains('playing')) { window.speechSynthesis.cancel(); btn.classList.remove('playing'); svgPath.setAttribute('d', 'M8 5v14l11-7z'); let wave = btn.nextElementSibling; Array.from(wave.children).forEach(bar => bar.style.animationPlayState = 'paused'); return; }
+            window.speechSynthesis.cancel(); let text = decodeURIComponent(encodedText); let utterance = new SpeechSynthesisUtterance(text); utterance.lang = /[\u1000-\u109F]/.test(text) ? 'my-MM' : 'en-US';
+            btn.classList.add('playing'); svgPath.setAttribute('d', 'M6 19h4V5H6v14zm8-14v14h4V5h-4z'); let wave = btn.nextElementSibling; Array.from(wave.children).forEach(bar => bar.style.animationPlayState = 'running');
             utterance.onend = () => { btn.classList.remove('playing'); svgPath.setAttribute('d', 'M8 5v14l11-7z'); Array.from(wave.children).forEach(bar => bar.style.animationPlayState = 'paused'); };
             utterance.onerror = () => { btn.classList.remove('playing'); svgPath.setAttribute('d', 'M8 5v14l11-7z'); Array.from(wave.children).forEach(bar => bar.style.animationPlayState = 'paused'); };
             window.speechSynthesis.speak(utterance);
@@ -788,32 +768,14 @@
         };
 
         window.editUserMessage = function(encodedText) { let text = decodeURIComponent(encodedText); document.getElementById("user-input").value = text; document.getElementById("user-input").focus(); triggerVibration(); };
+        window.regenerateMessage = async function() { if (!currentSessionId || (isStopGeneration === false && document.getElementById("stop-btn").style.display === "flex")) return; const session = chatSessions.find(s => s.id === currentSessionId); if (!session || session.messages.length < 2) return; triggerVibration(); if (!session.messages[session.messages.length - 1].isUser) { session.messages.pop(); const container = document.getElementById("chat-messages"); container.removeChild(container.lastChild); } const lastUserMsg = session.messages.pop(); const container = document.getElementById("chat-messages"); container.removeChild(container.lastChild); localStorage.setItem("nexus_chat_sessions", JSON.stringify(chatSessions)); document.getElementById("user-input").value = lastUserMsg.text || ""; if (lastUserMsg.img) { selectedImage = lastUserMsg.img; document.getElementById("preview-img").src = selectedImage; document.getElementById("preview-container").style.display = "block"; } sendMessage(); };
 
-        window.regenerateMessage = async function() {
-            if (!currentSessionId || (isStopGeneration === false && document.getElementById("stop-btn").style.display === "flex")) return; 
-            const session = chatSessions.find(s => s.id === currentSessionId);
-            if (!session || session.messages.length < 2) return;
-            triggerVibration();
-            if (!session.messages[session.messages.length - 1].isUser) { session.messages.pop(); const container = document.getElementById("chat-messages"); container.removeChild(container.lastChild); }
-            const lastUserMsg = session.messages.pop(); const container = document.getElementById("chat-messages"); container.removeChild(container.lastChild);
-            localStorage.setItem("nexus_chat_sessions", JSON.stringify(chatSessions));
-            document.getElementById("user-input").value = lastUserMsg.text || "";
-            if (lastUserMsg.img) { selectedImage = lastUserMsg.img; document.getElementById("preview-img").src = selectedImage; document.getElementById("preview-container").style.display = "block"; }
-            sendMessage(); 
-        };
-
+        // --- CHAT HISTORY LOGIC ---
+        window.clearAllHistoryFromSettings = function() { if(confirm("Are you sure you want to delete ALL chat history?")) { localStorage.removeItem("nexus_chat_sessions"); chatSessions = []; syncFirebaseChats(); startNewChat(); toggleSettings(); } };
         function toggleSearchBox() { const sb = document.getElementById("search-box"); if (sb.style.display === "block") { sb.style.display = "none"; document.getElementById("search-input").value = ""; filterHistoryChats(); } else { sb.style.display = "block"; document.getElementById("search-input").focus(); } }
         function filterHistoryChats() { const query = document.getElementById("search-input").value.toLowerCase(); const items = document.querySelectorAll(".history-item"); items.forEach(item => { const text = item.innerText.toLowerCase(); item.style.display = text.includes(query) ? "flex" : "none"; }); }
 
-        function startNewChat() { 
-            currentSessionId = null; 
-            document.getElementById("chat-messages").innerHTML = '<div id="welcome-message">Hello, Welcome</div>'; 
-            document.getElementById("prompt-suggestions").style.display = 'flex'; 
-            renderSidebar(); 
-            if(window.innerWidth <= 768) { document.getElementById("sidebar").classList.remove("open"); document.getElementById("overlay").classList.remove("show"); }
-            triggerVibration();
-        }
-        
+        function startNewChat() { currentSessionId = null; document.getElementById("chat-messages").innerHTML = '<div id="welcome-message">Hello, Welcome</div>'; document.getElementById("prompt-suggestions").style.display = 'flex'; renderSidebar(); if(window.innerWidth <= 768) { document.getElementById("sidebar").classList.remove("open"); document.getElementById("overlay").classList.remove("show"); } triggerVibration(); }
         window.deleteChatSession = function(id, event) { event.stopPropagation(); triggerVibration(); if(confirm("ဒီ Chat မှတ်တမ်းကို ဖျက်မှာ သေချာပါသလား?")) { chatSessions = chatSessions.filter(s => s.id !== id); localStorage.setItem("nexus_chat_sessions", JSON.stringify(chatSessions)); syncFirebaseChats(); if(currentSessionId === id) { startNewChat(); } else { renderSidebar(); } } };
 
         function renderSidebar() { 
@@ -830,7 +792,6 @@
         }
         
         function loadChatSession(id) { currentSessionId = id; const session = chatSessions.find(s => s.id === id); if(session) { document.getElementById("chat-messages").innerHTML = ""; document.getElementById("prompt-suggestions").style.display = 'none'; session.messages.forEach(msg => { appendMessage(msg.text, msg.isUser, msg.img, false); }); } renderSidebar(); if(window.innerWidth <= 768) { document.getElementById("sidebar").classList.remove("open"); document.getElementById("overlay").classList.remove("show"); } }
-        window.clearAllHistory = function() { if(confirm("Clear All History?")) { localStorage.removeItem("nexus_chat_sessions"); chatSessions = []; syncFirebaseChats(); startNewChat(); } };
         
         function saveMessageToSession(text, isUser, img) { 
             if(!text && !img) return; 
@@ -839,6 +800,7 @@
             if(activeSession) { activeSession.messages.push({ text: text, isUser: isUser, img: img }); localStorage.setItem("nexus_chat_sessions", JSON.stringify(chatSessions)); syncFirebaseChats(); renderSidebar(); } 
         }
 
+        // --- MESSAGE RENDERING ---
         function stopGenerating() { isStopGeneration = true; document.getElementById("stop-btn").style.display = "none"; document.getElementById("send-btn").style.display = "flex"; triggerVibration(); }
 
         async function typeWriterStreaming(textElement, fullText, resolve) {
@@ -887,6 +849,7 @@
             return row;
         }
 
+        // --- CORE SEND MESSAGE LOGIC ---
         async function sendMessage() {
             const input = document.getElementById("user-input"); const text = input.value.trim(); const imgData = selectedImage;
             if(isListening) recognition.stop(); if (!text && !imgData) return;
